@@ -1,0 +1,370 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RavnLearn - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #1e1e1e;
+            --panel-dark: #1e1e1e;
+            --input-bg: #323232;
+            --input-border: #444;
+            --text-white: #ffffff;
+            --text-muted: #b4b4b4;
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+            --btn-hover: #dddddd;
+            --error-bg: #5a1a1a;
+            --error-text: #ff8080;
+            --focus-color: #7c5cbf;
+        }
+
+        html, body {
+            height: 100%;
+            background-color: var(--bg-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .page-wrapper {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ─── LEFT SIDE: Illustration ─── */
+        .left-panel {
+            flex: 0 0 45%;
+            background-color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            animation: fadeInLeft 0.7s ease both;
+            margin-left: 30%;
+        }
+
+        /* Fallback illustration if no image */
+        .left-panel .brand-fallback {
+            text-align: center;
+            animation: fadeInLeft 0.7s ease both;
+        }
+
+        .brand-fallback .logo-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #7c5cbf, #4a90d9);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            margin: 0 auto 24px;
+            box-shadow: 0 20px 60px rgba(124, 92, 191, 0.4);
+        }
+
+        .brand-fallback h2 {
+            color: var(--text-white);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .brand-fallback p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 260px;
+            line-height: 1.6;
+        }
+
+        /* ─── RIGHT SIDE: Form Panel ─── */
+        .right-panel {
+            flex: 1;
+            background-color: var(--panel-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeInRight 0.7s ease both;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        /* ─── Heading ─── */
+        .form-title {
+            color: var(--text-white);
+            font-size: clamp(28px, 3vw, 42px);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 36px;
+        }
+
+        /* ─── Error Banner ─── */
+        .error-banner {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ─── Form Fields ─── */
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            color: var(--text-white);
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-white);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--focus-color);
+            box-shadow: 0 0 0 3px rgba(124, 92, 191, 0.15);
+        }
+
+        .input-wrapper input::placeholder {
+            color: #666;
+        }
+
+        /* Show/hide password button */
+        .btn-eye {
+            position: absolute;
+            right: 10px;
+            background: var(--input-bg);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            line-height: 1;
+            transition: color 0.2s ease;
+            user-select: none;
+        }
+
+        .btn-eye:hover {
+            color: var(--text-white);
+        }
+
+        /* Password input needs right padding for the eye icon */
+        .input-wrapper.has-eye input {
+            padding-right: 44px;
+        }
+
+        /* ─── Login Button ─── */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        /* ─── Sign Up Row ─── */
+        .bottom-row {
+            text-align: center;
+            margin-top: 28px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .bottom-row a {
+            color: var(--text-white);
+            font-weight: 700;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .bottom-row a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* ─── Animations ─── */
+        @@keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        @@keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ─── Responsive ─── */
+        @@media (max-width: 768px) {
+            html, body { overflow: auto; }
+            .page-wrapper { flex-direction: column; height: auto; min-height: 100vh; }
+            .left-panel {
+                flex: none;
+                height: 200px;
+                padding: 16px;
+            }
+            .left-panel img { max-width: 180px; }
+            .right-panel { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+
+        <!-- LEFT: Image / Branding -->
+        <div class="left-panel">
+            @* Replace src with your actual image path, e.g. ~/images/RavnLearnBG.png *@
+            <img src="~/images/Rev_nLearnBG1.png"
+                 alt="RavnLearn"
+                 onerror="this.style.display='none'; document.getElementById('brand-fallback').style.display='block';" />
+            <div class="brand-fallback" id="brand-fallback" style="display:none;">
+                <div class="logo-icon">📚</div>
+                <h2>RavnLearn</h2>
+                <p>Your intelligent study companion. Organize, learn, and grow.</p>
+            </div>
+        </div>
+
+        <!-- RIGHT: Login Form -->
+        <div class="right-panel">
+            <div class="form-container">
+
+                <h1 class="form-title">Welcome Back!</h1>
+                <p class="form-subtitle">Glad to see you again! Please Log In</p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="error-banner">
+                        <span>⚠️</span>
+                        <span>@ViewBag.Error</span>
+                    </div>
+                }
+
+                <form method="post" asp-action="Login" asp-controller="Account">
+                    @Html.AntiForgeryToken()
+
+                    <div class="field-group">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <input type="text"
+                                   id="username"
+                                   name="username"
+                                   placeholder="Enter your username"
+                                   autocomplete="username"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper has-eye">
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   required />
+                            <button type="button"
+                                    class="btn-eye"
+                                    onclick="togglePassword('password', this)"
+                                    title="Show/Hide password">👁</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Login</button>
+                </form>
+
+                <div class="bottom-row">
+                    Don't have an account? <a href="/Account/Register">Sign up</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+    </script>
+</body>
+</html>
