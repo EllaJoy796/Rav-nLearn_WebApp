@@ -273,7 +273,7 @@
         hideSource();
 
         try {
-            const res = await fetch(`/Chat/GetMessages/${activeChatId}`);
+            const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
 
