@@ -37,7 +37,16 @@
         .app-shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ── LEFT ── */
-        .panel-left { width: 220px; min-width: 220px; background: var(--left-bg); border-right: 1px solid var(--panel-border); display: flex; flex-direction: column; overflow: hidden; }
+        .panel-left {
+            width: 220px;
+            min-width: 140px;
+            max-width: 420px;
+            flex-shrink: 0;
+            background: var(--left-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
         .left-logo { padding: 16px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--panel-border); display: flex; align-items: center; gap: 8px; }
         .btn-new-chat { margin: 14px 12px 8px; padding: 10px 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.18s; }
         .btn-new-chat:hover { background: var(--accent-hover); }
@@ -58,8 +67,34 @@
         .btn-logout { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; transition: color 0.15s; }
         .btn-logout:hover { color: #e74c3c; }
 
+        /* ── RESIZE HANDLES ── */
+        .resize-handle {
+            width: 5px;
+            min-width: 5px;
+            cursor: col-resize;
+            background: var(--panel-border);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            transition: background 0.15s;
+        }
+        .resize-handle:hover,
+        .resize-handle.dragging {
+            background: var(--accent);
+        }
+        /* Widen the hit area without affecting layout */
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            left: -4px; right: -4px;
+            cursor: col-resize;
+        }
+        /* Prevent text selection while dragging */
+        body.resizing { user-select: none; cursor: col-resize; }
+
         /* ── CENTER ── */
-        .panel-center { flex: 1; background: var(--center-bg); display: flex; flex-direction: column; overflow: hidden; }
+        .panel-center { flex: 1; background: var(--center-bg); display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
         .welcome-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
         .welcome-screen h1 { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 10px; }
         .welcome-screen p { font-size: 15px; color: var(--text-muted); }
@@ -95,13 +130,31 @@
         .input-hint { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
 
         /* ── RIGHT ── */
-        .panel-right { width: 220px; min-width: 220px; background: var(--right-bg); border-left: 1px solid var(--panel-border); display: flex; flex-direction: column; overflow: hidden; }
+        .panel-right {
+            width: 220px;
+            min-width: 140px;
+            max-width: 420px;
+            flex-shrink: 0;
+            background: var(--right-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
         .right-header { padding: 16px 14px 10px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--panel-border); }
         .right-section { padding: 12px 14px 8px; }
         .right-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
         .btn-add-source { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: 1px dashed #3a3a3a; border-radius: var(--radius); color: var(--text-muted); font-size: 12.5px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
         .btn-add-source:hover { background: #2e2e2e; border-color: var(--accent); color: var(--text); }
-        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px; word-break: break-all; }
+        .source-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 111px; overflow-y: auto; padding-right: 2px; }
+        .source-list::-webkit-scrollbar { width: 3px; }
+        .source-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .source-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .source-item-spinner { width: 12px; height: 12px; border: 2px solid #444; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+        .btn-del-source { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s, color 0.15s; line-height: 1; }
+        .source-item:hover .btn-del-source { opacity: 1; }
+        .btn-del-source:hover { color: #e74c3c; }
         .right-divider { height: 1px; background: var(--panel-border); margin: 4px 14px; }
         .quiz-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
         .quiz-header-btn { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: none; border-radius: 8px; color: var(--text); font-size: 12.5px; font-family: inherit; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 6px; transition: background 0.15s; margin-bottom: 4px; }
@@ -113,12 +166,12 @@
 </head>
 <body>
 
-<input type="file" id="fileInput" accept=".pdf,.docx,.txt" />
+<input type="file" id="fileInput" accept=".pdf,.docx,.txt" multiple />
 
 <div class="app-shell">
 
     <!-- LEFT -->
-    <aside class="panel-left">
+    <aside class="panel-left" id="panelLeft">
         <div class="left-logo">
             <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
                  alt="Logo" style="width:28px;height:28px;object-fit:contain;"
@@ -139,6 +192,9 @@
             <button class="btn-logout" id="btnLogout" title="Logout">⏻</button>
         </div>
     </aside>
+
+    <!-- LEFT RESIZE HANDLE -->
+    <div class="resize-handle" id="resizeLeft"></div>
 
     <!-- CENTER -->
     <main class="panel-center">
@@ -162,15 +218,16 @@
         </div>
     </main>
 
+    <!-- RIGHT RESIZE HANDLE -->
+    <div class="resize-handle" id="resizeRight"></div>
+
     <!-- RIGHT -->
-    <aside class="panel-right">
+    <aside class="panel-right" id="panelRight">
         <div class="right-header">Study Tools</div>
         <div class="right-section">
             <div class="right-section-title">📎 Sources</div>
             <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
-            <div id="sourceDisplay" class="source-item" style="display:none;">
-                <span>📄</span><span id="sourceFileName"></span>
-            </div>
+            <div id="sourceList" class="source-list"></div>
         </div>
         <div class="right-divider"></div>
         <div class="right-section" style="padding-bottom:4px;">
@@ -213,6 +270,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         await loadChatList();
         setupEventListeners();
+        setupResizeHandles();
     });
 
     function setupEventListeners() {
@@ -226,6 +284,75 @@
         });
     }
 
+    // ══ DRAG RESIZE ══════════════════════════════════════
+    function setupResizeHandles() {
+        const panelLeft   = document.getElementById('panelLeft');
+        const panelRight  = document.getElementById('panelRight');
+        const handleLeft  = document.getElementById('resizeLeft');
+        const handleRight = document.getElementById('resizeRight');
+
+        // LEFT handle — dragging it changes the left panel width
+        makeResizable(handleLeft, (dx) => {
+            const newWidth = panelLeft.offsetWidth + dx;
+            const clamped  = Math.min(Math.max(newWidth, 140), 420);
+            panelLeft.style.width = clamped + 'px';
+        });
+
+        // RIGHT handle — dragging it changes the right panel width (inverted dx)
+        makeResizable(handleRight, (dx) => {
+            const newWidth = panelRight.offsetWidth - dx;
+            const clamped  = Math.min(Math.max(newWidth, 140), 420);
+            panelRight.style.width = clamped + 'px';
+        });
+    }
+
+    function makeResizable(handle, onDrag) {
+        let startX = 0;
+        let dragging = false;
+
+        handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            dragging = true;
+            startX = e.clientX;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            startX = e.clientX;
+            onDrag(dx);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+        });
+
+        // Touch support
+        handle.addEventListener('touchstart', (e) => {
+            dragging = true;
+            startX = e.touches[0].clientX;
+            handle.classList.add('dragging');
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            const dx = e.touches[0].clientX - startX;
+            startX = e.touches[0].clientX;
+            onDrag(dx);
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+        });
+    }
+
     // ══ CHAT LIST ════════════════════════════════════════
     async function loadChatList() {
         try {
@@ -233,7 +360,6 @@
             const chats = await res.json();
             const list = document.getElementById('chatList');
             list.innerHTML = '';
-            // Server returns newest first, so just append in order
             chats.forEach(c => {
                 const el = makeChatItem(c.id, c.title);
                 list.appendChild(el);
@@ -255,7 +381,6 @@
 
     function addChatItemToTop(id, title) {
         const list = document.getElementById('chatList');
-        // Remove if already exists
         document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
         const el = makeChatItem(id, title);
         list.prepend(el);
@@ -290,20 +415,24 @@
 
     // ══ LOAD CHAT ════════════════════════════════════════
     async function loadChat(chatId) {
-        // Set activeChatId FIRST before any awaits
         activeChatId = parseInt(chatId);
         setActiveChatItem(activeChatId);
         showChatUI();
         clearMessages();
         clearQuizList();
-        hideSource();
+        clearSourceList();
 
         try {
             const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
 
-            if (data.docFilename) showSource(data.docFilename);
+            // Prefer the array; fall back to single only if array is missing/empty
+            if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
+                data.docFilenames.forEach(name => addSourceItem(name, false));
+            } else if (data.docFilename) {
+                addSourceItem(data.docFilename, false);
+            }
 
             if (!data.messages || data.messages.length === 0) {
                 appendBubble('No messages yet. Start the conversation!', 'ai');
@@ -324,7 +453,6 @@
         const message = input.value.trim();
         if (!message) return;
 
-        // Create new chat if none selected
         if (activeChatId === -1) {
             try {
                 const res = await fetch('/Chat/NewChat', { method: 'POST' });
@@ -348,7 +476,6 @@
         isSending = true;
         document.getElementById('btnSend').disabled = true;
 
-        // Capture the current chat ID — don't let it change mid-request
         const sendingToChatId = activeChatId;
 
         try {
@@ -439,8 +566,8 @@
 
     // ══ UPLOAD ════════════════════════════════════════════
     async function uploadDocument(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
 
         if (activeChatId === -1) {
             const res = await fetch('/Chat/NewChat', { method: 'POST' });
@@ -451,20 +578,85 @@
         }
 
         showChatUI();
-        const fd = new FormData();
-        fd.append('file', file);
-        fd.append('chatId', activeChatId);
-        showSource('Uploading…');
 
-        try {
-            const res = await fetch('/Chat/UploadDocument', { method: 'POST', body: fd });
-            const data = await res.json();
-            if (data.error) { alert('Upload failed: ' + data.error); hideSource(); }
-            else { showSource(data.fileName); appendBubble(data.welcome, 'ai'); scrollToBottom(); }
-        } catch (err) { alert('Upload error: ' + err.message); hideSource(); }
+        // Upload each file one at a time, sequentially
+        for (const file of files) {
+            const itemEl = addSourceItem(file.name, true);
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('chatId', activeChatId);
+
+            try {
+                const res = await fetch('/Chat/UploadDocument', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.error) {
+                    removeSourceItem(itemEl);
+                    alert('Upload failed: ' + data.error);
+                } else {
+                    finalizeSourceItem(itemEl, data.fileName);
+                    appendBubble(data.welcome, 'ai');
+                    scrollToBottom();
+                }
+            } catch (err) {
+                removeSourceItem(itemEl);
+                alert('Upload error: ' + err.message);
+            }
+        }
 
         e.target.value = '';
     }
+
+    // ── Source list helpers ───────────────────────────────
+    function addSourceItem(name, uploading = false) {
+        const list = document.getElementById('sourceList');
+        const item = document.createElement('div');
+        item.className = 'source-item' + (uploading ? ' source-item-uploading' : '');
+
+        const icon = document.createElement('span');
+        icon.textContent = '📄';
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'source-item-name';
+        nameEl.title = name;
+        nameEl.textContent = name;
+
+        item.appendChild(icon);
+        item.appendChild(nameEl);
+
+        if (uploading) {
+            const spinner = document.createElement('div');
+            spinner.className = 'source-item-spinner';
+            item.appendChild(spinner);
+        } else {
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn-del-source';
+            delBtn.title = 'Remove';
+            delBtn.textContent = '✕';
+            delBtn.onclick = () => item.remove();
+            item.appendChild(delBtn);
+        }
+
+        list.appendChild(item);
+        return item;
+    }
+
+    function finalizeSourceItem(item, fileName) {
+        item.classList.remove('source-item-uploading');
+        // swap spinner for delete button
+        const spinner = item.querySelector('.source-item-spinner');
+        if (spinner) spinner.remove();
+        // update name in case server normalized it
+        const nameEl = item.querySelector('.source-item-name');
+        if (nameEl && fileName) { nameEl.textContent = fileName; nameEl.title = fileName; }
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-del-source';
+        delBtn.title = 'Remove';
+        delBtn.textContent = '✕';
+        delBtn.onclick = () => item.remove();
+        item.appendChild(delBtn);
+    }
+
+    function removeSourceItem(item) { item?.remove(); }
 
     // ══ QUIZ ══════════════════════════════════════════════
     let quizCount = 0;
@@ -503,16 +695,11 @@
         document.getElementById('messagesArea').classList.remove('visible');
         clearMessages();
         clearQuizList();
-        hideSource();
+        clearSourceList();
         document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
     }
 
-    function showSource(name) {
-        document.getElementById('sourceFileName').textContent = name;
-        document.getElementById('sourceDisplay').style.display = 'flex';
-    }
-
-    function hideSource() { document.getElementById('sourceDisplay').style.display = 'none'; }
+    function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
     function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
     function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     async function logout() { if (confirm('Are you sure you want to logout?')) window.location.href = '/Account/Logout'; }

@@ -65,59 +65,83 @@ namespace RavnLearnWeb.Controllers
             {
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
+
+                // Explicit delete in case cascade isn't set up
+                using var cmd0 = new NpgsqlCommand("DELETE FROM chat_documents WHERE chat_id = @cid", conn);
+                cmd0.Parameters.AddWithValue("cid", id);
+                await cmd0.ExecuteNonQueryAsync();
+
                 using var cmd1 = new NpgsqlCommand("DELETE FROM messages WHERE chat_id = @cid", conn);
                 cmd1.Parameters.AddWithValue("cid", id);
                 await cmd1.ExecuteNonQueryAsync();
+
                 using var cmd2 = new NpgsqlCommand(
                     "DELETE FROM chats WHERE chat_id = @cid AND user_id = @uid", conn);
                 cmd2.Parameters.AddWithValue("cid", id);
                 cmd2.Parameters.AddWithValue("uid", UserId);
                 await cmd2.ExecuteNonQueryAsync();
+
                 return Json(new { success = true });
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
-        // GET /Chat/GetMessages/{chatId}
         [HttpGet]
-[HttpGet]
-public async Task<IActionResult> GetMessages(int chatId)
-{
-    if (!IsLoggedIn()) return Unauthorized();
-    var messages = new List<object>();
-    string? docFilename = null;
-    string? chatTitle = null;
-    try
-    {
-        using (var conn1 = RavnLearnWeb.Database.GetConnection())
+        public async Task<IActionResult> GetMessages(int chatId)
         {
-            await conn1.OpenAsync();
-            using var cmd0 = new NpgsqlCommand(
-                "SELECT document_filename, title FROM chats WHERE chat_id = @cid", conn1);
-            cmd0.Parameters.AddWithValue("cid", chatId);
-            using var r0 = await cmd0.ExecuteReaderAsync();
-            if (await r0.ReadAsync())
+            if (!IsLoggedIn()) return Unauthorized();
+            var messages = new List<object>();
+            var docFilenames = new List<string>();
+            string? chatTitle = null;
+
+            try
             {
-                docFilename = r0.IsDBNull(0) ? null : r0.GetString(0);
-                chatTitle   = r0.IsDBNull(1) ? null : r0.GetString(1);
+                // Get chat title
+                using (var conn = RavnLearnWeb.Database.GetConnection())
+                {
+                    await conn.OpenAsync();
+                    using var cmd = new NpgsqlCommand(
+                        "SELECT title FROM chats WHERE chat_id = @cid", conn);
+                    cmd.Parameters.AddWithValue("cid", chatId);
+                    var result = await cmd.ExecuteScalarAsync();
+                    chatTitle = result as string;
+                }
+
+                // Get ALL uploaded filenames for this chat
+                using (var conn = RavnLearnWeb.Database.GetConnection())
+                {
+                    await conn.OpenAsync();
+                    using var cmd = new NpgsqlCommand(
+                        "SELECT document_filename FROM chat_documents WHERE chat_id = @cid ORDER BY uploaded_at ASC", conn);
+                    cmd.Parameters.AddWithValue("cid", chatId);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                        docFilenames.Add(reader.GetString(0));
+                }
+
+                // Get messages
+                using (var conn = RavnLearnWeb.Database.GetConnection())
+                {
+                    await conn.OpenAsync();
+                    using var cmd = new NpgsqlCommand(
+                        "SELECT role, content FROM messages WHERE chat_id = @cid ORDER BY timestamp ASC", conn);
+                    cmd.Parameters.AddWithValue("cid", chatId);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                        messages.Add(new { role = reader.GetString(0), content = reader.GetString(1) });
+                }
             }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+
+            return Json(new
+            {
+                messages,
+                docFilenames,                              // array — what the frontend uses
+                docFilename = docFilenames.FirstOrDefault(), // single — backwards compat
+                chatTitle
+            });
         }
 
-        using (var conn2 = RavnLearnWeb.Database.GetConnection())
-        {
-            await conn2.OpenAsync();
-            using var cmd = new NpgsqlCommand(
-                "SELECT role, content FROM messages WHERE chat_id = @cid ORDER BY timestamp ASC", conn2);
-            cmd.Parameters.AddWithValue("cid", chatId);
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                messages.Add(new { role = reader.GetString(0), content = reader.GetString(1) });
-        }
-    }
-    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
-    return Json(new { messages, docFilename, chatTitle });
-}
-        // POST /Chat/SendMessage
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest req)
         {
@@ -132,10 +156,10 @@ public async Task<IActionResult> GetMessages(int chatId)
                 // Create chat if needed
                 if (chatId <= 0)
                 {
-                    using var conn2 = RavnLearnWeb.Database.GetConnection();
-                    await conn2.OpenAsync();
+                    using var conn = RavnLearnWeb.Database.GetConnection();
+                    await conn.OpenAsync();
                     using var newCmd = new NpgsqlCommand(
-                        "INSERT INTO chats (user_id, title, created_at) VALUES (@uid, @title, @now) RETURNING chat_id", conn2);
+                        "INSERT INTO chats (user_id, title, created_at) VALUES (@uid, @title, @now) RETURNING chat_id", conn);
                     newCmd.Parameters.AddWithValue("uid", UserId);
                     newCmd.Parameters.AddWithValue("title", "New Chat");
                     newCmd.Parameters.AddWithValue("now", DateTime.UtcNow);
@@ -144,11 +168,11 @@ public async Task<IActionResult> GetMessages(int chatId)
 
                 // Auto-rename on first user message
                 string newTitle = "";
-                using (var connCheck = RavnLearnWeb.Database.GetConnection())
+                using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
-                    await connCheck.OpenAsync();
+                    await conn.OpenAsync();
                     using var countCmd = new NpgsqlCommand(
-                        "SELECT COUNT(*) FROM messages WHERE chat_id = @cid AND role = 'user'", connCheck);
+                        "SELECT COUNT(*) FROM messages WHERE chat_id = @cid AND role = 'user'", conn);
                     countCmd.Parameters.AddWithValue("cid", chatId);
                     long count = (long)(await countCmd.ExecuteScalarAsync() ?? 0L);
 
@@ -158,27 +182,32 @@ public async Task<IActionResult> GetMessages(int chatId)
                             ? req.Message.Substring(0, 40) + "…"
                             : req.Message;
                         using var titleCmd = new NpgsqlCommand(
-                            "UPDATE chats SET title = @t WHERE chat_id = @cid", connCheck);
+                            "UPDATE chats SET title = @t WHERE chat_id = @cid", conn);
                         titleCmd.Parameters.AddWithValue("t", newTitle);
                         titleCmd.Parameters.AddWithValue("cid", chatId);
                         await titleCmd.ExecuteNonQueryAsync();
                     }
                 }
 
-                // Get document context
-                string docContext = "";
-                using (var conn3 = RavnLearnWeb.Database.GetConnection())
+                // Combine ALL document texts for context
+                var docContextBuilder = new StringBuilder();
+                using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
-                    await conn3.OpenAsync();
+                    await conn.OpenAsync();
                     using var dcmd = new NpgsqlCommand(
-                        "SELECT document_text FROM chats WHERE chat_id = @cid", conn3);
+                        "SELECT document_filename, document_text FROM chat_documents WHERE chat_id = @cid ORDER BY uploaded_at ASC", conn);
                     dcmd.Parameters.AddWithValue("cid", chatId);
-                    var docResult = await dcmd.ExecuteScalarAsync();
-                    docContext = docResult is string s ? s : "";
+                    using var dr = await dcmd.ExecuteReaderAsync();
+                    while (await dr.ReadAsync())
+                    {
+                        docContextBuilder.AppendLine($"=== Document: {dr.GetString(0)} ===");
+                        docContextBuilder.AppendLine(dr.GetString(1));
+                        docContextBuilder.AppendLine();
+                    }
                 }
 
                 await SaveMessage(chatId, "user", req.Message);
-                string reply = await GeminiService.AskAsync(req.Message, docContext);
+                string reply = await GeminiService.AskAsync(req.Message, docContextBuilder.ToString());
                 await SaveMessage(chatId, "ai", reply);
 
                 return Json(new { reply, chatId, newTitle });
@@ -186,7 +215,6 @@ public async Task<IActionResult> GetMessages(int chatId)
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
-        // POST /Chat/UploadDocument
         [HttpPost]
         public async Task<IActionResult> UploadDocument(IFormFile file, int chatId)
         {
@@ -200,6 +228,7 @@ public async Task<IActionResult> GetMessages(int chatId)
 
             try
             {
+                // Create chat if needed
                 if (chatId <= 0)
                 {
                     using var conn0 = RavnLearnWeb.Database.GetConnection();
@@ -221,13 +250,16 @@ public async Task<IActionResult> GetMessages(int chatId)
                                : ext == ".pdf" ? ExtractPdfText(fileBytes)
                                : ExtractDocxText(fileBytes);
 
+                // INSERT a new row instead of overwriting
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
                 using var cmd = new NpgsqlCommand(
-                    "UPDATE chats SET document_filename = @fn, document_text = @dt WHERE chat_id = @cid", conn);
+                    @"INSERT INTO chat_documents (chat_id, document_filename, document_text, uploaded_at)
+                      VALUES (@cid, @fn, @dt, @now)", conn);
+                cmd.Parameters.AddWithValue("cid", chatId);
                 cmd.Parameters.AddWithValue("fn", fileName);
                 cmd.Parameters.AddWithValue("dt", docText);
-                cmd.Parameters.AddWithValue("cid", chatId);
+                cmd.Parameters.AddWithValue("now", DateTime.UtcNow);
                 await cmd.ExecuteNonQueryAsync();
 
                 string welcome = $"Document \"{fileName}\" loaded! You can ask me questions about it, request a summary, or say \"create a quiz\".";
