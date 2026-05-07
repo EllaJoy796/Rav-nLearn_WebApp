@@ -868,7 +868,7 @@ function addQuizToPanel(text, save = true) {
     quizCount++;
     const parsed = parseQuizFromText(text);
     const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
-    const title = parsed.title || label;
+    const title = parsed.questions[0]?.question?.slice(0, 50) || parsed.title || label;
     const list = document.getElementById('quizList');
 
     const card = document.createElement('div');
@@ -1046,6 +1046,7 @@ function parseQuizFromText(text) {
 
     // ── 3. Clean markdown from main text ───────────────────────────
     const clean = mainText
+        .replace(/\\_/g, '_')  
         .replace(/\*\*(.*?)\*\*/g, '$1')
         .replace(/\*(.*?)\*/g, '$1')
         .replace(/^---+$/gm, '')
