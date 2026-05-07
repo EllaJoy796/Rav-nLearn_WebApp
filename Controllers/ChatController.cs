@@ -80,43 +80,43 @@ namespace RavnLearnWeb.Controllers
 
         // GET /Chat/GetMessages/{chatId}
         [HttpGet]
-        public async Task<IActionResult> GetMessages(int chatId)
+[HttpGet]
+public async Task<IActionResult> GetMessages(int chatId)
+{
+    if (!IsLoggedIn()) return Unauthorized();
+    var messages = new List<object>();
+    string? docFilename = null;
+    string? chatTitle = null;
+    try
+    {
+        using (var conn1 = RavnLearnWeb.Database.GetConnection())
         {
-            if (!IsLoggedIn()) return Unauthorized();
-            var messages = new List<object>();
-            string? docFilename = null;
-            string? chatTitle = null;
-            try
+            await conn1.OpenAsync();
+            using var cmd0 = new NpgsqlCommand(
+                "SELECT document_filename, title FROM chats WHERE chat_id = @cid", conn1);
+            cmd0.Parameters.AddWithValue("cid", chatId);
+            using var r0 = await cmd0.ExecuteReaderAsync();
+            if (await r0.ReadAsync())
             {
-                using var conn = RavnLearnWeb.Database.GetConnection();
-                await conn.OpenAsync();
-
-                // Get chat info
-                using var cmd0 = new NpgsqlCommand(
-                    "SELECT document_filename, title FROM chats WHERE chat_id = @cid AND user_id = @uid", conn);
-                cmd0.Parameters.AddWithValue("cid", chatId);
-                cmd0.Parameters.AddWithValue("uid", UserId);
-                using (var r0 = await cmd0.ExecuteReaderAsync())
-                {
-                    if (await r0.ReadAsync())
-                    {
-                        docFilename = r0.IsDBNull(0) ? null : r0.GetString(0);
-                        chatTitle   = r0.IsDBNull(1) ? null : r0.GetString(1);
-                    }
-                }
-
-                // Get all messages ordered by time
-                using var cmd = new NpgsqlCommand(
-                    "SELECT role, content FROM messages WHERE chat_id = @cid ORDER BY timestamp ASC", conn);
-                cmd.Parameters.AddWithValue("cid", chatId);
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                    messages.Add(new { role = reader.GetString(0), content = reader.GetString(1) });
+                docFilename = r0.IsDBNull(0) ? null : r0.GetString(0);
+                chatTitle   = r0.IsDBNull(1) ? null : r0.GetString(1);
             }
-            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
-            return Json(new { messages, docFilename, chatTitle });
         }
 
+        using (var conn2 = RavnLearnWeb.Database.GetConnection())
+        {
+            await conn2.OpenAsync();
+            using var cmd = new NpgsqlCommand(
+                "SELECT role, content FROM messages WHERE chat_id = @cid ORDER BY timestamp ASC", conn2);
+            cmd.Parameters.AddWithValue("cid", chatId);
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+                messages.Add(new { role = reader.GetString(0), content = reader.GetString(1) });
+        }
+    }
+    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+    return Json(new { messages, docFilename, chatTitle });
+}
         // POST /Chat/SendMessage
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest req)
