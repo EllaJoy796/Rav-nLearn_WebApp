@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Text;
+using System.Linq;
 
 namespace RavnLearnWeb.Controllers
 {
@@ -270,6 +271,46 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> SaveQuiz([FromBody] SaveQuizRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    "INSERT INTO quizzes (chat_id, quiz_text, created_at) VALUES (@cid, @qt, @now) RETURNING quiz_id", conn);
+                cmd.Parameters.AddWithValue("cid", req.ChatId);
+                cmd.Parameters.AddWithValue("qt", req.QuizText);
+                cmd.Parameters.AddWithValue("now", DateTime.UtcNow);
+                int newId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                return Json(new { success = true, quizId = newId });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetQuizzes(int chatId)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            var quizzes = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    "SELECT quiz_id, quiz_text FROM quizzes WHERE chat_id = @cid ORDER BY created_at ASC", conn);
+                cmd.Parameters.AddWithValue("cid", chatId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    quizzes.Add(new { id = reader.GetInt32(0), text = reader.GetString(1) });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+            return Json(quizzes);
+        }
+
         private async Task SaveMessage(int chatId, string role, string content)
         {
             using var conn = RavnLearnWeb.Database.GetConnection();
@@ -284,19 +325,28 @@ namespace RavnLearnWeb.Controllers
         }
 
         private string ExtractPdfText(byte[] bytes)
+{
+    var sb = new StringBuilder();
+    try
+    {
+        using var doc = UglyToad.PdfPig.PdfDocument.Open(bytes);
+        foreach (var page in doc.GetPages())
         {
-            var sb = new StringBuilder();
-            try
-            {
-                using var ms = new MemoryStream(bytes);
-                var reader = new iTextSharp.text.pdf.PdfReader(ms);
-                for (int i = 1; i <= reader.NumberOfPages; i++)
-                    sb.Append(iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, i));
-            }
-            catch { sb.Append("[Could not extract PDF text]"); }
-            return sb.ToString();
+            var words = page.GetWords();
+            sb.AppendLine(string.Join(" ", words.Select(w => w.Text)));
         }
 
+        string result = sb.ToString().Trim();
+        if (string.IsNullOrWhiteSpace(result))
+            return "[This PDF appears to be image-based or scanned. Text could not be extracted.]";
+
+        return result;
+    }
+    catch (Exception ex)
+    {
+        return $"[Could not extract PDF text: {ex.Message}]";
+    }
+}
         private string ExtractDocxText(byte[] bytes)
         {
             try
@@ -314,4 +364,9 @@ namespace RavnLearnWeb.Controllers
         public int ChatId { get; set; }
         public string Message { get; set; } = "";
     }
+    public class SaveQuizRequest
+{
+    public int ChatId { get; set; }
+    public string QuizText { get; set; } = "";
+}
 }

@@ -152,7 +152,6 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            /* height is set dynamically via JS */
         }
         .right-section { padding: 12px 14px 8px; flex-shrink: 0; }
         .right-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
@@ -190,7 +189,6 @@
         }
         .resize-handle-vertical:hover,
         .resize-handle-vertical.dragging { background: var(--accent); }
-        /* Wider hit area */
         .resize-handle-vertical::before {
             content: '';
             position: absolute;
@@ -198,7 +196,6 @@
             top: -5px; bottom: -5px;
             cursor: row-resize;
         }
-        /* Grip dots */
         .resize-handle-vertical::after {
             content: '· · ·';
             font-size: 10px;
@@ -217,7 +214,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            flex: 1; /* takes remaining space */
+            flex: 1;
         }
         .quiz-section-header {
             padding: 10px 14px 6px;
@@ -231,10 +228,29 @@
         .quiz-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
         .quiz-list::-webkit-scrollbar { width: 3px; }
         .quiz-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .quiz-header-btn { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: none; border-radius: 8px; color: var(--text); font-size: 12.5px; font-family: inherit; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 6px; transition: background 0.15s; margin-bottom: 4px; }
-        .quiz-header-btn:hover { background: #2e2e2e; }
-        .quiz-content { background: #1e1e26; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #ccc; line-height: 1.6; margin-bottom: 6px; display: none; white-space: pre-wrap; }
-        .quiz-content.open { display: block; }
+
+        /* ── QUIZ CARDS (new) ── */
+        .quiz-card { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; margin-bottom: 6px; overflow: hidden; }
+        .quiz-card-header { padding: 9px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; transition: background .15s; }
+        .quiz-card-header:hover { background: #282828; }
+        .quiz-card-num { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--accent); flex-shrink: 0; }
+        .quiz-card-title { font-size: 12px; color: #ccc; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quiz-card-arrow { font-size: 10px; color: #555; flex-shrink: 0; transition: transform .2s; }
+        .quiz-card-arrow.open { transform: rotate(90deg); }
+        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #2a2a2a; }
+        .quiz-card-body.open { display: block; }
+        .quiz-q-text { font-size: 12px; color: #ccc; line-height: 1.5; margin: 8px 0 6px; }
+        .quiz-opt { display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; transition: background .15s; border: 1px solid transparent; }
+        .quiz-opt:hover { background: #2a2040; border-color: #3a2d52; }
+        .quiz-opt.correct { background: #1a2d1a; border-color: #2d522d; }
+        .quiz-opt.wrong { background: #2d1a1a; border-color: #52302d; }
+        .quiz-opt-letter { font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; width: 14px; }
+        .quiz-opt-text { font-size: 12px; color: #ccc; line-height: 1.4; }
+        .quiz-feedback { font-size: 11px; margin-top: 6px; padding: 5px 8px; border-radius: 5px; display: none; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: #1a2d1a; color: #6dbf6d; }
+        .quiz-feedback.wrong { background: #2d1a1a; color: #e07070; }
+        .quiz-score { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
 
         #fileInput { display: none; }
     </style>
@@ -324,6 +340,7 @@
     let activeChatId = -1;
     let isSending = false;
     let speakingBtn = null;
+    let quizCount = 0;
 
     function parseBold(text) {
         const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -341,6 +358,7 @@
         });
         return result.join('\n');
     }
+
     function speakerSVG() {
         return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`;
     }
@@ -428,7 +446,6 @@
 
     // ══ VERTICAL DRAG RESIZE (sources ↕ quizzes) ══════════
     function initSourcesSectionHeight() {
-        // Default: sources gets ~40% of available right panel height
         const panelRight = document.getElementById('panelRight');
         const header = panelRight.querySelector('.right-header');
         const handle = document.getElementById('resizeVertical');
@@ -437,14 +454,14 @@
     }
 
     function setupVerticalResize() {
-        const handle       = document.getElementById('resizeVertical');
-        const sourcesSection = document.getElementById('sourcesSection');
-        const panelRight   = document.getElementById('panelRight');
+        const handle          = document.getElementById('resizeVertical');
+        const sourcesSection  = document.getElementById('sourcesSection');
+        const panelRight      = document.getElementById('panelRight');
 
         let startY = 0, startH = 0, dragging = false;
 
         const getMinMax = () => {
-            const header = panelRight.querySelector('.right-header');
+            const header  = panelRight.querySelector('.right-header');
             const handleH = handle.offsetHeight;
             const totalAvailable = panelRight.offsetHeight - header.offsetHeight - handleH;
             return { min: 60, max: totalAvailable - 60 };
@@ -457,7 +474,6 @@
             handle.classList.add('dragging');
             document.body.classList.add('resizing-vertical');
         };
-
         const doDrag = (y) => {
             if (!dragging) return;
             const dy = y - startY;
@@ -465,7 +481,6 @@
             const newH = Math.min(Math.max(startH + dy, min), max);
             sourcesSection.style.height = newH + 'px';
         };
-
         const endDrag = () => {
             if (!dragging) return;
             dragging = false;
@@ -473,12 +488,10 @@
             document.body.classList.remove('resizing-vertical');
         };
 
-        // Mouse
         handle.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientY); });
         document.addEventListener('mousemove', (e) => doDrag(e.clientY));
         document.addEventListener('mouseup', endDrag);
 
-        // Touch
         handle.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientY); }, { passive: true });
         document.addEventListener('touchmove', (e) => { doDrag(e.touches[0].clientY); }, { passive: true });
         document.addEventListener('touchend', endDrag);
@@ -541,37 +554,46 @@
     }
 
     // ══ LOAD CHAT ════════════════════════════════════════
-    async function loadChat(chatId) {
-        activeChatId = parseInt(chatId);
-        setActiveChatItem(activeChatId);
-        showChatUI();
-        clearMessages();
-        clearQuizList();
-        clearSourceList();
+async function loadChat(chatId) {
+    activeChatId = parseInt(chatId);
+    setActiveChatItem(activeChatId);
+    showChatUI();
+    clearMessages();
+    clearQuizList();
+    clearSourceList();
 
-        try {
-            const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
+    try {
+        const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
 
-            if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
-                data.docFilenames.forEach(name => addSourceItem(name, false));
-            } else if (data.docFilename) {
-                addSourceItem(data.docFilename, false);
-            }
-
-            if (!data.messages || data.messages.length === 0) {
-                appendBubble('No messages yet. Start the conversation!', 'ai');
-            } else {
-                data.messages.forEach(m =>
-                    appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
-            }
-            scrollToBottom();
-        } catch (err) {
-            appendBubble('Could not load messages: ' + err.message, 'ai');
+        if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
+            data.docFilenames.forEach(name => addSourceItem(name, false));
+        } else if (data.docFilename) {
+            addSourceItem(data.docFilename, false);
         }
-    }
 
+        if (!data.messages || data.messages.length === 0) {
+            appendBubble('No messages yet. Start the conversation!', 'ai');
+        } else {
+            data.messages.forEach(m =>
+                appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
+        }
+
+        scrollToBottom();
+
+        // Load saved quizzes for this chat  ← ADD THIS BLOCK
+        try {
+            const qres = await fetch(`/Chat/GetQuizzes?chatId=${activeChatId}`);
+            const quizzes = await qres.json();
+            quizzes.forEach(q => addQuizToPanel(q.text, false));
+        } catch (err) { console.error('Quiz load error:', err); }
+
+    } catch (err) {
+        appendBubble('Could not load messages: ' + err.message, 'ai');
+    }
+}
+   
     // ══ SEND MESSAGE ══════════════════════════════════════
     async function sendMessage() {
         if (isSending) return;
@@ -614,7 +636,21 @@
             } else {
                 if (data.newTitle) updateChatItemTitle(sendingToChatId, data.newTitle);
                 appendBubble(data.reply, 'ai');
-                if (data.reply?.toLowerCase().includes('quiz')) addQuizToPanel(data.reply);
+
+                // Detect quiz in response and add to panel
+                const replyLower = data.reply?.toLowerCase() || '';
+                const hasQuizContent = replyLower.match(/\b(q1[).:\s]|question\s*1[).:\s]|\b1[).]\s)/i)
+                    && data.reply.includes('\n')
+                    && !replyLower.includes('i am sorry')
+                    && !replyLower.includes('i cannot')
+                    && !replyLower.includes('i\'m sorry')
+                    && !replyLower.includes('unable to')
+                    && !replyLower.includes('appears to be empty')
+                    && !replyLower.includes('no content');
+
+                if (hasQuizContent) {
+                    addQuizToPanel(data.reply);
+                }
             }
         } catch (err) {
             hideTyping();
@@ -827,30 +863,310 @@
 
     function removeSourceItem(item) { item?.remove(); }
 
-    // ══ QUIZ ══════════════════════════════════════════════
-    let quizCount = 0;
-    const quizColors = ['#3a2d52', '#2d2040', '#221830', '#1a1228'];
+    // ══ QUIZ PANEL ════════════════════════════════════════
+function addQuizToPanel(text, save = true) {
+    quizCount++;
+    const parsed = parseQuizFromText(text);
+    const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
+    const title = parsed.title || label;
+    const list = document.getElementById('quizList');
 
-    function addQuizToPanel(text) {
-        quizCount++;
-        const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
-        const list = document.getElementById('quizList');
-        const btn = document.createElement('button');
-        btn.className = 'quiz-header-btn';
-        btn.style.background = quizColors[(quizCount - 1) % quizColors.length];
-        btn.textContent = `▶ ${label}`;
-        const content = document.createElement('div');
-        content.className = 'quiz-content';
-        content.textContent = text;
-        btn.addEventListener('click', () => {
-            content.classList.toggle('open');
-            btn.textContent = (content.classList.contains('open') ? '▼ ' : '▶ ') + label;
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+
+    const header = document.createElement('div');
+    header.className = 'quiz-card-header';
+    const arrow = document.createElement('span');
+    arrow.className = 'quiz-card-arrow';
+    arrow.textContent = '▶';
+    header.innerHTML = `<span class="quiz-card-num">${escHtml(label)}</span><span class="quiz-card-title">${escHtml(title)}</span>`;
+    header.appendChild(arrow);
+
+    // ── buildBody is defined HERE, inside addQuizToPanel ──
+    // so it has access to: parsed, card, and the `body` variable below
+    function buildBody() {
+        const b = document.createElement('div');
+        b.className = 'quiz-card-body';
+
+        if (parsed.questions.length === 0) {
+            const raw = document.createElement('div');
+            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            raw.textContent = 'Could not parse quiz questions.';
+            b.appendChild(raw);
+            return b;
+        }
+
+        let score = 0, answered = 0;
+        const scoreEl = document.createElement('div');
+        scoreEl.className = 'quiz-score';
+
+        parsed.questions.forEach((q, idx) => {
+            const qwrap = document.createElement('div');
+            qwrap.style.marginBottom = '12px';
+
+            const qtext = document.createElement('div');
+            qtext.className = 'quiz-q-text';
+            qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
+            qwrap.appendChild(qtext);
+
+            if (q.type === 'mcq' || q.type === 'truefalse') {
+                const letters = ['A','B','C','D','E'];
+                let picked = false;
+                q.options.forEach((opt, oi) => {
+                    const ob = document.createElement('div');
+                    ob.className = 'quiz-opt';
+                    const letter = q.type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                    ob.innerHTML = `<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
+                    ob.addEventListener('click', () => {
+                        if (picked) return;
+                        picked = true; answered++;
+                        const fb = qwrap.querySelector('.quiz-feedback');
+                        if (oi === q.answerIndex) {
+                            score++;
+                            ob.classList.add('correct');
+                            fb.className = 'quiz-feedback show correct';
+                            fb.textContent = '✓ Correct!';
+                        } else {
+                            ob.classList.add('wrong');
+                            const allOpts = qwrap.querySelectorAll('.quiz-opt');
+                            if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
+                            fb.className = 'quiz-feedback show wrong';
+                            fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
+                        }
+                        scoreEl.textContent = `${score}/${answered} correct`;
+                    });
+                    qwrap.appendChild(ob);
+                });
+                const fb = document.createElement('div');
+                fb.className = 'quiz-feedback';
+                qwrap.appendChild(fb);
+
+            } else if (q.type === 'fillblank') {
+                const inputRow = document.createElement('div');
+                inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
+                const inp = document.createElement('input');
+                inp.type = 'text';
+                inp.placeholder = 'Type your answer…';
+                inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Check';
+                submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
+                const fb = document.createElement('div');
+                fb.className = 'quiz-feedback';
+                let picked = false;
+                submitBtn.addEventListener('click', () => {
+                    if (picked) return;
+                    const userAnswer = inp.value.trim().toLowerCase();
+                    const correct = q.answer.toLowerCase();
+                    if (userAnswer === correct || correct.includes(userAnswer) && userAnswer.length > 2) {
+                        picked = true; answered++; score++;
+                        fb.className = 'quiz-feedback show correct';
+                        fb.textContent = '✓ Correct!';
+                        inp.style.borderColor = '#2d522d';
+                    } else {
+                        picked = true; answered++;
+                        fb.className = 'quiz-feedback show wrong';
+                        fb.textContent = `✗ Answer: ${q.answer}`;
+                        inp.style.borderColor = '#52302d';
+                    }
+                    scoreEl.textContent = `${score}/${answered} correct`;
+                });
+                inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+                inputRow.appendChild(inp);
+                inputRow.appendChild(submitBtn);
+                qwrap.appendChild(inputRow);
+                qwrap.appendChild(fb);
+            }
+            b.appendChild(qwrap);
         });
-        list.appendChild(btn);
-        list.appendChild(content);
+
+        const retryRow = document.createElement('div');
+        retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
+        retryRow.appendChild(scoreEl);
+
+        const btnRetry = document.createElement('button');
+        btnRetry.textContent = '↺ Retry';
+        btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
+        btnRetry.onmouseenter = () => { btnRetry.style.background = 'rgba(124,92,191,0.12)'; btnRetry.style.borderColor = 'var(--accent)'; };
+        btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
+        btnRetry.addEventListener('click', () => {
+            const wasOpen = body.classList.contains('open');
+            const fresh = buildBody();
+            if (wasOpen) fresh.classList.add('open');
+            card.replaceChild(fresh, body);
+            body = fresh;
+        });
+
+        retryRow.appendChild(btnRetry);
+        b.appendChild(retryRow);
+        return b;
+    }
+    // ── end buildBody ──
+
+    let body = buildBody(); // ← must be `let`, not `const`, so retry can reassign it
+
+    header.addEventListener('click', () => {
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    list.appendChild(card);
+
+    if (save && activeChatId > 0) {
+        fetch('/Chat/SaveQuiz', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: activeChatId, quizText: text })
+        }).catch(err => console.error('Quiz save error:', err));
+    }
+}
+function parseQuizFromText(text) {
+    const result = { title: '', questions: [] };
+
+    // ── 1. Split off Answer Key before doing anything ──────────────
+    const keyMatch = text.search(/answer\s+key/i);
+    const mainText  = keyMatch > -1 ? text.slice(0, keyMatch) : text;
+    const keyText   = keyMatch > -1 ? text.slice(keyMatch)    : '';
+
+    // ── 2. Extract answers from key into a map { qNum → answerStr } ─
+    const answerMap = {};
+    if (keyText) {
+        keyText.split('\n').forEach(line => {
+            const m = line.trim().match(/^(\d+)[).:\s]+(.+)/);
+            if (m) {
+                // Strip leading "a) b) c)" letter labels from MCQ answers in key
+                const raw = m[2].trim().replace(/^[a-e][).:\s]/i, '').trim();
+                answerMap[parseInt(m[1])] = raw;
+            }
+        });
     }
 
-    function clearQuizList() { document.getElementById('quizList').innerHTML = ''; quizCount = 0; }
+    // ── 3. Clean markdown from main text ───────────────────────────
+    const clean = mainText
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/^---+$/gm, '')
+        .replace(/^#+\s*/gm, '');
+
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // ── 4. Extract title ───────────────────────────────────────────
+    let startIdx = 0;
+    for (let i = 0; i < Math.min(5, lines.length); i++) {
+        if (lines[i].match(/^(instructions?|answer the|directions?|section)/i)) continue;
+        if (!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)) {
+            result.title = lines[i].slice(0, 60);
+            startIdx = i + 1;
+            break;
+        }
+    }
+
+    let currentQ  = null;
+    let currentNum = 0;
+
+    const pushQ = () => {
+        if (!currentQ || !currentQ.question) return;
+        // Fill answer from key map if not already set
+        if (answerMap[currentNum] !== undefined) {
+            const keyAns = answerMap[currentNum];
+            if (currentQ.options.length > 0) {
+                // Match key answer letter (e.g. "b)") to option index
+                const letterM = keyAns.match(/^([a-e])[).:\s]/i);
+                if (letterM) {
+                    currentQ.answerIndex = letterM[1].toUpperCase().charCodeAt(0) - 65;
+                } else {
+                    // Try to match by answer text content
+                    const lc = keyAns.toLowerCase();
+                    const found = currentQ.options.findIndex(o => lc.includes(o.toLowerCase().slice(0,10)));
+                    if (found > -1) currentQ.answerIndex = found;
+                }
+            } else {
+                // Fill-in-the-blank — take just the first meaningful word/phrase
+                // Strip parenthetical notes like "(The document mentions...)"
+                currentQ.answer = keyAns.replace(/\(.*?\)/g, '').split('/')[0].trim();
+                currentQ.type   = 'fillblank';
+            }
+        }
+        // Determine type
+        if (currentQ.type !== 'fillblank') {
+            if (currentQ.options.length === 2 &&
+                currentQ.options.map(o => o.toLowerCase()).some(o => o === 'true' || o === 'false')) {
+                currentQ.type = 'truefalse';
+            } else if (currentQ.options.length > 0) {
+                currentQ.type = 'mcq';
+            } else {
+                // No options and no answer from key → short answer, skip
+                currentQ = null;
+                return;
+            }
+        }
+        result.questions.push(currentQ);
+        currentQ = null;
+    };
+
+    const fillRegex    = /_{2,}|\.{3,}/;
+    const optRegex     = /^([A-Ea-e])[).:\s]\s*(.+)/;
+    const qNumRegex    = /^(\d+)[).:\s]\s*(.+)/;
+    const qLabelRegex  = /^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i;
+    const sectionRegex = /^section\s*\d/i;
+
+    for (let i = startIdx; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Skip section headers like "Section 1: Multiple Choice"
+        if (sectionRegex.test(line)) continue;
+
+        // Q-label format "Q1. text" or "Question 1. text"
+        const qLabelMatch = line.match(qLabelRegex);
+        if (qLabelMatch) {
+            pushQ();
+            currentNum = parseInt(qLabelMatch[1]);
+            currentQ = { question: qLabelMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Numbered question "1. text" — only if not an option letter
+        const qNumMatch = line.match(qNumRegex);
+        if (qNumMatch && !optRegex.test(line) && line.length > 8) {
+            pushQ();
+            currentNum = parseInt(qNumMatch[1]);
+            currentQ = { question: qNumMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Option line "a) ..." / "A. ..."
+        const optMatch = line.match(optRegex);
+        if (optMatch && currentQ) {
+            currentQ.options.push(optMatch[2]);
+            continue;
+        }
+
+        // True/False inline
+        if (currentQ && currentQ.options.length === 0 &&
+            line.toLowerCase().match(/^(true or false|true\/false)/)) {
+            currentQ.options = ['True', 'False'];
+            continue;
+        }
+
+        // Continuation of question text (before any options)
+        if (currentQ && currentQ.options.length === 0 && line.length > 2) {
+            currentQ.question += ' ' + line;
+            if (fillRegex.test(line)) currentQ.type = 'fillblank';
+        }
+    }
+
+    pushQ();
+    return result;
+}
+    function clearQuizList() {
+        document.getElementById('quizList').innerHTML = '';
+        quizCount = 0;
+    }
 
     // ══ UI STATE ══════════════════════════════════════════
     function showChatUI() {
@@ -870,7 +1186,7 @@
 
     function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
     function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
-    function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     async function logout() { if (confirm('Are you sure you want to logout?')) window.location.href = '/Account/Logout'; }
 </script>
 
