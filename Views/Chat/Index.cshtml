@@ -910,10 +910,20 @@ function addQuizToPanel(text, save = true) {
     btnModal.textContent = '⛶ Full';
     btnModal.title = 'Open in full view';
     btnModal.addEventListener('click', (e) => {
-        e.stopPropagation(); // don't toggle the card
+        e.stopPropagation(); 
         openQuizModal(label, parsed, card);
     });
+    // After btnModal definition, add this:
+    const btnFlashcard = document.createElement('button');
+    btnFlashcard.className = 'btn-modal-open';
+    btnFlashcard.textContent = '🃏 Cards';
+    btnFlashcard.title = 'View as flashcards';
+    btnFlashcard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openFlashcardModal(label, parsed.questions);
+    });
     header.appendChild(btnModal);
+    header.appendChild(btnFlashcard);
     header.appendChild(arrow);
 
     // ── buildBody is defined HERE, inside addQuizToPanel ──
@@ -1255,20 +1265,20 @@ function parseQuizFromText(text) {
     });
 
     function buildQuizBody(parsed, card) {
-    let body = document.createElement('div');
-    body.className = 'quiz-card-body';
+        let body = document.createElement('div');
+        body.className = 'quiz-card-body';
 
-    if (parsed.questions.length === 0) {
-        const raw = document.createElement('div');
-        raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
-        raw.textContent = 'Could not parse quiz questions.';
-        body.appendChild(raw);
-        return body;
-    }
+        if (parsed.questions.length === 0) {
+            const raw = document.createElement('div');
+            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            raw.textContent = 'Could not parse quiz questions.';
+            body.appendChild(raw);
+            return body;
+        }
 
-    let score = 0, answered = 0;
-    const scoreEl = document.createElement('div');
-    scoreEl.className = 'quiz-score';
+        let score = 0, answered = 0;
+        const scoreEl = document.createElement('div');
+        scoreEl.className = 'quiz-score';
 
     parsed.questions.forEach((q, idx) => {
         const qwrap = document.createElement('div');
@@ -1378,7 +1388,259 @@ function parseQuizFromText(text) {
     retryRow.appendChild(btnRetry);
     body.appendChild(retryRow);
     return body;
+    }
+
+    function openFlashcardModal(label, questions) {
+        // Convert quiz questions into flashcard format
+        const flashcards = questions.map(q => {
+            const letters = ['A','B','C','D','E'];
+            let back = '';
+            if (q.type === 'mcq' || q.type === 'truefalse') {
+                const letter = q.type === 'truefalse'
+                    ? (q.answerIndex === 0 ? 'True' : 'False')
+                    : letters[q.answerIndex];
+                back = `${letter}) ${q.options[q.answerIndex] || ''}`;
+            } else {
+                back = q.answer;
+            }
+            return { front: q.question, back };
+        });
+
+        document.getElementById('modalQuizLabel').textContent = label + ' — Flashcards';
+        const body = document.getElementById('modalQuizBody');
+        body.innerHTML = '';
+        const fc = buildFlashcardBody({ flashcards }, null);
+        fc.classList.add('open');
+        fc.style.cssText = 'display:block;padding:0;border:none;';
+        body.appendChild(fc);
+        document.getElementById('quizModal').classList.add('open');
+    }
+
+function parseFlashcardsFromText(text) {
+    const cards = [];
+
+    // Clean markdown
+    const clean = text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/^#+\s*/gm, '')
+        .replace(/^---+$/gm, '');
+
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // Patterns to detect front/back pairs
+    // Supports: "Q: ... A: ...", "Term: ... Definition: ...", "Front: ... Back: ...", numbered "1. Q: A:"
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i];
+
+        // Pattern: Q: ... / A: ... (on same or next line)
+        const qMatch = line.match(/^(?:\d+[).:\s]+)?(?:Q|Question|Front|Term)[).:]\s*(.+)/i);
+        if (qMatch) {
+            const front = qMatch[1].trim();
+            let back = '';
+            // Look ahead for answer line
+            for (let j = i + 1; j < Math.min(i + 4, lines.length); j++) {
+                const aMatch = lines[j].match(/^(?:A|Answer|Back|Definition)[).:]\s*(.+)/i);
+                if (aMatch) { back = aMatch[1].trim(); i = j; break; }
+            }
+            if (front && back) cards.push({ front, back });
+            i++; continue;
+        }
+
+        // Pattern: "Term — Definition" or "Term: Definition" (single line)
+        const dashMatch = line.match(/^(?:\d+[).:\s]+)?(.+?)\s*[—–:]\s{1,4}(.{10,})/);
+        if (dashMatch && !line.match(/^(?:Q|A|Front|Back|Term|Definition|Answer|Question)[).:]/i)) {
+            cards.push({ front: dashMatch[1].trim(), back: dashMatch[2].trim() });
+            i++; continue;
+        }
+
+        i++;
+    }
+
+    return cards;
 }
+
+    function buildFlashcardBody(parsed, card) {
+        const body = document.createElement('div');
+        body.className = 'quiz-card-body';
+
+        const cards = typeof parsed === 'string'
+            ? parseFlashcardsFromText(parsed)
+            : (parsed.flashcards || []);
+
+        if (cards.length === 0) {
+            const empty = document.createElement('div');
+            empty.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            empty.textContent = 'Could not parse flashcards.';
+            body.appendChild(empty);
+            return body;
+        }
+
+        let current = 0;
+        let flipped = false;
+        let known = 0;
+        let unknown = 0;
+
+        // ── Card display ──
+        const cardWrap = document.createElement('div');
+        cardWrap.style.cssText = 'perspective:800px;margin:8px 0 10px;cursor:pointer;';
+
+        const cardInner = document.createElement('div');
+        cardInner.style.cssText = `
+            position:relative;width:100%;min-height:90px;
+            transform-style:preserve-3d;
+            transition:transform 0.45s cubic-bezier(.4,0,.2,1);
+            border-radius:10px;
+        `;
+
+        const makeFace = (side) => {
+            const face = document.createElement('div');
+            face.style.cssText = `
+                position:${side === 'back' ? 'absolute' : 'relative'};
+                inset:0;
+                background:${side === 'front' ? '#252535' : '#1e2d1e'};
+                border:1px solid ${side === 'front' ? '#3a3a52' : '#2d522d'};
+                border-radius:10px;
+                padding:12px;
+                backface-visibility:hidden;
+                -webkit-backface-visibility:hidden;
+                display:flex;flex-direction:column;gap:4px;
+                ${side === 'back' ? 'transform:rotateY(180deg);' : ''}
+            `;
+            const label = document.createElement('div');
+            label.style.cssText = `font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${side === 'front' ? 'var(--accent)' : '#6dbf6d'};margin-bottom:4px;`;
+            label.textContent = side === 'front' ? '▸ FRONT' : '▸ BACK';
+            const text = document.createElement('div');
+            text.style.cssText = 'font-size:12.5px;color:#ddd;line-height:1.5;';
+            face.appendChild(label);
+            face.appendChild(text);
+            return { face, text };
+        };
+
+        const { face: frontFace, text: frontText } = makeFace('front');
+        const { face: backFace,  text: backText  } = makeFace('back');
+        cardInner.appendChild(frontFace);
+        cardInner.appendChild(backFace);
+        cardWrap.appendChild(cardInner);
+
+        // Flip on click
+        cardWrap.addEventListener('click', () => {
+            flipped = !flipped;
+            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
+        });
+
+        // ── Counter ──
+        const counter = document.createElement('div');
+        counter.style.cssText = 'font-size:10px;color:#555;text-align:center;margin-bottom:6px;';
+
+        // ── Progress bar ──
+        const progressWrap = document.createElement('div');
+        progressWrap.style.cssText = 'height:3px;background:#2a2a2a;border-radius:2px;margin-bottom:10px;overflow:hidden;';
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = 'height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;';
+        progressWrap.appendChild(progressBar);
+
+        // ── Navigation ──
+        const navRow = document.createElement('div');
+        navRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
+
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '← Prev';
+        btnPrev.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnFlip = document.createElement('button');
+        btnFlip.textContent = '↺ Flip';
+        btnFlip.style.cssText = 'flex:1;background:rgba(124,92,191,0.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnNext = document.createElement('button');
+        btnNext.textContent = 'Next →';
+        btnNext.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        // ── Know / Don't Know ──
+        const knowRow = document.createElement('div');
+        knowRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
+
+        const btnKnow = document.createElement('button');
+        btnKnow.textContent = '✓ Know it';
+        btnKnow.style.cssText = 'flex:1;background:#1a2d1a;border:1px solid #2d522d;border-radius:6px;color:#6dbf6d;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnDontKnow = document.createElement('button');
+        btnDontKnow.textContent = '✗ Still learning';
+        btnDontKnow.style.cssText = 'flex:1;background:#2d1a1a;border:1px solid #52302d;border-radius:6px;color:#e07070;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        // ── Score row ──
+        const scoreRow = document.createElement('div');
+        scoreRow.style.cssText = 'display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
+        const knownEl   = document.createElement('span');
+        const unknownEl = document.createElement('span');
+        knownEl.style.color   = '#6dbf6d';
+        unknownEl.style.color = '#e07070';
+        scoreRow.appendChild(knownEl);
+        scoreRow.appendChild(unknownEl);
+
+        // ── Render card ──
+        function renderCard() {
+            const c = cards[current];
+            // Reset flip
+            flipped = false;
+            cardInner.style.transform = '';
+            frontText.textContent = c.front;
+            backText.textContent  = c.back;
+            counter.textContent   = `${current + 1} / ${cards.length}`;
+            progressBar.style.width = `${((current + 1) / cards.length) * 100}%`;
+            btnPrev.disabled = current === 0;
+            btnPrev.style.opacity = current === 0 ? '0.3' : '1';
+            btnNext.disabled = current === cards.length - 1;
+            btnNext.style.opacity = current === cards.length - 1 ? '0.3' : '1';
+            knownEl.textContent   = known   ? `✓ ${known} known`   : '';
+            unknownEl.textContent = unknown ? `✗ ${unknown} learning` : '';
+        }
+
+        btnFlip.addEventListener('click', () => {
+            flipped = !flipped;
+            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
+        });
+        btnPrev.addEventListener('click', () => { if (current > 0) { current--; renderCard(); } });
+        btnNext.addEventListener('click', () => { if (current < cards.length - 1) { current++; renderCard(); } });
+
+        btnKnow.addEventListener('click', () => {
+            known++;
+            if (current < cards.length - 1) { current++; renderCard(); }
+            else renderCard();
+        });
+        btnDontKnow.addEventListener('click', () => {
+            unknown++;
+            if (current < cards.length - 1) { current++; renderCard(); }
+            else renderCard();
+        });
+
+        // ── Keyboard nav ──
+        const keyHandler = (e) => {
+            if (!body.closest('body')) { document.removeEventListener('keydown', keyHandler); return; }
+            if (e.key === 'ArrowRight' && current < cards.length - 1) { current++; renderCard(); }
+            if (e.key === 'ArrowLeft'  && current > 0)                { current--; renderCard(); }
+            if (e.key === ' ') { e.preventDefault(); btnFlip.click(); }
+        };
+        document.addEventListener('keydown', keyHandler);
+
+        navRow.appendChild(btnPrev);
+        navRow.appendChild(btnFlip);
+        navRow.appendChild(btnNext);
+        knowRow.appendChild(btnKnow);
+        knowRow.appendChild(btnDontKnow);
+
+        body.appendChild(counter);
+        body.appendChild(progressWrap);
+        body.appendChild(cardWrap);
+        body.appendChild(navRow);
+        body.appendChild(knowRow);
+        body.appendChild(scoreRow);
+
+        renderCard();
+        return body;
+    }
+
 </script>
 
 </body>
