@@ -84,7 +84,7 @@
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
         .input-bar { padding: 14px 24px 18px; border-top: 1px solid var(--panel-border); background: var(--center-bg); }
-        .input-row { display: flex; align-items: flex-end; gap: 10px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; padding: 10px 14px; transition: border-color 0.2s; }
+        .input-row { display: flex; align-items: center; gap: 10px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; padding: 10px 14px; transition: border-color 0.2s; }
         .input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,191,0.12); }
         #txtInput { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 14px; font-family: inherit; resize: none; max-height: 120px; line-height: 1.5; }
         #txtInput::placeholder { color: var(--text-dim); }
@@ -183,6 +183,32 @@
 <script>
     let activeChatId = -1;
     let isSending = false;
+    let speakingBtn = null;
+
+    function parseBold(text) {
+        const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const bolded = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        const lines = bolded.split('\n');
+        const result = lines.map(line => {
+            const trimmed = line.trimStart();
+            const indent = line.length - trimmed.length;
+            if (trimmed.startsWith('* ')) {
+                const content = trimmed.slice(2);
+                const pad = indent > 0 ? `margin-left:${indent * 8}px` : '';
+                return `<div style="display:flex;align-items:baseline;gap:6px;${pad}"><span style="color:var(--accent);flex-shrink:0;">•</span><span>${content}</span></div>`;
+            }
+            return line;
+        });
+        return result.join('\n');
+    }
+    function speakerSVG() {
+        return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`;
+    }
+    function stopSVG() {
+        return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><rect x="6" y="6" width="12" height="12"/></svg>`;
+    }
+    function setSpeakActive(btn) { btn.innerHTML = stopSVG() + 'Stop'; btn.style.color = '#e74c3c'; }
+    function setSpeakIdle(btn)   { btn.innerHTML = speakerSVG() + 'Speak'; btn.style.color = ''; if (speakingBtn === btn) speakingBtn = null; }
 
     document.addEventListener('DOMContentLoaded', async () => {
         await loadChatList();
@@ -361,7 +387,7 @@
 
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-        bubble.textContent = (role === 'ai' ? '🤖  ' : '') + text;
+        bubble.innerHTML = (role === 'ai' ? '🤖  ' : '') + parseBold(text);
 
         const actions = document.createElement('div');
         actions.className = 'msg-actions';
@@ -378,8 +404,21 @@
 
         const btnSpeak = document.createElement('button');
         btnSpeak.className = 'btn-action';
-        btnSpeak.textContent = '🔊 Speak';
-        btnSpeak.onclick = () => speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+        setSpeakIdle(btnSpeak);
+        btnSpeak.onclick = () => {
+            if (speechSynthesis.speaking && speakingBtn === btnSpeak) {
+                speechSynthesis.cancel();
+                setSpeakIdle(btnSpeak);
+            } else {
+                if (speechSynthesis.speaking) { speechSynthesis.cancel(); if (speakingBtn) setSpeakIdle(speakingBtn); }
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.onend = () => setSpeakIdle(btnSpeak);
+                utter.onerror = () => setSpeakIdle(btnSpeak);
+                speakingBtn = btnSpeak;
+                setSpeakActive(btnSpeak);
+                speechSynthesis.speak(utter);
+            }
+        };
 
         actions.appendChild(btnCopy);
         actions.appendChild(btnSpeak);
