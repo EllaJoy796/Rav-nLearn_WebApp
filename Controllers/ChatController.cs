@@ -311,6 +311,25 @@ namespace RavnLearnWeb.Controllers
             return Json(quizzes);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RenameChat([FromBody] RenameChatRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    "UPDATE chats SET title = @t WHERE chat_id = @cid AND user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("t", req.Title);
+                cmd.Parameters.AddWithValue("cid", req.ChatId);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                await cmd.ExecuteNonQueryAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
         private async Task SaveMessage(int chatId, string role, string content)
         {
             using var conn = RavnLearnWeb.Database.GetConnection();
@@ -364,9 +383,16 @@ namespace RavnLearnWeb.Controllers
         public int ChatId { get; set; }
         public string Message { get; set; } = "";
     }
+
     public class SaveQuizRequest
-{
-    public int ChatId { get; set; }
-    public string QuizText { get; set; } = "";
-}
+    {
+        public int ChatId { get; set; }
+        public string QuizText { get; set; } = "";
+    }
+
+    public class RenameChatRequest
+    {
+        public int ChatId { get; set; }
+        public string Title { get; set; } = "";
+    }
 }

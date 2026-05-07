@@ -46,7 +46,7 @@
             background: var(--left-bg);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: visible;
         }
         .left-logo { padding: 16px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--panel-border); display: flex; align-items: center; gap: 8px; }
         .btn-new-chat { margin: 14px 12px 8px; padding: 10px 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.18s; }
@@ -65,27 +65,42 @@
         .user-area { border-top: 1px solid var(--panel-border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
         .user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
         .user-name { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-logout { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; transition: color 0.15s; }
-        .btn-logout:hover { color: #e74c3c; }
+        .btn-logout { background: none; border: 1px solid #3a3a3a; color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: 500; font-family: inherit; padding: 4px 10px; border-radius: 6px; transition: all 0.15s; flex-shrink: 0; }
+        .btn-logout:hover { border-color: #e74c3c; color: #e74c3c; background: rgba(231,76,60,0.08); }
 
         /* ── HORIZONTAL RESIZE HANDLES (left/right panels) ── */
         .resize-handle {
-            width: 5px;
-            min-width: 5px;
+            width: 8px;
+            min-width: 8px;
             cursor: col-resize;
             background: var(--panel-border);
             flex-shrink: 0;
             position: relative;
             z-index: 10;
             transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        .resize-handle::before {
+            content: '⋮';
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            pointer-events: none;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        .resize-handle:hover::before,
+        .resize-handle.dragging::before { color: #fff; }
+
         .resize-handle:hover,
         .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
             content: '';
             position: absolute;
             top: 0; bottom: 0;
-            left: -4px; right: -4px;
+            left: -8px; right: -8px;
             cursor: col-resize;
         }
         body.resizing { user-select: none; cursor: col-resize; }
@@ -255,6 +270,200 @@
 
         #fileInput { display: none; }
 
+        /* ── COLLAPSIBLE PANELS ── */
+        .panel-left,
+        .panel-right {
+            transition: width 0.25s cubic-bezier(.4,0,.2,1),
+                        min-width 0.25s cubic-bezier(.4,0,.2,1);
+        }
+        .panel-left.resizing,
+        .panel-right.resizing {
+            transition: none !important;
+        }
+        .panel-left.collapsed {
+            width: 52px !important;
+            min-width: 52px !important;
+            overflow: hidden;
+        }
+        .panel-right.collapsed {
+            width: 52px !important;
+            min-width: 52px !important;
+            overflow: hidden;
+        }
+
+        /* Also ensure uncollapsed panels clip properly */
+        .panel-left, .panel-right { overflow: hidden; }
+        .panel-left .chat-list { overflow-y: auto; overflow-x: visible; }
+        .panel-left .left-content { overflow: visible; }
+
+        /* Collapse toggle buttons */
+        .btn-collapse {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.15s, background 0.15s;
+        }
+        .btn-collapse:hover { color: var(--text); background: #2a2a2a; }
+
+        /* Hide panel content when collapsed, show icon strip */
+        .panel-left .left-content,
+        .panel-right .right-content { 
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .panel-left.collapsed .left-content,
+        .panel-right.collapsed .right-content { display: none; }
+
+        /* Keep header row visible when collapsed, just hide the logo text */
+        .panel-left.collapsed .left-header-row { 
+            justify-content: center; 
+            padding: 10px 0;
+            border-bottom: 1px solid var(--panel-border);
+            min-width: 0;
+        }
+        .panel-left.collapsed .left-logo-inner { display: none; }
+        .panel-left.collapsed .btn-collapse { margin: 0 auto; }
+
+        /* Keep right header row visible when collapsed, hide the label text */
+        .panel-right.collapsed .right-header-row {
+            justify-content: center;
+            padding: 10px 0;
+            min-width: 0;
+        }
+        .panel-right.collapsed .right-header-row span { display: none; }
+        .panel-right.collapsed .btn-collapse { margin: 0 auto; }
+
+        /* Icon strips shown when collapsed */
+        .collapsed-icons {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            flex: 1;
+        }
+        .panel-left.collapsed .collapsed-icons,
+        .panel-right.collapsed .collapsed-icons { display: flex; }
+
+        .collapsed-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 6px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
+            line-height: 1;
+            title: attr(title);
+        }
+        .collapsed-icon-btn:hover { color: var(--text); background: #2a2a2a; }
+
+        /* Left panel header row */
+        .left-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px 12px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
+        }
+        .left-logo-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Right panel header row */
+        .right-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px 10px 14px;
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
+        }
+
+        /* VOICE INPUT */
+        .btn-mic {
+            background: none;
+            border: none;
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            color: var(--text-dim);
+            transition: color 0.18s, background 0.18s;
+        }
+        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
+        .btn-mic.recording {
+            color: #e74c3c;
+            animation: micPulse 1.2s ease-in-out infinite;
+        }
+        @@keyframes micPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .voice-status-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 14px 0;
+            font-size: 11px;
+            gap: 8px;
+        }
+        .voice-status-bar.visible { display: flex; }
+        .voice-status-text {
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        .voice-status-text .mic-dot {
+            width: 7px;
+            height: 7px;
+            background: #e74c3c;
+            border-radius: 50%;
+            animation: micPulse 1.2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .voice-countdown {
+            color: var(--text-dim);
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: color 0.3s;
+        }
+        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
+        .voice-cancel-btn {
+            background: none;
+            border: 1px solid #3a3a3a;
+            border-radius: 5px;
+            color: var(--text-dim);
+            font-size: 10px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .voice-cancel-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
         #quizModal.open { display: flex !important; }
 .btn-modal-open {
     background: none;
@@ -270,6 +479,66 @@
     line-height: 1.6;
 }
 .btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
+
+.btn-more-chat {
+    opacity: 0;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.chat-item:hover .btn-more-chat { opacity: 1; }
+.btn-more-chat:hover { color: var(--text); }
+
+.chat-context-menu {
+    position: absolute;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    right: 8px;
+    min-width: 130px;
+}
+.ctx-menu-item {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+.ctx-menu-item:hover { background: #333; color: var(--text); }
+.ctx-delete:hover { color: #e74c3c !important; }
+
+.rename-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 2px 6px;
+    outline: none;
+    width: 100%;
+}
+
+.chat-item { position: relative; }
+
     </style>
 </head>
 <body>
@@ -280,24 +549,43 @@
 
     <!-- LEFT -->
     <aside class="panel-left" id="panelLeft">
-        <div class="left-logo">
-            <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
-                 alt="Logo" style="width:28px;height:28px;object-fit:contain;"
-                 onerror="this.style.display='none'" />
-            RavnLearn
+        <!-- Header row: logo+chevron always visible, logo hidden when collapsed -->
+        <div class="left-header-row">
+            <div class="left-logo-inner" id="leftLogoInner">
+                <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
+                     alt="Logo" style="width:28px;height:28px;object-fit:contain;"
+                     onerror="this.style.display='none'" />
+                RavnLearn
+            </div>
+            <button class="btn-collapse" id="btnCollapseLeft" title="Collapse sidebar">‹</button>
         </div>
-        <button class="btn-new-chat" id="btnNewChat">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            New Chat
-        </button>
-        <div class="section-label">Recents</div>
-        <div class="chat-list" id="chatList"></div>
-        <div class="user-area">
-            <div class="user-avatar">@ViewBag.UserInitial</div>
-            <span class="user-name">@ViewBag.Username</span>
-            <button class="btn-logout" id="btnLogout" title="Logout">⏻</button>
+
+        <!-- Main content (hidden when collapsed) -->
+        <div class="left-content">
+            <button class="btn-new-chat" id="btnNewChat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Chat
+            </button>
+            <div class="section-label">Recents</div>
+            <div class="chat-list" id="chatList"></div>
+            <div class="user-area">
+                <div class="user-avatar">@ViewBag.UserInitial</div>
+                <span class="user-name">@ViewBag.Username</span>
+                <button class="btn-logout" id="btnLogout" title="Logout">Log out</button>
+            </div>
+        </div>
+
+        <!-- Icon strip (shown when collapsed) -->
+        <div class="collapsed-icons">
+            <button class="collapsed-icon-btn" title="New Chat" id="btnNewChatCollapsed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </button>
+            <button class="collapsed-icon-btn" title="Chat History">💬</button>
+            <button class="collapsed-icon-btn" title="Logout" id="btnLogoutCollapsed">⏻</button>
         </div>
     </aside>
 
@@ -318,11 +606,25 @@
         <div class="input-bar">
             <div class="input-row">
                 <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
+                <button class="btn-mic" id="btnMic" title="Voice input">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+                    </svg>
+                </button>
                 <button class="btn-send" id="btnSend" title="Send">
                     <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
                 </button>
             </div>
-            <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+            <div class="voice-status-bar" id="voiceStatusBar">
+                <div class="voice-status-text">
+                    <span class="mic-dot"></span>
+                    <span id="voiceStatusText">Listening…</span>
+                </div>
+                <span class="voice-countdown" id="voiceCountdown"></span>
+                <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
+            </div>
+            <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
         </div>
     </main>
 
@@ -331,27 +633,41 @@
 
     <!-- RIGHT -->
     <aside class="panel-right" id="panelRight">
-        <div class="right-header">Study Tools</div>
-
-        <!-- SOURCES SECTION (resizable height) -->
-        <div class="sources-section" id="sourcesSection">
-            <div class="right-section">
-                <div class="right-section-title">📎 Sources</div>
-                <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
-            </div>
-            <div id="sourceList" class="source-list"></div>
+        <!-- Header row with title + collapse button -->
+        <div class="right-header-row">
+            <button class="btn-collapse" id="btnCollapseRight" title="Collapse panel">›</button>
+            <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);flex:1;text-align:right;">Study Tools</span>
         </div>
 
-        <!-- VERTICAL DRAG HANDLE -->
-        <div class="resize-handle-vertical" id="resizeVertical"></div>
+        <!-- Main content (hidden when collapsed) -->
+        <div class="right-content">
+            <!-- SOURCES SECTION (resizable height) -->
+            <div class="sources-section" id="sourcesSection">
+                <div class="right-section">
+                    <div class="right-section-title">📎 Sources</div>
+                    <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
+                </div>
+                <div id="sourceList" class="source-list"></div>
+            </div>
 
-        <!-- QUIZZES SECTION (takes remaining space) -->
-        <div class="quizzes-section" id="quizzesSection">
-            <div class="quiz-section-header">🧠 Quizzes</div>
-            <div class="quiz-list" id="quizList"></div>
+            <!-- VERTICAL DRAG HANDLE -->
+            <div class="resize-handle-vertical" id="resizeVertical"></div>
+
+            <!-- QUIZZES SECTION (takes remaining space) -->
+            <div class="quizzes-section" id="quizzesSection">
+                <div class="quiz-section-header">🧠 Quizzes</div>
+                <div class="quiz-list" id="quizList"></div>
+            </div>
+        </div>
+
+        <!-- Icon strip (shown when collapsed) -->
+        <div class="collapsed-icons">
+            <button class="collapsed-icon-btn" title="Add Document" id="btnAddSourceCollapsed">📎</button>
+            <button class="collapsed-icon-btn" title="Quizzes">🧠</button>
         </div>
     </aside>
 </div>
+
 <!-- QUIZ MODAL -->
 <div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
     <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(560px,90vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
@@ -362,6 +678,31 @@
         <div id="modalQuizBody" style="flex:1;overflow-y:auto;padding:20px;"></div>
     </div>
 </div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Delete Chat</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">This chat and all its messages will be permanently deleted. This cannot be undone.</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="deleteCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
+            <button id="deleteConfirmBtn" style="background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Log Out</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Are you sure you want to log out of RavnLearn?</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="logoutCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
+            <button id="logoutConfirmBtn" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Log Out</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let activeChatId = -1;
     let isSending = false;
@@ -440,6 +781,8 @@
             startX = e.clientX;
             handle.classList.add('dragging');
             document.body.classList.add('resizing');
+            document.getElementById('panelLeft').classList.add('resizing');
+            document.getElementById('panelRight').classList.add('resizing');
         });
         document.addEventListener('mousemove', (e) => {
             if (!dragging) return;
@@ -452,6 +795,8 @@
             dragging = false;
             handle.classList.remove('dragging');
             document.body.classList.remove('resizing');
+            document.getElementById('panelLeft').classList.remove('resizing');
+            document.getElementById('panelRight').classList.remove('resizing');
         });
         handle.addEventListener('touchstart', (e) => {
             dragging = true; startX = e.touches[0].clientX;
@@ -473,9 +818,9 @@
     // ══ VERTICAL DRAG RESIZE (sources ↕ quizzes) ══════════
     function initSourcesSectionHeight() {
         const panelRight = document.getElementById('panelRight');
-        const header = panelRight.querySelector('.right-header');
+        const header = panelRight.querySelector('.right-header-row');
         const handle = document.getElementById('resizeVertical');
-        const available = panelRight.offsetHeight - header.offsetHeight - handle.offsetHeight;
+        const available = panelRight.offsetHeight - (header?.offsetHeight || 0) - handle.offsetHeight;
         document.getElementById('sourcesSection').style.height = Math.round(available * 0.4) + 'px';
     }
 
@@ -487,9 +832,9 @@
         let startY = 0, startH = 0, dragging = false;
 
         const getMinMax = () => {
-            const header  = panelRight.querySelector('.right-header');
+            const header  = panelRight.querySelector('.right-header-row');
             const handleH = handle.offsetHeight;
-            const totalAvailable = panelRight.offsetHeight - header.offsetHeight - handleH;
+            const totalAvailable = panelRight.offsetHeight - (header?.offsetHeight || 0) - handleH;
             return { min: 60, max: totalAvailable - 60 };
         };
 
@@ -540,10 +885,77 @@
         el.dataset.id = String(id);
         el.innerHTML = `
             <span class="chat-item-title">💬 ${escHtml(title)}</span>
-            <button class="btn-del-chat" title="Delete" onclick="deleteChat(event,${id})">✕</button>
+            <button class="btn-more-chat" title="More options" data-id="${id}">⋯</button>
         `;
         el.addEventListener('click', () => loadChat(id));
+
+        const moreBtn = el.querySelector('.btn-more-chat');
+        moreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllMenus();
+            const menu = document.createElement('div');
+            menu.className = 'chat-context-menu';
+            menu.innerHTML = `
+                <button class="ctx-menu-item" id="ctxRename">✏️ Rename</button>
+                <button class="ctx-menu-item ctx-delete" id="ctxDelete">🗑️ Delete</button>
+            `;
+            menu.querySelector('#ctxRename').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllMenus();
+                startRename(id, el);
+            });
+            menu.querySelector('#ctxDelete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllMenus();
+                deleteChat(e, id);
+            });
+            el.appendChild(menu);
+            setTimeout(() => document.addEventListener('click', closeAllMenus, { once: true }), 0);
+        });
+
         return el;
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.chat-context-menu').forEach(m => m.remove());
+    }
+
+    function startRename(id, el) {
+        const titleEl = el.querySelector('.chat-item-title');
+        const oldTitle = titleEl.textContent.replace('💬 ', '').trim();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldTitle;
+        input.className = 'rename-input';
+        input.onclick = e => e.stopPropagation();
+        titleEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const finish = async () => {
+            const newTitle = input.value.trim();
+            if (!newTitle || newTitle === oldTitle) {
+                input.replaceWith(titleEl);
+                return;
+            }
+            try {
+                const res = await fetch('/Chat/RenameChat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId: id, title: newTitle })
+                });
+                if (res.ok) {
+                    titleEl.textContent = '💬 ' + newTitle;
+                }
+            } catch (err) { console.error(err); }
+            input.replaceWith(titleEl);
+        };
+
+        input.addEventListener('blur', finish);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+            if (e.key === 'Escape') { input.replaceWith(titleEl); }
+        });
     }
 
     function addChatItemToTop(id, title) {
@@ -571,12 +983,29 @@
         } catch (err) { alert('Error: ' + err.message); }
     }
 
-    async function deleteChat(e, id) {
+    function deleteChat(e, id) {
         e.stopPropagation();
-        if (!confirm('Delete this chat?')) return;
-        await fetch(`/Chat/DeleteChat/${id}`, { method: 'DELETE' });
-        document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
-        if (activeChatId === id) resetUI();
+        const modal = document.getElementById('deleteModal');
+        modal.style.display = 'flex';
+
+        const confirmBtn = document.getElementById('deleteConfirmBtn');
+        const cancelBtn  = document.getElementById('deleteCancelBtn');
+
+        const cleanup = () => {
+            modal.style.display = 'none';
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+        };
+
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => {
+            cleanup();
+            await fetch(`/Chat/DeleteChat/${id}`, { method: 'DELETE' });
+            document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
+            if (activeChatId === id) resetUI();
+        });
+
+        document.getElementById('deleteCancelBtn').addEventListener('click', cleanup);
+        modal.addEventListener('click', (ev) => { if (ev.target === modal) cleanup(); }, { once: true });
     }
 
     // ══ LOAD CHAT ════════════════════════════════════════
@@ -1233,7 +1662,27 @@ function parseQuizFromText(text) {
     function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
     function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
     function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    async function logout() { if (confirm('Are you sure you want to logout?')) window.location.href = '/Account/Logout'; }
+    function logout() {
+    const modal = document.getElementById('logoutModal');
+    modal.style.display = 'flex';
+
+    const confirmBtn = document.getElementById('logoutConfirmBtn');
+    const cancelBtn  = document.getElementById('logoutCancelBtn');
+
+    const cleanup = () => {
+        modal.style.display = 'none';
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    };
+
+    document.getElementById('logoutConfirmBtn').addEventListener('click', () => {
+        cleanup();
+        window.location.href = '/Account/Logout';
+    });
+
+    document.getElementById('logoutCancelBtn').addEventListener('click', cleanup);
+    modal.addEventListener('click', (ev) => { if (ev.target === modal) cleanup(); }, { once: true });
+}
 
     function openQuizModal(label, parsed, card) {
     document.getElementById('modalQuizLabel').textContent = label;
@@ -1641,6 +2090,210 @@ function parseFlashcardsFromText(text) {
         renderCard();
         return body;
     }
+
+// COLLAPSIBLE PANELS 
+    (function () {
+        const panelLeft         = document.getElementById('panelLeft');
+        const panelRight        = document.getElementById('panelRight');
+        const btnCollapseLeft   = document.getElementById('btnCollapseLeft');
+        const btnCollapseRight  = document.getElementById('btnCollapseRight');
+
+        // Restore saved state
+        const leftCollapsed  = localStorage.getItem('panelLeftCollapsed')  === 'true';
+        const rightCollapsed = localStorage.getItem('panelRightCollapsed') === 'true';
+        if (leftCollapsed)  setLeft(true,  false);
+        if (rightCollapsed) setRight(true, false);
+
+        btnCollapseLeft.addEventListener('click',  () => setLeft(!panelLeft.classList.contains('collapsed')));
+        btnCollapseRight.addEventListener('click', () => setRight(!panelRight.classList.contains('collapsed')));
+
+        // Collapsed icon buttons expand the panel when clicked
+        document.getElementById('btnNewChatCollapsed').addEventListener('click', () => {
+            setLeft(false);
+            setTimeout(() => document.getElementById('btnNewChat').click(), 260);
+        });
+        document.getElementById('btnLogoutCollapsed').addEventListener('click', () => {
+            document.getElementById('btnLogout').click();
+        });
+        document.getElementById('btnAddSourceCollapsed').addEventListener('click', () => {
+            setRight(false);
+            setTimeout(() => document.getElementById('btnAddSource').click(), 260);
+        });
+
+        function setLeft(collapse, save = true) {
+            panelLeft.classList.toggle('collapsed', collapse);
+            btnCollapseLeft.textContent = collapse ? '›' : '‹';
+            btnCollapseLeft.title = collapse ? 'Expand sidebar' : 'Collapse sidebar';
+            // Disable resize handle when collapsed
+            document.getElementById('resizeLeft').style.pointerEvents = collapse ? 'none' : '';
+            document.getElementById('resizeLeft').style.opacity = collapse ? '0' : '';
+            if (save) localStorage.setItem('panelLeftCollapsed', collapse);
+        }
+
+        function setRight(collapse, save = true) {
+            panelRight.classList.toggle('collapsed', collapse);
+            btnCollapseRight.textContent = collapse ? '‹' : '›';
+            btnCollapseRight.title = collapse ? 'Expand panel' : 'Collapse panel';
+            // Disable resize handle when collapsed
+            document.getElementById('resizeRight').style.pointerEvents = collapse ? 'none' : '';
+            document.getElementById('resizeRight').style.opacity = collapse ? '0' : '';
+            if (save) localStorage.setItem('panelRightCollapsed', collapse);
+        }
+    })();
+
+    // VOICE INPUT
+    (function () {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btnMic        = document.getElementById('btnMic');
+        const txtInput      = document.getElementById('txtInput');
+        const statusBar     = document.getElementById('voiceStatusBar');
+        const statusText    = document.getElementById('voiceStatusText');
+        const countdownEl   = document.getElementById('voiceCountdown');
+        const cancelBtn     = document.getElementById('voiceCancelBtn');
+        const inputHint     = document.getElementById('inputHint');
+
+        // Hide mic button if browser doesn't support it
+        if (!SpeechRecognition) {
+            if (btnMic) btnMic.style.display = 'none';
+            return;
+        }
+
+        let recognition     = null;
+        let isRecording     = false;
+        let silenceTimer    = null;
+        let countdownInterval = null;
+        let silenceSeconds  = 0;
+        const SILENCE_LIMIT = 5; // seconds before auto-send
+
+        function buildRecognition() {
+            const r = new SpeechRecognition();
+            r.continuous      = true;
+            r.interimResults  = true;
+            r.lang            = 'en-US';
+
+            let finalTranscript = '';
+
+            r.onstart = () => {
+                finalTranscript = txtInput.value.trim();
+                statusBar.classList.add('visible');
+                inputHint.style.display = 'none';
+                setListeningState();
+            };
+
+            r.onresult = (e) => {
+                let interim = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    const t = e.results[i][0].transcript;
+                    if (e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + t.trim();
+                    else interim = t;
+                }
+                txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
+                autoResize(txtInput);
+                resetSilenceTimer();
+            };
+
+            r.onspeechend = () => { startSilenceTimer(); };
+
+            r.onerror = (e) => {
+                if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
+                if (e.error === 'aborted') return;
+                stopRecording(false);
+            };
+
+            r.onsoundend = () => { startSilenceTimer(); };
+
+            r.onend = () => {
+                // Restart if still recording (handles browser auto-stop)
+                if (isRecording) {
+                    try { r.start(); } catch (_) {}
+                }
+            };
+
+            return r;
+        }
+
+        function setListeningState() {
+            statusText.textContent = 'Listening…';
+            countdownEl.textContent = '';
+            countdownEl.classList.remove('urgent');
+        }
+
+        function startSilenceTimer() {
+            clearSilenceTimer();
+            silenceSeconds = SILENCE_LIMIT;
+            statusText.textContent = 'Auto-sending in…';
+
+            countdownInterval = setInterval(() => {
+                silenceSeconds--;
+                countdownEl.textContent = silenceSeconds + 's';
+                countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
+
+                if (silenceSeconds <= 0) {
+                    clearSilenceTimer();
+                    stopRecording(true); // true = auto-send
+                }
+            }, 1000);
+        }
+
+        function resetSilenceTimer() {
+            clearSilenceTimer();
+            setListeningState();
+        }
+
+        function clearSilenceTimer() {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+
+        function startRecording() {
+            if (isRecording) return;
+            isRecording = true;
+            btnMic.classList.add('recording');
+            btnMic.title = 'Stop recording';
+            recognition = buildRecognition();
+            try { recognition.start(); } catch (_) {}
+        }
+
+        function stopRecording(andSend = false) {
+            if (!isRecording) return;
+            isRecording = false;
+            clearSilenceTimer();
+            btnMic.classList.remove('recording');
+            btnMic.title = 'Voice input';
+            statusBar.classList.remove('visible');
+            inputHint.style.display = '';
+            countdownEl.classList.remove('urgent');
+
+            try { recognition.abort(); } catch (_) {}
+            recognition = null;
+
+            if (andSend) {
+                const msg = txtInput.value.trim();
+                if (msg) sendMessage();
+            }
+        }
+
+        // Mic button toggle
+        btnMic.addEventListener('click', () => {
+            isRecording ? stopRecording(false) : startRecording();
+        });
+
+        // Cancel button
+        cancelBtn.addEventListener('click', () => {
+            stopRecording(false);
+        });
+
+        // If user manually edits or sends during countdown, stop cleanly
+        txtInput.addEventListener('keydown', (e) => {
+            if (isRecording && e.key === 'Enter' && !e.shiftKey) {
+                stopRecording(false); // let the existing sendMessage handle it
+            }
+        });
+
+        document.getElementById('btnSend').addEventListener('click', () => {
+            if (isRecording) stopRecording(false);
+        });
+    })();
 
 </script>
 
