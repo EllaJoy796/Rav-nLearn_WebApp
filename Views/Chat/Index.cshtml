@@ -67,7 +67,7 @@
         .btn-logout { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; transition: color 0.15s; }
         .btn-logout:hover { color: #e74c3c; }
 
-        /* ── RESIZE HANDLES ── */
+        /* ── HORIZONTAL RESIZE HANDLES (left/right panels) ── */
         .resize-handle {
             width: 5px;
             min-width: 5px;
@@ -79,10 +79,7 @@
             transition: background 0.15s;
         }
         .resize-handle:hover,
-        .resize-handle.dragging {
-            background: var(--accent);
-        }
-        /* Widen the hit area without affecting layout */
+        .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
             content: '';
             position: absolute;
@@ -90,7 +87,6 @@
             left: -4px; right: -4px;
             cursor: col-resize;
         }
-        /* Prevent text selection while dragging */
         body.resizing { user-select: none; cursor: col-resize; }
 
         /* ── CENTER ── */
@@ -129,7 +125,7 @@
         .btn-send svg { width: 16px; height: 16px; fill: #fff; }
         .input-hint { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
 
-        /* ── RIGHT ── */
+        /* ── RIGHT PANEL ── */
         .panel-right {
             width: 220px;
             min-width: 140px;
@@ -140,27 +136,106 @@
             flex-direction: column;
             overflow: hidden;
         }
-        .right-header { padding: 16px 14px 10px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--panel-border); }
-        .right-section { padding: 12px 14px 8px; }
+        .right-header {
+            padding: 16px 14px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
+        }
+
+        /* ── SOURCES SECTION ── */
+        .sources-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* height is set dynamically via JS */
+        }
+        .right-section { padding: 12px 14px 8px; flex-shrink: 0; }
         .right-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
         .btn-add-source { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: 1px dashed #3a3a3a; border-radius: var(--radius); color: var(--text-muted); font-size: 12.5px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
         .btn-add-source:hover { background: #2e2e2e; border-color: var(--accent); color: var(--text); }
-        .source-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 111px; overflow-y: auto; padding-right: 2px; }
+        .source-list { flex: 1; overflow-y: auto; padding: 0 10px 8px; }
         .source-list::-webkit-scrollbar { width: 3px; }
         .source-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; min-width: 0; margin-bottom: 6px; }
         .source-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .source-item-spinner { width: 12px; height: 12px; border: 2px solid #444; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
         @@keyframes spin { to { transform: rotate(360deg); } }
         .btn-del-source { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s, color 0.15s; line-height: 1; }
         .source-item:hover .btn-del-source { opacity: 1; }
         .btn-del-source:hover { color: #e74c3c; }
-        .right-divider { height: 1px; background: var(--panel-border); margin: 4px 14px; }
+        .source-drag-handle { color: var(--text-dim); font-size: 11px; cursor: grab; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; padding: 0 2px; user-select: none; line-height: 1; }
+        .source-item:hover .source-drag-handle { opacity: 1; }
+        .source-drag-handle:active { cursor: grabbing; }
+        .source-item.dragging-source { opacity: 0.4; border: 1px dashed var(--accent); }
+        .source-item.drag-over-source { border-color: var(--accent); background: #2a2040; }
+
+        /* ── VERTICAL RESIZE HANDLE (between Sources and Quizzes) ── */
+        .resize-handle-vertical {
+            height: 6px;
+            min-height: 6px;
+            cursor: row-resize;
+            background: var(--panel-border);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .resize-handle-vertical:hover,
+        .resize-handle-vertical.dragging { background: var(--accent); }
+        /* Wider hit area */
+        .resize-handle-vertical::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            top: -5px; bottom: -5px;
+            cursor: row-resize;
+        }
+        /* Grip dots */
+        .resize-handle-vertical::after {
+            content: '· · ·';
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            pointer-events: none;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        .resize-handle-vertical:hover::after,
+        .resize-handle-vertical.dragging::after { color: #fff; }
+        body.resizing-vertical { user-select: none; cursor: row-resize; }
+
+        /* ── QUIZZES SECTION ── */
+        .quizzes-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1; /* takes remaining space */
+        }
+        .quiz-section-header {
+            padding: 10px 14px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
         .quiz-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
+        .quiz-list::-webkit-scrollbar { width: 3px; }
+        .quiz-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         .quiz-header-btn { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: none; border-radius: 8px; color: var(--text); font-size: 12.5px; font-family: inherit; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 6px; transition: background 0.15s; margin-bottom: 4px; }
         .quiz-header-btn:hover { background: #2e2e2e; }
         .quiz-content { background: #1e1e26; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #ccc; line-height: 1.6; margin-bottom: 6px; display: none; white-space: pre-wrap; }
         .quiz-content.open { display: block; }
+
         #fileInput { display: none; }
     </style>
 </head>
@@ -224,16 +299,24 @@
     <!-- RIGHT -->
     <aside class="panel-right" id="panelRight">
         <div class="right-header">Study Tools</div>
-        <div class="right-section">
-            <div class="right-section-title">📎 Sources</div>
-            <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
+
+        <!-- SOURCES SECTION (resizable height) -->
+        <div class="sources-section" id="sourcesSection">
+            <div class="right-section">
+                <div class="right-section-title">📎 Sources</div>
+                <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
+            </div>
             <div id="sourceList" class="source-list"></div>
         </div>
-        <div class="right-divider"></div>
-        <div class="right-section" style="padding-bottom:4px;">
-            <div class="right-section-title">🧠 Quizzes</div>
+
+        <!-- VERTICAL DRAG HANDLE -->
+        <div class="resize-handle-vertical" id="resizeVertical"></div>
+
+        <!-- QUIZZES SECTION (takes remaining space) -->
+        <div class="quizzes-section" id="quizzesSection">
+            <div class="quiz-section-header">🧠 Quizzes</div>
+            <div class="quiz-list" id="quizList"></div>
         </div>
-        <div class="quiz-list" id="quizList"></div>
     </aside>
 </div>
 
@@ -271,6 +354,8 @@
         await loadChatList();
         setupEventListeners();
         setupResizeHandles();
+        setupVerticalResize();
+        initSourcesSectionHeight();
     });
 
     function setupEventListeners() {
@@ -284,31 +369,26 @@
         });
     }
 
-    // ══ DRAG RESIZE ══════════════════════════════════════
+    // ══ HORIZONTAL DRAG RESIZE (left/right panels) ════════
     function setupResizeHandles() {
         const panelLeft   = document.getElementById('panelLeft');
         const panelRight  = document.getElementById('panelRight');
         const handleLeft  = document.getElementById('resizeLeft');
         const handleRight = document.getElementById('resizeRight');
 
-        // LEFT handle — dragging it changes the left panel width
         makeResizable(handleLeft, (dx) => {
             const newWidth = panelLeft.offsetWidth + dx;
-            const clamped  = Math.min(Math.max(newWidth, 140), 420);
-            panelLeft.style.width = clamped + 'px';
+            panelLeft.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
         });
 
-        // RIGHT handle — dragging it changes the right panel width (inverted dx)
         makeResizable(handleRight, (dx) => {
             const newWidth = panelRight.offsetWidth - dx;
-            const clamped  = Math.min(Math.max(newWidth, 140), 420);
-            panelRight.style.width = clamped + 'px';
+            panelRight.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
         });
     }
 
     function makeResizable(handle, onDrag) {
-        let startX = 0;
-        let dragging = false;
+        let startX = 0, dragging = false;
 
         handle.addEventListener('mousedown', (e) => {
             e.preventDefault();
@@ -317,40 +397,91 @@
             handle.classList.add('dragging');
             document.body.classList.add('resizing');
         });
-
         document.addEventListener('mousemove', (e) => {
             if (!dragging) return;
             const dx = e.clientX - startX;
             startX = e.clientX;
             onDrag(dx);
         });
-
         document.addEventListener('mouseup', () => {
             if (!dragging) return;
             dragging = false;
             handle.classList.remove('dragging');
             document.body.classList.remove('resizing');
         });
-
-        // Touch support
         handle.addEventListener('touchstart', (e) => {
-            dragging = true;
-            startX = e.touches[0].clientX;
+            dragging = true; startX = e.touches[0].clientX;
             handle.classList.add('dragging');
         }, { passive: true });
-
         document.addEventListener('touchmove', (e) => {
             if (!dragging) return;
             const dx = e.touches[0].clientX - startX;
             startX = e.touches[0].clientX;
             onDrag(dx);
         }, { passive: true });
-
         document.addEventListener('touchend', () => {
             dragging = false;
             handle.classList.remove('dragging');
             document.body.classList.remove('resizing');
         });
+    }
+
+    // ══ VERTICAL DRAG RESIZE (sources ↕ quizzes) ══════════
+    function initSourcesSectionHeight() {
+        // Default: sources gets ~40% of available right panel height
+        const panelRight = document.getElementById('panelRight');
+        const header = panelRight.querySelector('.right-header');
+        const handle = document.getElementById('resizeVertical');
+        const available = panelRight.offsetHeight - header.offsetHeight - handle.offsetHeight;
+        document.getElementById('sourcesSection').style.height = Math.round(available * 0.4) + 'px';
+    }
+
+    function setupVerticalResize() {
+        const handle       = document.getElementById('resizeVertical');
+        const sourcesSection = document.getElementById('sourcesSection');
+        const panelRight   = document.getElementById('panelRight');
+
+        let startY = 0, startH = 0, dragging = false;
+
+        const getMinMax = () => {
+            const header = panelRight.querySelector('.right-header');
+            const handleH = handle.offsetHeight;
+            const totalAvailable = panelRight.offsetHeight - header.offsetHeight - handleH;
+            return { min: 60, max: totalAvailable - 60 };
+        };
+
+        const startDrag = (y) => {
+            dragging = true;
+            startY = y;
+            startH = sourcesSection.offsetHeight;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing-vertical');
+        };
+
+        const doDrag = (y) => {
+            if (!dragging) return;
+            const dy = y - startY;
+            const { min, max } = getMinMax();
+            const newH = Math.min(Math.max(startH + dy, min), max);
+            sourcesSection.style.height = newH + 'px';
+        };
+
+        const endDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing-vertical');
+        };
+
+        // Mouse
+        handle.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientY); });
+        document.addEventListener('mousemove', (e) => doDrag(e.clientY));
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch
+        handle.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchmove', (e) => { doDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchend', endDrag);
     }
 
     // ══ CHAT LIST ════════════════════════════════════════
@@ -360,10 +491,7 @@
             const chats = await res.json();
             const list = document.getElementById('chatList');
             list.innerHTML = '';
-            chats.forEach(c => {
-                const el = makeChatItem(c.id, c.title);
-                list.appendChild(el);
-            });
+            chats.forEach(c => list.appendChild(makeChatItem(c.id, c.title)));
         } catch (err) { console.error('loadChatList error:', err); }
     }
 
@@ -382,8 +510,7 @@
     function addChatItemToTop(id, title) {
         const list = document.getElementById('chatList');
         document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
-        const el = makeChatItem(id, title);
-        list.prepend(el);
+        list.prepend(makeChatItem(id, title));
     }
 
     function updateChatItemTitle(id, title) {
@@ -427,7 +554,6 @@
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
 
-            // Prefer the array; fall back to single only if array is missing/empty
             if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
                 data.docFilenames.forEach(name => addSourceItem(name, false));
             } else if (data.docFilename) {
@@ -460,10 +586,7 @@
                 activeChatId = parseInt(data.id);
                 addChatItemToTop(data.id, data.title);
                 setActiveChatItem(activeChatId);
-            } catch (err) {
-                alert('Could not create chat: ' + err.message);
-                return;
-            }
+            } catch (err) { alert('Could not create chat: ' + err.message); return; }
         }
 
         showChatUI();
@@ -475,7 +598,6 @@
 
         isSending = true;
         document.getElementById('btnSend').disabled = true;
-
         const sendingToChatId = activeChatId;
 
         try {
@@ -579,7 +701,6 @@
 
         showChatUI();
 
-        // Upload each file one at a time, sequentially
         for (const file of files) {
             const itemEl = addSourceItem(file.name, true);
             const fd = new FormData();
@@ -607,10 +728,17 @@
     }
 
     // ── Source list helpers ───────────────────────────────
+    let dragSrcEl = null;
+
     function addSourceItem(name, uploading = false) {
         const list = document.getElementById('sourceList');
         const item = document.createElement('div');
         item.className = 'source-item' + (uploading ? ' source-item-uploading' : '');
+
+        const handle = document.createElement('span');
+        handle.className = 'source-drag-handle';
+        handle.textContent = '⠿';
+        handle.title = 'Drag to reorder';
 
         const icon = document.createElement('span');
         icon.textContent = '📄';
@@ -620,6 +748,7 @@
         nameEl.title = name;
         nameEl.textContent = name;
 
+        item.appendChild(handle);
         item.appendChild(icon);
         item.appendChild(nameEl);
 
@@ -634,18 +763,56 @@
             delBtn.textContent = '✕';
             delBtn.onclick = () => item.remove();
             item.appendChild(delBtn);
+            makeDraggable(item, handle);
         }
 
         list.appendChild(item);
         return item;
     }
 
+    function makeDraggable(item, handle) {
+        item.draggable = false;
+
+        handle.addEventListener('mousedown', () => { item.draggable = true; });
+        handle.addEventListener('mouseup',   () => { item.draggable = false; });
+
+        item.addEventListener('dragstart', (e) => {
+            dragSrcEl = item;
+            item.classList.add('dragging-source');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        item.addEventListener('dragend', () => {
+            item.draggable = false;
+            item.classList.remove('dragging-source');
+            document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
+            dragSrcEl = null;
+        });
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (dragSrcEl && dragSrcEl !== item) {
+                document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
+                item.classList.add('drag-over-source');
+            }
+        });
+        item.addEventListener('dragleave', () => item.classList.remove('drag-over-source'));
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            item.classList.remove('drag-over-source');
+            if (!dragSrcEl || dragSrcEl === item) return;
+            const list = document.getElementById('sourceList');
+            const items = [...list.children];
+            const srcIdx = items.indexOf(dragSrcEl);
+            const dstIdx = items.indexOf(item);
+            if (srcIdx < dstIdx) list.insertBefore(dragSrcEl, item.nextSibling);
+            else list.insertBefore(dragSrcEl, item);
+        });
+    }
+
     function finalizeSourceItem(item, fileName) {
         item.classList.remove('source-item-uploading');
-        // swap spinner for delete button
         const spinner = item.querySelector('.source-item-spinner');
         if (spinner) spinner.remove();
-        // update name in case server normalized it
         const nameEl = item.querySelector('.source-item-name');
         if (nameEl && fileName) { nameEl.textContent = fileName; nameEl.title = fileName; }
         const delBtn = document.createElement('button');
@@ -654,6 +821,8 @@
         delBtn.textContent = '✕';
         delBtn.onclick = () => item.remove();
         item.appendChild(delBtn);
+        const handle = item.querySelector('.source-drag-handle');
+        if (handle) makeDraggable(item, handle);
     }
 
     function removeSourceItem(item) { item?.remove(); }
