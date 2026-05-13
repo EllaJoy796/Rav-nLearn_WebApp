@@ -32,6 +32,30 @@
             --topbar-h:      64px;
         }
 
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --card-hover:  #ede9fa;
+            --card-new-bg: #e8e4f8;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+            --icon-bg:     rgba(124,92,191,.15);
+        }
+        body.light-mode .search-bar input { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
+        body.light-mode .search-bar .search-icon svg { stroke: var(--text-muted); }
+        body.light-mode .modal,
+        body.light-mode .delete-modal { background: #f4f3ff; }
+        body.light-mode .field-input  { background: #edeaf8; color: var(--text-white); }
+        body.light-mode .ctx-menu     { background: #f4f3ff; }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
         html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
@@ -75,7 +99,7 @@
         .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 20px; }
 
         /* ── GRID ── */
-        .chats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .chats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
         /* ── NEW CHAT CARD ── */
         .card-new { background: var(--card-new-bg); border: 1.5px dashed rgba(124,92,191,0.3); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; min-height: 170px; transition: border-color 0.2s ease, background 0.2s ease; text-decoration: none; animation: fadeUp 0.4s ease both; }
@@ -154,7 +178,7 @@
             .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
             .nav-item::after { display: none; }
             .nav-label { display: none; }
-            .chats-grid { grid-template-columns: 1fr 1fr; }
+            .chats-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
             .search-bar { width: 100%; }
         }
@@ -306,6 +330,12 @@
 </div>
 
 <script>
+    /* ── THEME INIT: apply before paint to avoid flash ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
     let ctxChatId   = null;
     let ctxChatName = '';
 

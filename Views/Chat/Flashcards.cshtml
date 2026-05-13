@@ -36,6 +36,27 @@
             --topbar-h:      64px;
         }
 
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --card-hover:  #ede9fa;
+            --card-new-bg: #e8e4f8;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+            --icon-bg:     rgba(124,92,191,.15);
+        }
+        body.light-mode .search-bar input { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
+        body.light-mode .search-bar .search-icon svg { stroke: var(--text-muted); }
+        body.light-mode .card-fc-banner { background: linear-gradient(135deg, #ded8f5 0%, #e8e3f8 100%); }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
         html, body {
             height: 100%;
             background-color: var(--bg);
@@ -335,7 +356,7 @@
         /* ─── GRID ─── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
 
@@ -383,51 +404,16 @@
         /* Stacked cards illustration */
         .fc-stack {
             position: relative;
-            width: 60px;
-            height: 48px;
-        }
-
-        .fc-stack-card {
-            position: absolute;
-            width: 52px;
-            height: 38px;
-            border-radius: 6px;
-            border: 1.5px solid white;
-        }
-
-        .fc-stack-card:nth-child(1) {
-            background: rgba(124, 92, 191, 0.12);
-            top: 10px;
-            left: 8px;
-            transform: rotate(-6deg);
-        }
-
-        .fc-stack-card:nth-child(2) {
-            background: rgba(124, 92, 191, 0.26);
-            top: 5px;
-            left: 4px;
-            transform: rotate(-2deg);
-        }
-
-        .fc-stack-card:nth-child(3) {
-            background: rgba(124, 92, 191, 0.26);
-            top: 0;
-            left: 0;
-            transform: rotate(2deg);
+            width: 64px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .fc-stack-card:nth-child(3) svg {
-            width: 18px;
-            height: 18px;
-            stroke: white;
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            opacity: 0.7;
+        .fc-icon-back {
+            width: 64px;
+            height: 52px;
         }
 
         /* Chip on banner */
@@ -555,7 +541,7 @@
             .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
             .nav-item::after { display: none; }
             .nav-label { display: none; }
-            .cards-grid { grid-template-columns: 1fr 1fr; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
         }
     </style>
@@ -642,11 +628,10 @@
                             <div class="card-fc-banner">
                                 <span class="banner-chip">@set.CardCount Flashcards</span>
                                 <div class="fc-stack">
-                                    <div class="fc-stack-card"></div>
-                                    <div class="fc-stack-card"></div>
-                                    <div class="fc-stack-card">
-                                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </div>
+                                    <svg class="fc-icon-back" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="10" y="14" width="30" height="22" rx="3" stroke="rgba(255,255,255,0.35)" stroke-width="2" transform="rotate(-6 10 14)"/>
+                                        <rect x="8" y="12" width="30" height="22" rx="3" fill="rgba(124,92,191,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+                                    </svg>
                                 </div>
                                <button class="btn-more" onclick="event.stopPropagation(); showMenu(@(set.Id))">
                                     <span></span><span></span><span></span>
@@ -673,11 +658,10 @@
                             <div class="card-fc-banner">
                                 <span class="banner-chip">15 Flashcards</span>
                                 <div class="fc-stack">
-                                    <div class="fc-stack-card"></div>
-                                    <div class="fc-stack-card"></div>
-                                    <div class="fc-stack-card">
-                                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </div>
+                                    <svg class="fc-icon-back" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="10" y="14" width="30" height="22" rx="3" stroke="rgba(255,255,255,0.35)" stroke-width="2" transform="rotate(-6 10 14)"/>
+                                        <rect x="8" y="12" width="30" height="22" rx="3" fill="rgba(124,92,191,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+                                    </svg>
                                 </div>
                                 <button class="btn-more" onclick="event.stopPropagation()">
                                     <span></span><span></span><span></span>
@@ -704,6 +688,12 @@
 </div>
 
 <script>
+    /* ── THEME INIT ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
     function filterCards() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.card-fc').forEach(card => {

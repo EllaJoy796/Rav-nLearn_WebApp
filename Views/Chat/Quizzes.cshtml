@@ -36,6 +36,25 @@
             --topbar-h:         64px;
         }
 
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --card-hover:  #ede9fa;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+            --icon-bg:     rgba(124,92,191,.15);
+        }
+        body.light-mode .search-bar input { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
+        body.light-mode .search-bar .search-icon svg { stroke: var(--text-muted); }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
         html, body {
             height: 100%;
             background-color: var(--bg);
@@ -326,7 +345,7 @@
         /* ─── GRID ─── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
 
@@ -497,7 +516,7 @@
             .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
             .nav-item::after { display: none; }
             .nav-label { display: none; }
-            .cards-grid { grid-template-columns: 1fr 1fr; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
         }
     </style>
@@ -639,6 +658,12 @@
 </div>
 
 <script>
+    /* ── THEME INIT ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
     function filterCards() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.card-quiz').forEach(card => {
