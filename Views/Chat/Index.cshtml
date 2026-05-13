@@ -8,509 +8,267 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rev'nLearn</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>RavnLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg:            #111111;
-            --left-bg:       #191919;
-            --center-bg:     #111111;
-            --right-bg:      #191919;
-            --panel-border:  #262626;
-            --input-bg:      #1e1e1e;
-            --input-border:  #2e2e2e;
-            --bubble-user:   #4a2d8a;
-            --bubble-ai:     #222222;
-            --text:          #f2f2f2;
-            --text-muted:    #777;
-            --text-dim:      #444;
-            --accent:        #6c46b8;
-            --accent-light:  #8560d4;
-            --accent-soft:   rgba(108,70,184,0.15);
-            --btn-outline:   #252525;
-            --card-bg:       #1e1e1e;
-            --card-border:   #2a2a2a;
-            --radius:        10px;
-            --radius-lg:     14px;
+            --bg:           #141414;
+            --left-bg:      #1a1a1a;
+            --center-bg:    #141414;
+            --right-bg:     #1a1a1a;
+            --panel-border: #2a2a2a;
+            --input-bg:     #252525;
+            --input-border: #333;
+            --bubble-user:  #50387a;
+            --bubble-ai:    #2d2d2d;
+            --text:         #f0f0f0;
+            --text-muted:   #888;
+            --text-dim:     #555;
+            --accent:       #7c5cbf;
+            --accent-hover: #6a4eaa;
+            --btn-flat:     #2a2a2a;
+            --radius:       10px;
         }
 
-        html, body {
-            height: 100%;
-            background: var(--bg);
-            font-family: 'Figtree', sans-serif;
-            color: var(--text);
-            overflow: hidden;
-        }
+        html, body { height: 100%; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); overflow: hidden; }
 
         .app-shell { display: flex; height: 100vh; width: 100vw; }
 
-        /* ══════════ LEFT PANEL ══════════ */
+        /* ── LEFT ── */
         .panel-left {
-            width: 210px;
-            min-width: 160px;
-            max-width: 320px;
+            width: 220px;
+            min-width: 140px;
+            max-width: 420px;
             flex-shrink: 0;
             background: var(--left-bg);
-            border-right: 1px solid var(--panel-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-
-        .left-logo {
-            padding: 18px 16px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--panel-border);
-            margin-bottom: 6px;
-        }
-        .left-logo img {
-            width: 30px; height: 30px;
-            object-fit: contain; border-radius: 8px;
-        }
-        .left-logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 16px; font-weight: 800;
-            color: var(--text);
-            letter-spacing: -.3px;
-        }
-
-        /* ── Action Buttons ── */
-        .left-actions {
-            padding: 10px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .btn-left {
-            width: 100%;
-            height: 40px;
-            border-radius: var(--radius);
-            border: 1px solid var(--panel-border);
-            background: var(--btn-outline);
-            color: var(--text-muted);
-            font-family: 'Figtree', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 0 13px;
-            transition: background .18s, color .18s, border-color .18s;
-        }
-        .btn-left:hover {
-            background: #252525;
-            color: var(--text);
-            border-color: #383838;
-        }
-        .btn-left svg {
-            width: 15px; height: 15px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-            flex-shrink: 0;
-        }
-        .btn-left.btn-accent {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-        .btn-left.btn-accent:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-light);
-        }
-
-        /* ── Documents Section ── */
-        .left-section-label {
-            padding: 14px 16px 6px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-        }
-
-        .doc-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 10px 12px;
-        }
-        .doc-list::-webkit-scrollbar { width: 3px; }
-        .doc-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-
-        .doc-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 13px;
-            transition: background .15s, color .15s;
-        }
-        .doc-item:hover { background: #222; color: var(--text); }
-        .doc-item svg {
-            width: 15px; height: 15px;
-            stroke: currentColor; fill: none;
-            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-            flex-shrink: 0;
-        }
-        .doc-item-name {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .btn-del-doc {
-            opacity: 0;
-            background: none; border: none;
-            color: var(--text-dim); cursor: pointer;
-            font-size: 13px; padding: 2px 4px;
-            border-radius: 3px;
-            transition: opacity .15s, color .15s;
-        }
-        .doc-item:hover .btn-del-doc { opacity: 1; }
-        .btn-del-doc:hover { color: #e74c3c; }
-
-        /* ── User Area ── */
-        .user-area {
-            border-top: 1px solid var(--panel-border);
-            padding: 12px 14px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .user-avatar {
-            width: 30px; height: 30px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
-        }
-        .user-name {
-            font-size: 13px; font-weight: 600;
-            flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .btn-logout {
-            background: none; border: none;
-            color: var(--text-dim); cursor: pointer;
-            font-size: 15px; padding: 4px;
-            border-radius: 4px; transition: color .15s;
-        }
+        .left-logo { padding: 16px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--panel-border); display: flex; align-items: center; gap: 8px; }
+        .btn-new-chat { margin: 14px 12px 8px; padding: 10px 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.18s; }
+        .btn-new-chat:hover { background: var(--accent-hover); }
+        .section-label { padding: 10px 16px 6px; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+        .chat-list { flex: 1; overflow-y: auto; padding: 4px 8px; }
+        .chat-list::-webkit-scrollbar { width: 4px; }
+        .chat-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .chat-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px; transition: background 0.15s, color 0.15s; gap: 6px; }
+        .chat-item:hover { background: #242424; color: var(--text); }
+        .chat-item.active { background: rgba(124,92,191,0.18); color: var(--text); }
+        .chat-item-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-del-chat { opacity: 0; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 4px; transition: opacity 0.15s, color 0.15s; flex-shrink: 0; }
+        .chat-item:hover .btn-del-chat { opacity: 1; }
+        .btn-del-chat:hover { color: #e74c3c; }
+        .user-area { border-top: 1px solid var(--panel-border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .user-name { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-logout { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; transition: color 0.15s; }
         .btn-logout:hover { color: #e74c3c; }
 
-        /* ══════════ RESIZE HANDLE ══════════ */
+        /* ── HORIZONTAL RESIZE HANDLES (left/right panels) ── */
         .resize-handle {
-            width: 4px; min-width: 4px;
+            width: 5px;
+            min-width: 5px;
             cursor: col-resize;
             background: var(--panel-border);
             flex-shrink: 0;
-            transition: background .15s;
-            position: relative; z-index: 10;
+            position: relative;
+            z-index: 10;
+            transition: background 0.15s;
         }
-        .resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
+        .resize-handle:hover,
+        .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
-            content: ''; position: absolute;
-            top: 0; bottom: 0; left: -4px; right: -4px;
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            left: -4px; right: -4px;
             cursor: col-resize;
         }
         body.resizing { user-select: none; cursor: col-resize; }
 
-        /* ══════════ CENTER PANEL ══════════ */
-        .panel-center {
-            flex: 1;
-            background: var(--center-bg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-width: 200px;
-        }
-
-        /* Welcome */
-        .welcome-screen {
-            flex: 1;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding: 40px 24px;
-            text-align: center;
-        }
-        .welcome-screen h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: 55px; font-weight: 700;
-            letter-spacing: -1.5px;
-            color: var(--text);
-            margin-bottom: 10px;
-            line-height: 1.1;
-        }
-        .welcome-screen p {
-            font-size: 14px; color: var(--text-muted);
-            line-height: 1.6;
-            max-width: 320px;
-        }
-
-        /* Messages */
-        .messages-area {
-            flex: 1; overflow-y: auto;
-            padding: 24px 32px;
-            display: none; flex-direction: column; gap: 4px;
-        }
+        /* ── CENTER ── */
+        .panel-center { flex: 1; background: var(--center-bg); display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
+        .welcome-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
+        .welcome-screen h1 { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 10px; }
+        .welcome-screen p { font-size: 15px; color: var(--text-muted); }
+        .messages-area { flex: 1; overflow-y: auto; padding: 24px 32px; display: none; flex-direction: column; gap: 4px; }
         .messages-area.visible { display: flex; }
-        .messages-area::-webkit-scrollbar { width: 4px; }
-        .messages-area::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-
+        .messages-area::-webkit-scrollbar { width: 5px; }
+        .messages-area::-webkit-scrollbar-thumb { background: #2e2e2e; border-radius: 4px; }
         .msg-wrapper { display: flex; flex-direction: column; margin: 3px 0; max-width: 72%; }
         .msg-wrapper.user { align-self: flex-end; align-items: flex-end; }
-        .msg-wrapper.ai   { align-self: flex-start; align-items: flex-start; }
-
-        .bubble {
-            padding: 11px 15px; border-radius: 14px;
-            font-size: 14px; line-height: 1.6;
-            white-space: pre-wrap; word-break: break-word;
-        }
+        .msg-wrapper.ai { align-self: flex-start; align-items: flex-start; }
+        .bubble { padding: 11px 15px; border-radius: 14px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
         .msg-wrapper.user .bubble { background: var(--bubble-user); color: #fff; border-bottom-right-radius: 4px; }
-        .msg-wrapper.ai   .bubble { background: var(--bubble-ai);   color: var(--text); border-bottom-left-radius: 4px; }
-
-        .msg-actions { display: flex; gap: 4px; margin-top: 4px; opacity: 0; transition: opacity .15s; }
+        .msg-wrapper.ai .bubble { background: var(--bubble-ai); color: var(--text); border-bottom-left-radius: 4px; }
+        .msg-actions { display: flex; gap: 4px; margin-top: 4px; opacity: 0; transition: opacity 0.15s; }
         .msg-wrapper:hover .msg-actions { opacity: 1; }
-        .btn-action {
-            background: none; border: none; color: var(--text-dim);
-            font-size: 11px; cursor: pointer; padding: 3px 7px;
-            border-radius: 4px; font-family: inherit;
-            transition: background .15s, color .15s;
-        }
-        .btn-action:hover { background: #1e1e1e; color: var(--text-muted); }
-
-        .typing-indicator {
-            display: none; align-self: flex-start;
-            background: var(--bubble-ai);
-            padding: 12px 16px; border-radius: 14px; border-bottom-left-radius: 4px;
-            gap: 5px;
-        }
+        .btn-action { background: none; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; padding: 3px 7px; border-radius: 4px; font-family: inherit; transition: background 0.15s, color 0.15s; }
+        .btn-action:hover { background: #222; color: var(--text-muted); }
+        .typing-indicator { display: none; align-self: flex-start; background: var(--bubble-ai); padding: 12px 16px; border-radius: 14px; border-bottom-left-radius: 4px; gap: 5px; }
         .typing-indicator.visible { display: flex; }
-        .typing-indicator span {
-            width: 7px; height: 7px; background: var(--text-dim);
-            border-radius: 50%; animation: bounce 1.2s infinite;
-        }
-        .typing-indicator span:nth-child(2) { animation-delay: .2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: .4s; }
-        @@keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        /* ── Input Bar ── */
-        .input-bar {
-            padding: 14px 24px 20px;
-            background: var(--center-bg);
-        }
-        .input-row {
-            display: flex; align-items: center; gap: 10px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 50px;
-            padding: 10px 10px 10px 18px;
-            transition: border-color .2s;
-        }
-        .input-row:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(108,70,184,.1);
-        }
-        #txtInput {
-            flex: 1; background: none; border: none; outline: none;
-            color: var(--text); font-size: 14px; font-family: inherit;
-            resize: none; max-height: 120px; line-height: 1.5;
-        }
+        .typing-indicator span { width: 7px; height: 7px; background: var(--text-dim); border-radius: 50%; animation: bounce 1.2s infinite; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+        .input-bar { padding: 14px 24px 18px; border-top: 1px solid var(--panel-border); background: var(--center-bg); }
+        .input-row { display: flex; align-items: center; gap: 10px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; padding: 10px 14px; transition: border-color 0.2s; }
+        .input-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,191,0.12); }
+        #txtInput { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 14px; font-family: inherit; resize: none; max-height: 120px; line-height: 1.5; }
         #txtInput::placeholder { color: var(--text-dim); }
-
-        .btn-mic {
-            background: none; border: none;
-            color: var(--text-dim); cursor: pointer;
-            width: 34px; height: 34px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%;
-            transition: color .18s, background .18s;
-            flex-shrink: 0;
-        }
-        .btn-mic:hover { color: var(--text-muted); background: #252525; }
-        .btn-mic svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-        .btn-send {
-            background: var(--accent); border: none;
-            border-radius: 50%; width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; flex-shrink: 0;
-            transition: background .18s;
-        }
-        .btn-send:hover { background: var(--accent-light); }
+        .btn-send { background: var(--accent); border: none; border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.18s; }
+        .btn-send:hover { background: var(--accent-hover); }
         .btn-send:disabled { background: #333; cursor: not-allowed; }
         .btn-send svg { width: 16px; height: 16px; fill: #fff; }
+        .input-hint { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
 
-        /* ══════════ RIGHT PANEL ══════════ */
+        /* ── RIGHT PANEL ── */
         .panel-right {
-            width: 240px;
-            min-width: 180px;
-            max-width: 360px;
+            width: 220px;
+            min-width: 140px;
+            max-width: 420px;
             flex-shrink: 0;
             background: var(--right-bg);
-            border-left: 1px solid var(--panel-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-
         .right-header {
-            padding: 18px 16px 4px;
+            padding: 16px 14px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--panel-border);
             flex-shrink: 0;
         }
-        .right-header-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 16px; font-weight: 800;
-            color: var(--text); letter-spacing: -.2px;
-        }
-        .right-header-sub {
-            font-size: 11px; color: var(--text-dim);
-            margin-top: 2px;
-        }
 
-        .right-divider {
-            height: 1px; background: var(--panel-border);
-            margin: 12px 16px;
+        /* ── SOURCES SECTION ── */
+        .sources-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
+        .right-section { padding: 12px 14px 8px; flex-shrink: 0; }
+        .right-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+        .btn-add-source { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: 1px dashed #3a3a3a; border-radius: var(--radius); color: var(--text-muted); font-size: 12.5px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+        .btn-add-source:hover { background: #2e2e2e; border-color: var(--accent); color: var(--text); }
+        .source-list { flex: 1; overflow-y: auto; padding: 0 10px 8px; }
+        .source-list::-webkit-scrollbar { width: 3px; }
+        .source-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; min-width: 0; margin-bottom: 6px; }
+        .source-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .source-item-spinner { width: 12px; height: 12px; border: 2px solid #444; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+        .btn-del-source { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s, color 0.15s; line-height: 1; }
+        .source-item:hover .btn-del-source { opacity: 1; }
+        .btn-del-source:hover { color: #e74c3c; }
+        .source-drag-handle { color: var(--text-dim); font-size: 11px; cursor: grab; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; padding: 0 2px; user-select: none; line-height: 1; }
+        .source-item:hover .source-drag-handle { opacity: 1; }
+        .source-drag-handle:active { cursor: grabbing; }
+        .source-item.dragging-source { opacity: 0.4; border: 1px dashed var(--accent); }
+        .source-item.drag-over-source { border-color: var(--accent); background: #2a2040; }
 
-        /* ── Study Cards (right panel) ── */
-        .study-list {
-            flex: 1; overflow-y: auto;
-            padding: 0 12px 16px;
-        }
-        .study-list::-webkit-scrollbar { width: 3px; }
-        .study-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-
-        .study-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            transition: border-color .15s;
-        }
-        .study-card:hover { border-color: #383838; }
-
-        .study-card-top {
-            display: flex; align-items: flex-start; gap: 10px;
-        }
-        .study-card-icon {
-            width: 34px; height: 34px;
-            background: #252525;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
+        /* ── VERTICAL RESIZE HANDLE (between Sources and Quizzes) ── */
+        .resize-handle-vertical {
+            height: 6px;
+            min-height: 6px;
+            cursor: row-resize;
+            background: var(--panel-border);
             flex-shrink: 0;
-            font-size: 15px;
+            position: relative;
+            z-index: 10;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .study-card-info { flex: 1; min-width: 0; }
-        .study-card-title {
-            font-size: 13px; font-weight: 700;
-            color: var(--text);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        .resize-handle-vertical:hover,
+        .resize-handle-vertical.dragging { background: var(--accent); }
+        .resize-handle-vertical::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            top: -5px; bottom: -5px;
+            cursor: row-resize;
         }
-        .study-card-meta {
-            font-size: 10px; color: var(--text-dim);
-            margin-top: 2px;
+        .resize-handle-vertical::after {
+            content: '· · ·';
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            pointer-events: none;
+            line-height: 1;
+            transition: color 0.15s;
         }
-        .study-card-badge {
-            font-size: 9px; font-weight: 700;
-            letter-spacing: .8px; text-transform: uppercase;
-            padding: 3px 7px; border-radius: 5px;
-            flex-shrink: 0;
-        }
-        .badge-quiz {
-            background: rgba(108,70,184,.2);
-            color: #a585e8;
-            border: 1px solid rgba(108,70,184,.3);
-        }
-        .badge-flashcard {
-            background: rgba(56,136,84,.18);
-            color: #72c48b;
-            border: 1px solid rgba(56,136,84,.3);
-        }
+        .resize-handle-vertical:hover::after,
+        .resize-handle-vertical.dragging::after { color: #fff; }
+        body.resizing-vertical { user-select: none; cursor: row-resize; }
 
-        .study-card-actions {
-            display: flex; gap: 6px;
-            margin-top: 10px;
-        }
-        .btn-card-action {
+        /* ── QUIZZES SECTION ── */
+        .quizzes-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             flex: 1;
-            height: 30px;
-            border-radius: 7px;
-            border: 1px solid var(--card-border);
-            background: #252525;
-            color: var(--text-muted);
-            font-family: 'Figtree', sans-serif;
-            font-size: 11px; font-weight: 600;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            transition: background .15s, color .15s, border-color .15s;
         }
-        .btn-card-action:hover {
-            background: #2e2e2e;
-            color: var(--text);
-            border-color: #404040;
+        .quiz-section-header {
+            padding: 10px 14px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            flex-shrink: 0;
         }
-        .btn-card-action svg {
-            width: 11px; height: 11px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-        }
+        .quiz-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
+        .quiz-list::-webkit-scrollbar { width: 3px; }
+        .quiz-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
-        /* ══════════ QUIZ MODAL ══════════ */
-        #quizModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        #quizModal.open { display: flex !important; }
-        .modal-inner {
-            background: #1a1a1a; border: 1px solid #2e2e2e;
-            border-radius: 16px; width: min(560px,90vw); max-height: 85vh;
-            display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 24px 60px rgba(0,0,0,.6);
-        }
-        .modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 20px; border-bottom: 1px solid #252525; flex-shrink: 0;
-        }
-        .modal-label {
-            font-size: 11px; font-weight: 700; letter-spacing: 1px;
-            text-transform: uppercase; color: var(--accent);
-        }
-        .btn-modal-close {
-            background: none; border: none; color: #555;
-            font-size: 18px; cursor: pointer; padding: 2px 6px;
-            border-radius: 4px; line-height: 1; transition: color .15s;
-        }
-        .btn-modal-close:hover { color: #e74c3c; }
-        #modalQuizBody { flex: 1; overflow-y: auto; padding: 20px; }
-
-        /* ══════════ QUIZ CARD BODY (in-panel) ══════════ */
-        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #252525; }
+        /* ── QUIZ CARDS (new) ── */
+        .quiz-card { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; margin-bottom: 6px; overflow: hidden; }
+        .quiz-card-header { padding: 9px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; transition: background .15s; }
+        .quiz-card-header:hover { background: #282828; }
+        .quiz-card-num { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--accent); flex-shrink: 0; }
+        .quiz-card-title { font-size: 12px; color: #ccc; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quiz-card-arrow { font-size: 10px; color: #555; flex-shrink: 0; transition: transform .2s; }
+        .quiz-card-arrow.open { transform: rotate(90deg); }
+        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #2a2a2a; }
         .quiz-card-body.open { display: block; }
         .quiz-q-text { font-size: 12px; color: #ccc; line-height: 1.5; margin: 8px 0 6px; }
-        .quiz-opt {
-            display: flex; align-items: flex-start; gap: 7px;
-            padding: 6px 8px; border-radius: 6px; margin-bottom: 4px;
-            cursor: pointer; transition: background .15s; border: 1px solid transparent;
-        }
-        .quiz-opt:hover { background: #1e1430; border-color: #3a2d52; }
+        .quiz-opt { display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; transition: background .15s; border: 1px solid transparent; }
+        .quiz-opt:hover { background: #2a2040; border-color: #3a2d52; }
         .quiz-opt.correct { background: #1a2d1a; border-color: #2d522d; }
-        .quiz-opt.wrong   { background: #2d1a1a; border-color: #52302d; }
-        .quiz-opt-letter  { font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; width: 14px; }
-        .quiz-opt-text    { font-size: 12px; color: #ccc; line-height: 1.4; }
-        .quiz-feedback    { font-size: 11px; margin-top: 6px; padding: 5px 8px; border-radius: 5px; display: none; }
-        .quiz-feedback.show   { display: block; }
+        .quiz-opt.wrong { background: #2d1a1a; border-color: #52302d; }
+        .quiz-opt-letter { font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; width: 14px; }
+        .quiz-opt-text { font-size: 12px; color: #ccc; line-height: 1.4; }
+        .quiz-feedback { font-size: 11px; margin-top: 6px; padding: 5px 8px; border-radius: 5px; display: none; }
+        .quiz-feedback.show { display: block; }
         .quiz-feedback.correct { background: #1a2d1a; color: #6dbf6d; }
-        .quiz-feedback.wrong   { background: #2d1a1a; color: #e07070; }
+        .quiz-feedback.wrong { background: #2d1a1a; color: #e07070; }
         .quiz-score { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
 
         #fileInput { display: none; }
+
+        #quizModal.open { display: flex !important; }
+.btn-modal-open {
+    background: none;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 7px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, border-color .15s;
+    flex-shrink: 0;
+    line-height: 1.6;
+}
+.btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -519,33 +277,22 @@
 
 <div class="app-shell">
 
-    <!-- ══ LEFT PANEL ══ -->
+    <!-- LEFT -->
     <aside class="panel-left" id="panelLeft">
         <div class="left-logo">
             <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
-                 alt="Rev'nLearn"
+                 alt="Logo" style="width:28px;height:28px;object-fit:contain;"
                  onerror="this.style.display='none'" />
-            <span class="left-logo-text">Rev'nLearn</span>
+            RavnLearn
         </div>
-
-        <div class="left-actions">
-            <button class="btn-left" id="btnBack" onclick="window.history.back()">
-                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                Back
-            </button>
-            <button class="btn-left" id="btnNewChat">
-                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="10" y1="11" x2="14" y2="11"/></svg>
-                New Chat
-            </button>
-            <button class="btn-left" id="btnAddSource">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                Add a Document
-            </button>
-        </div>
-
-        <div class="left-section-label">Documents</div>
-        <div class="doc-list" id="docList"></div>
-
+        <button class="btn-new-chat" id="btnNewChat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Chat
+        </button>
+        <div class="section-label">Recents</div>
+        <div class="chat-list" id="chatList"></div>
         <div class="user-area">
             <div class="user-avatar">@ViewBag.UserInitial</div>
             <span class="user-name">@ViewBag.Username</span>
@@ -553,96 +300,111 @@
         </div>
     </aside>
 
-    <!-- LEFT RESIZE -->
+    <!-- LEFT RESIZE HANDLE -->
     <div class="resize-handle" id="resizeLeft"></div>
 
-    <!-- ══ CENTER PANEL ══ -->
+    <!-- CENTER -->
     <main class="panel-center">
         <div class="welcome-screen" id="welcomeScreen">
             <h1>Ready to Learn?</h1>
-            <p>Upload a document to start chatting and asking questions.</p>
+            <p>Start a new chat or select one from the left.<br>Upload a document to get AI-powered insights.</p>
         </div>
-
         <div class="messages-area" id="messagesArea">
             <div class="typing-indicator" id="typingIndicator">
                 <span></span><span></span><span></span>
             </div>
         </div>
-
         <div class="input-bar">
             <div class="input-row">
                 <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
-                <button class="btn-mic" title="Voice input">
-                    <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                </button>
                 <button class="btn-send" id="btnSend" title="Send">
                     <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
                 </button>
             </div>
+            <div class="input-hint">Enter to send · Shift+Enter for new line</div>
         </div>
     </main>
 
-    <!-- RIGHT RESIZE -->
+    <!-- RIGHT RESIZE HANDLE -->
     <div class="resize-handle" id="resizeRight"></div>
 
-    <!-- ══ RIGHT PANEL ══ -->
+    <!-- RIGHT -->
     <aside class="panel-right" id="panelRight">
-        <div class="right-header">
-            <div class="right-header-title">Study Guide</div>
-            <div class="right-header-sub">Generated from this chat</div>
+        <div class="right-header">Study Tools</div>
+
+        <!-- SOURCES SECTION (resizable height) -->
+        <div class="sources-section" id="sourcesSection">
+            <div class="right-section">
+                <div class="right-section-title">📎 Sources</div>
+                <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
+            </div>
+            <div id="sourceList" class="source-list"></div>
         </div>
-        <div class="right-divider"></div>
-        <div class="study-list" id="studyList"></div>
+
+        <!-- VERTICAL DRAG HANDLE -->
+        <div class="resize-handle-vertical" id="resizeVertical"></div>
+
+        <!-- QUIZZES SECTION (takes remaining space) -->
+        <div class="quizzes-section" id="quizzesSection">
+            <div class="quiz-section-header">🧠 Quizzes</div>
+            <div class="quiz-list" id="quizList"></div>
+        </div>
     </aside>
 </div>
-
-<!-- ══ QUIZ MODAL ══ -->
-<div id="quizModal">
-    <div class="modal-inner">
-        <div class="modal-header">
-            <span class="modal-label" id="modalQuizLabel"></span>
-            <button class="btn-modal-close" onclick="closeQuizModal()">✕</button>
+<!-- QUIZ MODAL -->
+<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(560px,90vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2a2a2a;flex-shrink:0;">
+            <span id="modalQuizLabel" style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)"></span>
+            <button onclick="closeQuizModal()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" title="Close">✕</button>
         </div>
-        <div id="modalQuizBody"></div>
+        <div id="modalQuizBody" style="flex:1;overflow-y:auto;padding:20px;"></div>
     </div>
 </div>
-
 <script>
-    let activeFolderId = @(ViewBag.FolderId ?? -1);
-    let activeChatId   = @(ViewBag.ChatId ?? -1);
+    let activeFolderId = @(ViewBag.FolderId ?? -1); 
+    let activeChatId = @(ViewBag.ChatId ?? -1);
     let isSending = false;
     let speakingBtn = null;
     let quizCount = 0;
 
-    /* ── helpers ── */
-    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
-
     function parseBold(text) {
-        const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const bold = esc.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-        return bold.split('\n').map(line => {
-            const t = line.trimStart();
-            const pad = line.length - t.length;
-            if (t.startsWith('* ')) {
-                const s = pad > 0 ? `margin-left:${pad*8}px` : '';
-                return `<div style="display:flex;align-items:baseline;gap:6px;${s}"><span style="color:var(--accent);flex-shrink:0">•</span><span>${t.slice(2)}</span></div>`;
+        const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const bolded = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        const lines = bolded.split('\n');
+        const result = lines.map(line => {
+            const trimmed = line.trimStart();
+            const indent = line.length - trimmed.length;
+            if (trimmed.startsWith('* ')) {
+                const content = trimmed.slice(2);
+                const pad = indent > 0 ? `margin-left:${indent * 8}px` : '';
+                return `<div style="display:flex;align-items:baseline;gap:6px;${pad}"><span style="color:var(--accent);flex-shrink:0;">•</span><span>${content}</span></div>`;
             }
             return line;
-        }).join('\n');
+        });
+        return result.join('\n');
     }
 
-    function speakerSVG() { return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`; }
-    function stopSVG()    { return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><rect x="6" y="6" width="12" height="12"/></svg>`; }
-    function setSpeakActive(btn) { btn.innerHTML=stopSVG()+'Stop'; btn.style.color='#e74c3c'; }
-    function setSpeakIdle(btn)   { btn.innerHTML=speakerSVG()+'Speak'; btn.style.color=''; if(speakingBtn===btn) speakingBtn=null; }
+    function speakerSVG() {
+        return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`;
+    }
+    function stopSVG() {
+        return `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><rect x="6" y="6" width="12" height="12"/></svg>`;
+    }
+    function setSpeakActive(btn) { btn.innerHTML = stopSVG() + 'Stop'; btn.style.color = '#e74c3c'; }
+    function setSpeakIdle(btn)   { btn.innerHTML = speakerSVG() + 'Speak'; btn.style.color = ''; if (speakingBtn === btn) speakingBtn = null; }
 
-    /* ── INIT ── */
     document.addEventListener('DOMContentLoaded', async () => {
         await loadChatList();
         setupEventListeners();
         setupResizeHandles();
-        if (activeChatId !== -1) await loadChat(activeChatId);
+        setupVerticalResize();
+        initSourcesSectionHeight();
+
+         // ADD THIS — auto-load if opened from MyChats
+        if (activeChatId !== -1) {
+            await loadChat(activeChatId);
+        }
     });
 
     function setupEventListeners() {
@@ -652,458 +414,1367 @@
         document.getElementById('btnAddSource').addEventListener('click', () => document.getElementById('fileInput').click());
         document.getElementById('fileInput').addEventListener('change', uploadDocument);
         document.getElementById('txtInput').addEventListener('keydown', e => {
-            if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
     }
 
-    /* ── RESIZE ── */
+    // ══ HORIZONTAL DRAG RESIZE (left/right panels) ════════
     function setupResizeHandles() {
-        const L = document.getElementById('panelLeft');
-        const R = document.getElementById('panelRight');
-        makeResizable(document.getElementById('resizeLeft'),  dx => { L.style.width = Math.min(Math.max(L.offsetWidth+dx,160),320)+'px'; });
-        makeResizable(document.getElementById('resizeRight'), dx => { R.style.width = Math.min(Math.max(R.offsetWidth-dx,180),360)+'px'; });
-    }
-    function makeResizable(handle, onDrag) {
-        let startX=0, dragging=false;
-        handle.addEventListener('mousedown', e => { e.preventDefault(); dragging=true; startX=e.clientX; handle.classList.add('dragging'); document.body.classList.add('resizing'); });
-        document.addEventListener('mousemove', e => { if(!dragging) return; const dx=e.clientX-startX; startX=e.clientX; onDrag(dx); });
-        document.addEventListener('mouseup', () => { if(!dragging) return; dragging=false; handle.classList.remove('dragging'); document.body.classList.remove('resizing'); });
+        const panelLeft   = document.getElementById('panelLeft');
+        const panelRight  = document.getElementById('panelRight');
+        const handleLeft  = document.getElementById('resizeLeft');
+        const handleRight = document.getElementById('resizeRight');
+
+        makeResizable(handleLeft, (dx) => {
+            const newWidth = panelLeft.offsetWidth + dx;
+            panelLeft.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
+        });
+
+        makeResizable(handleRight, (dx) => {
+            const newWidth = panelRight.offsetWidth - dx;
+            panelRight.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
+        });
     }
 
-    /* ── CHAT LIST (stored in doc list) ── */
+    function makeResizable(handle, onDrag) {
+        let startX = 0, dragging = false;
+
+        handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            dragging = true;
+            startX = e.clientX;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing');
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            startX = e.clientX;
+            onDrag(dx);
+        });
+        document.addEventListener('mouseup', () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+        });
+        handle.addEventListener('touchstart', (e) => {
+            dragging = true; startX = e.touches[0].clientX;
+            handle.classList.add('dragging');
+        }, { passive: true });
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            const dx = e.touches[0].clientX - startX;
+            startX = e.touches[0].clientX;
+            onDrag(dx);
+        }, { passive: true });
+        document.addEventListener('touchend', () => {
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+        });
+    }
+
+    // ══ VERTICAL DRAG RESIZE (sources ↕ quizzes) ══════════
+    function initSourcesSectionHeight() {
+        const panelRight = document.getElementById('panelRight');
+        const header = panelRight.querySelector('.right-header');
+        const handle = document.getElementById('resizeVertical');
+        const available = panelRight.offsetHeight - header.offsetHeight - handle.offsetHeight;
+        document.getElementById('sourcesSection').style.height = Math.round(available * 0.4) + 'px';
+    }
+
+    function setupVerticalResize() {
+        const handle          = document.getElementById('resizeVertical');
+        const sourcesSection  = document.getElementById('sourcesSection');
+        const panelRight      = document.getElementById('panelRight');
+
+        let startY = 0, startH = 0, dragging = false;
+
+        const getMinMax = () => {
+            const header  = panelRight.querySelector('.right-header');
+            const handleH = handle.offsetHeight;
+            const totalAvailable = panelRight.offsetHeight - header.offsetHeight - handleH;
+            return { min: 60, max: totalAvailable - 60 };
+        };
+
+        const startDrag = (y) => {
+            dragging = true;
+            startY = y;
+            startH = sourcesSection.offsetHeight;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing-vertical');
+        };
+        const doDrag = (y) => {
+            if (!dragging) return;
+            const dy = y - startY;
+            const { min, max } = getMinMax();
+            const newH = Math.min(Math.max(startH + dy, min), max);
+            sourcesSection.style.height = newH + 'px';
+        };
+        const endDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing-vertical');
+        };
+
+        handle.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientY); });
+        document.addEventListener('mousemove', (e) => doDrag(e.clientY));
+        document.addEventListener('mouseup', endDrag);
+
+        handle.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchmove', (e) => { doDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchend', endDrag);
+    }
+
+    // ══ CHAT LIST ════════════════════════════════════════
     async function loadChatList() {
-        if (activeFolderId===-1) return;
+        if (activeFolderId === -1) return;
         try {
             const res = await fetch(`/Chat/GetChatsInProject?projectId=${activeFolderId}`);
             const chats = await res.json();
-            // We show chats as document-style items for "recent" context
-            // (Documents section shows uploaded docs; chat list is just for switching)
+            const list = document.getElementById('chatList');
+            list.innerHTML = '';
+            chats.forEach(c => list.appendChild(makeChatItem(c.id, c.title)));
             if (activeChatId !== -1) setActiveChatItem(activeChatId);
-        } catch(e) { console.error(e); }
+        } catch (err) { console.error('loadChatList error:', err); }
+    }
+
+
+
+    function makeChatItem(id, title) {
+        const el = document.createElement('div');
+        el.className = 'chat-item';
+        el.dataset.id = String(id);
+        el.innerHTML = `
+            <span class="chat-item-title">💬 ${escHtml(title)}</span>
+            <button class="btn-del-chat" title="Delete" onclick="deleteChat(event,${id})">✕</button>
+        `;
+        el.addEventListener('click', () => loadChat(id));
+        return el;
+    }
+
+    function addChatItemToTop(id, title) {
+        const list = document.getElementById('chatList');
+        document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
+        list.prepend(makeChatItem(id, title));
+    }
+
+    function updateChatItemTitle(id, title) {
+        const el = document.querySelector(`.chat-item[data-id="${id}"] .chat-item-title`);
+        if (el) el.textContent = '💬 ' + title;
     }
 
     function setActiveChatItem(id) {
-        document.querySelectorAll('.doc-item').forEach(el =>
+        document.querySelectorAll('.chat-item').forEach(el =>
             el.classList.toggle('active', el.dataset.id === String(id)));
     }
 
-    /* ── NEW CHAT ── */
     async function newChat() {
         try {
             const res = await fetch('/Chat/NewChatInProject', {
-                method:'POST', headers:{'Content-Type':'application/json'},
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folderId: activeFolderId })
             });
             const data = await res.json();
-            activeChatId = parseInt(data.id);
-            showChatUI(); clearMessages(); clearStudyList(); clearDocList();
-        } catch(e) { alert('Error: '+e.message); }
+            addChatItemToTop(data.id, data.title);
+            await loadChat(data.id);
+        } catch (err) { alert('Error: ' + err.message); }
     }
 
-    async function logout() { if(confirm('Log out?')) window.location.href='/Account/Logout'; }
+    async function deleteChat(e, id) {
+        e.stopPropagation();
+        if (!confirm('Delete this chat?')) return;
+        await fetch(`/Chat/DeleteChat/${id}`, { method: 'DELETE' });
+        document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
+        if (activeChatId === id) resetUI();
+    }
 
-    /* ── LOAD CHAT ── */
+
+    // ══ LOAD CHAT ════════════════════════════════════════
     async function loadChat(chatId) {
         activeChatId = parseInt(chatId);
-        showChatUI(); clearMessages(); clearStudyList(); clearDocList();
+        setActiveChatItem(activeChatId);
+        showChatUI();
+        clearMessages();
+        clearQuizList();
+        clearSourceList();
 
-        // Messages + docs (already works via GetMessages returning docFilenames)
         try {
             const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
-            if (data.docFilenames?.length) data.docFilenames.forEach(n => addDocItem(n, false));
-            else if (data.docFilename) addDocItem(data.docFilename, false);
-            if (!data.messages?.length) appendBubble('No messages yet. Start the conversation!', 'ai');
-            else data.messages.forEach(m => appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
+
+            if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
+                data.docFilenames.forEach(name => addSourceItem(name, false));
+            } else if (data.docFilename) {
+                addSourceItem(data.docFilename, false);
+            }
+
+            if (!data.messages || data.messages.length === 0) {
+                appendBubble('No messages yet. Start the conversation!', 'ai');
+            } else {
+                data.messages.forEach(m =>
+                    appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
+            }
+
             scrollToBottom();
-        } catch(e) { appendBubble('Could not load messages: ' + e.message, 'ai'); }
 
-        // Quizzes
+        } catch (err) {
+            appendBubble('Could not load messages: ' + err.message, 'ai');
+        }
+
+        // Quiz loading in its own separate try/catch
         try {
-            const res = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
-            const quizzes = await res.json();
+            const qres = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
+            const quizzes = await qres.json();
             if (quizzes.length > 0) {
-                const questions = quizzes.map(q => ({
-                    question: q.question,
-                    options: [q.choiceA, q.choiceB, q.choiceC, q.choiceD],
-                    answerIndex: ['A','B','C','D'].indexOf(q.correctAnswer.toUpperCase()),
-                    type: 'mcq', answer: ''
-                }));
-                addStudyCard('quiz', questions);
-            }
-        } catch(e) { console.error('Quiz load error:', e); }
+                const sessionMap = new Map();
+                quizzes.forEach(q => {
+                    const sid = q.sessionId;
+                    if (!sessionMap.has(sid)) sessionMap.set(sid, []);
+                    const type = q.questionType || 'mcq';
+                    let item;
+                    if (type === 'fillblank') {
+                        item = {
+                            question:    q.question,
+                            type:        'fillblank',
+                            options:     [],
+                            answerIndex: 0,
+                            answer:      q.answerText || ''
+                        };
+                    } else if (type === 'truefalse') {
+                        item = {
+                            question:    q.question,
+                            type:        'truefalse',
+                            options:     ['True', 'False'],
+                            answerIndex: q.correctAnswer.toUpperCase() === 'A' ? 0 : 1,
+                            answer:      ''
+                        };
+                    } else {
+                        item = {
+                            question:    q.question,
+                            type:        'mcq',
+                            options:     [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean),
+                            answerIndex: ['A','B','C','D'].indexOf(q.correctAnswer.toUpperCase()),
+                            answer:      ''
+                        };
+                    }
+                    sessionMap.get(sid).push(item);
+                });
 
-        // Flashcards
-        try {
-            const res = await fetch(`/Chat/GetFlashcardsByChat?chatId=${activeChatId}`);
-            const cards = await res.json();
-            if (cards.length > 0) {
-                const flashcards = cards.map(c => ({ front: c.front, back: c.back }));
-                addStudyCard('flashcard', flashcards);
+                // I-render bawat session bilang sariling quiz card
+                sessionMap.forEach(questions => {
+                    addQuizToPanel_structured(questions);
+                });
             }
-        } catch(e) { console.error('Flashcard load error:', e); }
+        } catch (err) { console.error('Quiz load error:', err); }
     }
     
-    /* ── SEND MESSAGE ── */
+    
+    // ══ SEND MESSAGE ══════════════════════════════════════
     async function sendMessage() {
         if (isSending) return;
         const input = document.getElementById('txtInput');
         const message = input.value.trim();
         if (!message) return;
-        if (activeChatId===-1) {
-            const res = await fetch('/Chat/NewChatInProject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderId:activeFolderId})});
+
+        if (activeChatId === -1) {
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
             const data = await res.json();
             activeChatId = parseInt(data.id);
+            addChatItemToTop(data.id, data.title);
+            setActiveChatItem(activeChatId);
         }
-        showChatUI(); input.value=''; input.style.height='auto';
-        appendBubble(message,'user'); showTyping(); scrollToBottom();
-        isSending=true; document.getElementById('btnSend').disabled=true;
-        const sendingTo = activeChatId;
+
+        showChatUI();
+        input.value = '';
+        input.style.height = 'auto';
+        appendBubble(message, 'user');
+        showTyping();
+        scrollToBottom();
+
+        isSending = true;
+        document.getElementById('btnSend').disabled = true;
+        const sendingToChatId = activeChatId;
+
         try {
-            const res = await fetch('/Chat/SendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chatId:sendingTo,message})});
+            const res = await fetch('/Chat/SendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: sendingToChatId, message })
+            });
             const data = await res.json();
             hideTyping();
-            if (data.error) { appendBubble('Error: '+data.error,'ai'); }
-            else {
-                appendBubble(data.reply,'ai');
-                const rl = data.reply?.toLowerCase()||'';
-                const parsed = parseQuizFromText(data.reply);
-                if (parsed.questions.length > 0) {
-                    addStudyCard('quiz', parsed.questions);
-                    const qs = parsed.questions
-                        .filter(q => q.type === 'mcq' && q.options.length === 4)
-                        .map(q => ({
-                            question: q.question,
-                            choiceA: q.options[0], choiceB: q.options[1],
-                            choiceC: q.options[2], choiceD: q.options[3],
-                            correctAnswer: ['A','B','C','D'][q.answerIndex] || 'A'
-                        }));
-                    if (qs.length) fetch('/Chat/SaveQuizQuestions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                       body: JSON.stringify({ chatId: sendingTo, questions: qs })
-                    }).catch(console.error);
+
+            if (data.error) {
+                appendBubble('Error: ' + data.error, 'ai');
+            } else {
+                if (data.newTitle) updateChatItemTitle(sendingToChatId, data.newTitle);
+                appendBubble(data.reply, 'ai');
+
+                // Detect quiz in response and add to panel
+                const replyLower = data.reply?.toLowerCase() || '';
+                const hasQuizContent = replyLower.match(/\b(q1[).:\s]|question\s*1[).:\s]|\b1[).]\s)/i)
+                    && data.reply.includes('\n')
+                    && !replyLower.includes('i am sorry')
+                    && !replyLower.includes('i cannot')
+                    && !replyLower.includes('i\'m sorry')
+                    && !replyLower.includes('unable to')
+                    && !replyLower.includes('appears to be empty')
+                    && !replyLower.includes('no content');
+
+                if (hasQuizContent) {
+                    addQuizToPanel(data.reply);
                 }
             }
-        } catch(e) { hideTyping(); appendBubble('Network error: '+e.message,'ai'); }
-        isSending=false; document.getElementById('btnSend').disabled=false; scrollToBottom();
+        } catch (err) {
+            hideTyping();
+            appendBubble('Network error: ' + err.message, 'ai');
+        }
+
+        isSending = false;
+        document.getElementById('btnSend').disabled = false;
+        scrollToBottom();
     }
 
-    /* ── MESSAGES ── */
+    // ══ MESSAGES ══════════════════════════════════════════
     function appendBubble(text, role) {
         const area = document.getElementById('messagesArea');
         const typing = document.getElementById('typingIndicator');
+
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${role}`;
+
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-        bubble.innerHTML = (role==='ai'?'🤖  ':'')+parseBold(text);
+        bubble.innerHTML = (role === 'ai' ? '🤖  ' : '') + parseBold(text);
+
         const actions = document.createElement('div');
         actions.className = 'msg-actions';
+
         const btnCopy = document.createElement('button');
-        btnCopy.className='btn-action'; btnCopy.textContent='⧉ Copy';
-        btnCopy.onclick=()=>{ navigator.clipboard.writeText(text); btnCopy.textContent='✓ Copied'; btnCopy.style.color='#6dbf6d'; setTimeout(()=>{btnCopy.textContent='⧉ Copy';btnCopy.style.color='';},2000); };
-        const btnSpeak = document.createElement('button');
-        btnSpeak.className='btn-action'; setSpeakIdle(btnSpeak);
-        btnSpeak.onclick=()=>{
-            if(speechSynthesis.speaking&&speakingBtn===btnSpeak){speechSynthesis.cancel();setSpeakIdle(btnSpeak);}
-            else{if(speechSynthesis.speaking){speechSynthesis.cancel();if(speakingBtn)setSpeakIdle(speakingBtn);}
-            const u=new SpeechSynthesisUtterance(text);u.onend=()=>setSpeakIdle(btnSpeak);u.onerror=()=>setSpeakIdle(btnSpeak);speakingBtn=btnSpeak;setSpeakActive(btnSpeak);speechSynthesis.speak(u);}
+        btnCopy.className = 'btn-action';
+        btnCopy.textContent = '⧉ Copy';
+        btnCopy.onclick = () => {
+            navigator.clipboard.writeText(text);
+            btnCopy.textContent = '✓ Copied';
+            btnCopy.style.color = '#6dbf6d';
+            setTimeout(() => { btnCopy.textContent = '⧉ Copy'; btnCopy.style.color = ''; }, 2000);
         };
-        actions.appendChild(btnCopy); actions.appendChild(btnSpeak);
-        wrapper.appendChild(bubble); wrapper.appendChild(actions);
+
+        const btnSpeak = document.createElement('button');
+        btnSpeak.className = 'btn-action';
+        setSpeakIdle(btnSpeak);
+        btnSpeak.onclick = () => {
+            if (speechSynthesis.speaking && speakingBtn === btnSpeak) {
+                speechSynthesis.cancel();
+                setSpeakIdle(btnSpeak);
+            } else {
+                if (speechSynthesis.speaking) { speechSynthesis.cancel(); if (speakingBtn) setSpeakIdle(speakingBtn); }
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.onend = () => setSpeakIdle(btnSpeak);
+                utter.onerror = () => setSpeakIdle(btnSpeak);
+                speakingBtn = btnSpeak;
+                setSpeakActive(btnSpeak);
+                speechSynthesis.speak(utter);
+            }
+        };
+
+        actions.appendChild(btnCopy);
+        actions.appendChild(btnSpeak);
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(actions);
         area.insertBefore(wrapper, typing);
     }
-    function clearMessages() { const a=document.getElementById('messagesArea'),t=document.getElementById('typingIndicator'); [...a.children].forEach(c=>{if(c!==t)c.remove();}); }
+
+    function clearMessages() {
+        const area = document.getElementById('messagesArea');
+        const typing = document.getElementById('typingIndicator');
+        [...area.children].forEach(c => { if (c !== typing) c.remove(); });
+    }
+
     function showTyping() { document.getElementById('typingIndicator').classList.add('visible'); }
     function hideTyping() { document.getElementById('typingIndicator').classList.remove('visible'); }
-    function scrollToBottom() { const a=document.getElementById('messagesArea'); a.scrollTop=a.scrollHeight; }
+    function scrollToBottom() { const a = document.getElementById('messagesArea'); a.scrollTop = a.scrollHeight; }
 
-    /* ── UPLOAD ── */
+    // ══ UPLOAD ════════════════════════════════════════════
     async function uploadDocument(e) {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-        if (activeChatId===-1) {
-            const res=await fetch('/Chat/NewChatInProject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderId:activeFolderId})});
-            const data=await res.json(); activeChatId=parseInt(data.id);
-        }
-        showChatUI();
-        for (const file of files) {
-            const itemEl = addDocItem(file.name, true);
-            const fd=new FormData(); fd.append('file',file); fd.append('chatId',activeChatId);
-            try {
-                const res=await fetch('/Chat/UploadDocument',{method:'POST',body:fd});
-                const data=await res.json();
-                if(data.error){itemEl.remove();alert('Upload failed: '+data.error);}
-                else{finalizeDocItem(itemEl,data.fileName);appendBubble(data.welcome,'ai');scrollToBottom();}
-            } catch(err){itemEl.remove();alert('Upload error: '+err.message);}
-        }
-        e.target.value='';
-    }
 
-    /* ── DOC LIST (left panel) ── */
-    function addDocItem(name, uploading=false) {
-        const list=document.getElementById('docList');
-        const item=document.createElement('div');
-        item.className='doc-item';
-        item.innerHTML=`
-            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span class="doc-item-name" title="${escHtml(name)}">${escHtml(name)}</span>
-            ${uploading ? '<span style="font-size:11px;color:var(--text-dim)">…</span>' : '<button class="btn-del-doc" title="Remove" onclick="this.closest(\'.doc-item\').remove()">✕</button>'}
-        `;
+        if (activeChatId === -1) {
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
+            const data = await res.json();
+            activeChatId = parseInt(data.id);
+            addChatItemToTop(data.id, data.title);
+            setActiveChatItem(activeChatId);
+        }
+
+        showChatUI();
+
+        for (const file of files) {
+            const itemEl = addSourceItem(file.name, true);
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('chatId', activeChatId);
+
+            try {
+                const res = await fetch('/Chat/UploadDocument', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.error) {
+                    removeSourceItem(itemEl);
+                    alert('Upload failed: ' + data.error);
+                } else {
+                    finalizeSourceItem(itemEl, data.fileName);
+                    appendBubble(data.welcome, 'ai');
+                    scrollToBottom();
+                }
+            } catch (err) {
+                removeSourceItem(itemEl);
+                alert('Upload error: ' + err.message);
+            }
+        }
+
+        e.target.value = '';
+    }
+    // ── Source list helpers ───────────────────────────────
+    let dragSrcEl = null;
+
+    function addSourceItem(name, uploading = false) {
+        const list = document.getElementById('sourceList');
+        const item = document.createElement('div');
+        item.className = 'source-item' + (uploading ? ' source-item-uploading' : '');
+
+        const handle = document.createElement('span');
+        handle.className = 'source-drag-handle';
+        handle.textContent = '⠿';
+        handle.title = 'Drag to reorder';
+
+        const icon = document.createElement('span');
+        icon.textContent = '📄';
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'source-item-name';
+        nameEl.title = name;
+        nameEl.textContent = name;
+
+        item.appendChild(handle);
+        item.appendChild(icon);
+        item.appendChild(nameEl);
+
+        if (uploading) {
+            const spinner = document.createElement('div');
+            spinner.className = 'source-item-spinner';
+            item.appendChild(spinner);
+        } else {
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn-del-source';
+            delBtn.title = 'Remove';
+            delBtn.textContent = '✕';
+            delBtn.onclick = () => item.remove();
+            item.appendChild(delBtn);
+            makeDraggable(item, handle);
+        }
+
         list.appendChild(item);
         return item;
     }
-    function finalizeDocItem(item, fileName) {
-        if(fileName){ const n=item.querySelector('.doc-item-name'); if(n){n.textContent=fileName;n.title=fileName;} }
-        const spinner=item.querySelector('span[style]'); if(spinner) spinner.remove();
-        if(!item.querySelector('.btn-del-doc')){
-            const b=document.createElement('button'); b.className='btn-del-doc'; b.title='Remove'; b.textContent='✕';
-            b.onclick=()=>item.remove(); item.appendChild(b);
-        }
-    }
-    function clearDocList() { document.getElementById('docList').innerHTML=''; }
 
-    /* ══════════ STUDY GUIDE CARDS (right panel) ══════════ */
-    function addStudyCard(type, questions) {
-    quizCount++;
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const label = type==='quiz' ? `Reviewer ${quizCount}` : `Cards ${quizCount}`;
-    const countLabel = type==='quiz' ? `${questions.length} Questions` : `${questions.length} Cards`;
-    const parsed = { title: label, questions };
+    function makeDraggable(item, handle) {
+        item.draggable = false;
 
-    const list = document.getElementById('studyList');
-    const card = document.createElement('div');
-    card.className = 'study-card';
+        handle.addEventListener('mousedown', () => { item.draggable = true; });
+        handle.addEventListener('mouseup',   () => { item.draggable = false; });
 
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', function(e) {
-        if (e.target.closest('.study-card-actions')) return;
-        openQuizModal(label, parsed);
-    });  // ← closing brace and paren were missing here
-
-    const badgeClass = type==='quiz' ? 'badge-quiz' : 'badge-flashcard';
-    const badgeText  = type==='quiz' ? 'QUIZ' : 'FLASHCARD';
-    const icon       = type==='quiz' ? '📋' : '🃏';
-
-    card.innerHTML = `
-        <div class="study-card-top">
-            <div class="study-card-icon">${icon}</div>
-            <div class="study-card-info">
-                <div class="study-card-title">${escHtml(label)}</div>
-                <div class="study-card-meta">${escHtml(countLabel)} · ${dateStr}</div>
-            </div>
-            <span class="study-card-badge ${badgeClass}">${badgeText}</span>
-        </div>
-        <div class="study-card-actions"></div>
-    `;
-
-    const actions = card.querySelector('.study-card-actions');
-
-    const btnStudy = document.createElement('button');
-    btnStudy.className = 'btn-card-action';
-    btnStudy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Study Buddy`;
-    btnStudy.onclick = () => openQuizModal(label, parsed);
-    actions.appendChild(btnStudy);
-
-    if (type === 'quiz') {
-        const btnFlash = document.createElement('button');
-        btnFlash.className = 'btn-card-action';
-        btnFlash.innerHTML = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Flashcard`;
-        btnFlash.onclick = () => openFlashcardModal(label, questions);
-        actions.appendChild(btnFlash);
-    } else {
-        const btnTake = document.createElement('button');
-        btnTake.className = 'btn-card-action';
-        btnTake.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Take Quiz`;
-        btnTake.onclick = () => openQuizModal(label, parsed);
-        actions.appendChild(btnTake);
-    }
-
-    list.appendChild(card);
-}
-
-    function clearStudyList() { document.getElementById('studyList').innerHTML=''; quizCount=0; }
-
-    /* ── MODAL ── */
-    function openQuizModal(label, parsed) {
-        document.getElementById('modalQuizLabel').textContent = label;
-        const body = document.getElementById('modalQuizBody');
-        body.innerHTML = '';
-        const fb = buildQuizBody(parsed, null);
-        fb.classList.add('open');
-        fb.style.cssText = 'display:block;padding:0;border:none;';
-        body.appendChild(fb);
-        document.getElementById('quizModal').classList.add('open');
-    }
-    function closeQuizModal() { document.getElementById('quizModal').classList.remove('open'); document.getElementById('modalQuizBody').innerHTML=''; }
-    document.addEventListener('DOMContentLoaded',()=>{
-        document.getElementById('quizModal').addEventListener('click', function(e){ if(e.target===this) closeQuizModal(); });
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeQuizModal(); });
-    });
-
-    function openFlashcardModal(label, questions) {
-        const flashcards = questions.map(q => {
-            const letters=['A','B','C','D','E'];
-            const back = q.type==='truefalse' ? (q.answerIndex===0?'True':'False') : `${letters[q.answerIndex]}) ${q.options[q.answerIndex]||''}`;
-            return { front: q.question, back };
+        item.addEventListener('dragstart', (e) => {
+            dragSrcEl = item;
+            item.classList.add('dragging-source');
+            e.dataTransfer.effectAllowed = 'move';
         });
-        document.getElementById('modalQuizLabel').textContent = label+' — Flashcards';
-        const body = document.getElementById('modalQuizBody');
-        body.innerHTML = '';
-        const fb = buildFlashcardBody({ flashcards }, null);
-        fb.classList.add('open');
-        fb.style.cssText = 'display:block;padding:0;border:none;';
-        body.appendChild(fb);
-        document.getElementById('quizModal').classList.add('open');
+        item.addEventListener('dragend', () => {
+            item.draggable = false;
+            item.classList.remove('dragging-source');
+            document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
+            dragSrcEl = null;
+        });
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (dragSrcEl && dragSrcEl !== item) {
+                document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
+                item.classList.add('drag-over-source');
+            }
+        });
+        item.addEventListener('dragleave', () => item.classList.remove('drag-over-source'));
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            item.classList.remove('drag-over-source');
+            if (!dragSrcEl || dragSrcEl === item) return;
+            const list = document.getElementById('sourceList');
+            const items = [...list.children];
+            const srcIdx = items.indexOf(dragSrcEl);
+            const dstIdx = items.indexOf(item);
+            if (srcIdx < dstIdx) list.insertBefore(dragSrcEl, item.nextSibling);
+            else list.insertBefore(dragSrcEl, item);
+        });
     }
 
-    /* ── QUIZ BODY BUILDER ── */
-    function buildQuizBody(parsed, card) {
-        let body = document.createElement('div');
-        body.className = 'quiz-card-body';
-        if (!parsed.questions?.length) {
-            body.innerHTML='<div style="font-size:12px;color:#888;padding:8px 0">No questions.</div>';
-            return body;
+    function finalizeSourceItem(item, fileName) {
+        item.classList.remove('source-item-uploading');
+        const spinner = item.querySelector('.source-item-spinner');
+        if (spinner) spinner.remove();
+        const nameEl = item.querySelector('.source-item-name');
+        if (nameEl && fileName) { nameEl.textContent = fileName; nameEl.title = fileName; }
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-del-source';
+        delBtn.title = 'Remove';
+        delBtn.textContent = '✕';
+        delBtn.onclick = () => item.remove();
+        item.appendChild(delBtn);
+        const handle = item.querySelector('.source-drag-handle');
+        if (handle) makeDraggable(item, handle);
+    }
+
+    function removeSourceItem(item) { item?.remove(); }
+
+    // ══ QUIZ PANEL ════════════════════════════════════════
+function addQuizToPanel(text, save = true) {
+    quizCount++;
+    const parsed = parseQuizFromText(text);
+    const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
+    const title = parsed.questions[0]?.question?.slice(0, 50) || parsed.title || label;
+    const list = document.getElementById('quizList');
+
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+
+    const header = document.createElement('div');
+    header.className = 'quiz-card-header';
+    const arrow = document.createElement('span');
+    arrow.className = 'quiz-card-arrow';
+    arrow.textContent = '▶';
+    header.innerHTML = `<span class="quiz-card-num">${escHtml(label)}</span><span class="quiz-card-title">${escHtml(title)}</span>`;
+    const btnModal = document.createElement('button');
+    btnModal.className = 'btn-modal-open';
+    btnModal.textContent = '⛶ Full';
+    btnModal.title = 'Open in full view';
+    btnModal.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        openQuizModal(label, parsed, card);
+    });
+    // After btnModal definition, add this:
+    const btnFlashcard = document.createElement('button');
+    btnFlashcard.className = 'btn-modal-open';
+    btnFlashcard.textContent = '🃏 Cards';
+    btnFlashcard.title = 'View as flashcards';
+    btnFlashcard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openFlashcardModal(label, parsed.questions);
+    });
+    header.appendChild(btnModal);
+    header.appendChild(btnFlashcard);
+    header.appendChild(arrow);
+
+    // ── buildBody is defined HERE, inside addQuizToPanel ──
+    // so it has access to: parsed, card, and the `body` variable below
+    function buildBody() {
+        const b = document.createElement('div');
+        b.className = 'quiz-card-body';
+
+        if (parsed.questions.length === 0) {
+            const raw = document.createElement('div');
+            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            raw.textContent = 'Could not parse quiz questions.';
+            b.appendChild(raw);
+            return b;
         }
-        let score=0, answered=0;
-        const scoreEl=document.createElement('div'); scoreEl.className='quiz-score';
-        parsed.questions.forEach((q,idx)=>{
-            const qwrap=document.createElement('div'); qwrap.style.marginBottom='12px';
-            const qtext=document.createElement('div'); qtext.className='quiz-q-text';
-            qtext.innerHTML=`<strong style="color:var(--accent)">Q${idx+1}.</strong> ${escHtml(q.question)}`;
+
+        let score = 0, answered = 0;
+        const scoreEl = document.createElement('div');
+        scoreEl.className = 'quiz-score';
+
+        parsed.questions.forEach((q, idx) => {
+            const qwrap = document.createElement('div');
+            qwrap.style.marginBottom = '12px';
+
+            const qtext = document.createElement('div');
+            qtext.className = 'quiz-q-text';
+            qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
             qwrap.appendChild(qtext);
-            if (q.type==='mcq'||q.type==='truefalse') {
-                const letters=['A','B','C','D','E']; let picked=false;
-                q.options.forEach((opt,oi)=>{
-                    const ob=document.createElement('div'); ob.className='quiz-opt';
-                    const letter=q.type==='truefalse'?(oi===0?'T':'F'):letters[oi];
-                    ob.innerHTML=`<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
-                    ob.addEventListener('click',()=>{
-                        if(picked)return; picked=true; answered++;
-                        const fb=qwrap.querySelector('.quiz-feedback');
-                        if(oi===q.answerIndex){score++;ob.classList.add('correct');fb.className='quiz-feedback show correct';fb.textContent='✓ Correct!';}
-                        else{ob.classList.add('wrong');const all=qwrap.querySelectorAll('.quiz-opt');if(all[q.answerIndex])all[q.answerIndex].classList.add('correct');fb.className='quiz-feedback show wrong';fb.textContent=`✗ Correct: ${letters[q.answerIndex]}`;}
-                        scoreEl.textContent=`${score}/${answered} correct`;
+
+            if (q.type === 'mcq' || q.type === 'truefalse') {
+                const letters = ['A','B','C','D','E'];
+                let picked = false;
+                q.options.forEach((opt, oi) => {
+                    const ob = document.createElement('div');
+                    ob.className = 'quiz-opt';
+                    const letter = q.type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                    ob.innerHTML = `<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
+                    ob.addEventListener('click', () => {
+                        if (picked) return;
+                        picked = true; answered++;
+                        const fb = qwrap.querySelector('.quiz-feedback');
+                        if (oi === q.answerIndex) {
+                            score++;
+                            ob.classList.add('correct');
+                            fb.className = 'quiz-feedback show correct';
+                            fb.textContent = '✓ Correct!';
+                        } else {
+                            ob.classList.add('wrong');
+                            const allOpts = qwrap.querySelectorAll('.quiz-opt');
+                            if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
+                            fb.className = 'quiz-feedback show wrong';
+                            fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
+                        }
+                        scoreEl.textContent = `${score}/${answered} correct`;
                     });
                     qwrap.appendChild(ob);
                 });
-                const fb=document.createElement('div'); fb.className='quiz-feedback'; qwrap.appendChild(fb);
+                const fb = document.createElement('div');
+                fb.className = 'quiz-feedback';
+                qwrap.appendChild(fb);
+
+            } else if (q.type === 'fillblank') {
+                const inputRow = document.createElement('div');
+                inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
+                const inp = document.createElement('input');
+                inp.type = 'text';
+                inp.placeholder = 'Type your answer…';
+                inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Check';
+                submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
+                const fb = document.createElement('div');
+                fb.className = 'quiz-feedback';
+                let picked = false;
+                submitBtn.addEventListener('click', () => {
+                    if (picked) return;
+                    const userAnswer = inp.value.trim().toLowerCase();
+                    const correct = q.answer.toLowerCase();
+                    if (userAnswer === correct || correct.includes(userAnswer) && userAnswer.length > 2) {
+                        picked = true; answered++; score++;
+                        fb.className = 'quiz-feedback show correct';
+                        fb.textContent = '✓ Correct!';
+                        inp.style.borderColor = '#2d522d';
+                    } else {
+                        picked = true; answered++;
+                        fb.className = 'quiz-feedback show wrong';
+                        fb.textContent = `✗ Answer: ${q.answer}`;
+                        inp.style.borderColor = '#52302d';
+                    }
+                    scoreEl.textContent = `${score}/${answered} correct`;
+                });
+                inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+                inputRow.appendChild(inp);
+                inputRow.appendChild(submitBtn);
+                qwrap.appendChild(inputRow);
+                qwrap.appendChild(fb);
             }
-            body.appendChild(qwrap);
+            b.appendChild(qwrap);
         });
-        const retryRow=document.createElement('div'); retryRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
+
+        const retryRow = document.createElement('div');
+        retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
         retryRow.appendChild(scoreEl);
-        const btnRetry=document.createElement('button'); btnRetry.textContent='↺ Retry';
-        btnRetry.style.cssText='background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;';
-        btnRetry.addEventListener('click',()=>{ const wasOpen=body.classList.contains('open'); const fresh=buildQuizBody(parsed,card); if(wasOpen)fresh.classList.add('open'); if(card)card.replaceChild(fresh,body); body=fresh; });
-        retryRow.appendChild(btnRetry); body.appendChild(retryRow);
-        return body;
+
+        const btnRetry = document.createElement('button');
+        btnRetry.textContent = '↺ Retry';
+        btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
+        btnRetry.onmouseenter = () => { btnRetry.style.background = 'rgba(124,92,191,0.12)'; btnRetry.style.borderColor = 'var(--accent)'; };
+        btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
+        btnRetry.addEventListener('click', () => {
+            const wasOpen = body.classList.contains('open');
+            const fresh = buildBody();
+            if (wasOpen) fresh.classList.add('open');
+            card.replaceChild(fresh, body);
+            body = fresh;
+        });
+
+        retryRow.appendChild(btnRetry);
+        b.appendChild(retryRow);
+        return b;
+    }
+    // ── end buildBody ──
+
+    let body = buildBody(); // ← must be `let`, not `const`, so retry can reassign it
+
+    header.addEventListener('click', () => {
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    list.appendChild(card);
+
+    if (save && activeChatId > 0) {
+    const questions = parsed.questions.map(q => {
+        if (q.type === 'fillblank') {
+            return {
+                question:      q.question,
+                questionType:  'fillblank',
+                choiceA: '', choiceB: '', choiceC: '', choiceD: '',
+                correctAnswer: '',
+                answerText:    q.answer
+            };
+        } else if (q.type === 'truefalse') {
+            return {
+                question:      q.question,
+                questionType:  'truefalse',
+                choiceA: 'True', choiceB: 'False', choiceC: '', choiceD: '',
+                correctAnswer: q.answerIndex === 0 ? 'A' : 'B',
+                answerText:    ''
+            };
+        } else {
+            return {
+                question:      q.question,
+                questionType:  'mcq',
+                choiceA:       q.options[0] || '',
+                choiceB:       q.options[1] || '',
+                choiceC:       q.options[2] || '',
+                choiceD:       q.options[3] || '',
+                correctAnswer: ['A','B','C','D'][q.answerIndex] || 'A',
+                answerText:    ''
+            };
+        }
+    });
+    if (questions.length > 0) {
+        fetch('/Chat/SaveQuizQuestions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: activeChatId, questions })
+        }).catch(err => console.error('Quiz save error:', err));
+    }
+}
+}
+
+function addQuizToPanel_structured(questions) {
+    quizCount++;
+    const parsed = { title: '', questions };
+    const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
+    const title = questions[0]?.question?.slice(0, 50) || label;
+    const list = document.getElementById('quizList');
+
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    const header = document.createElement('div');
+    header.className = 'quiz-card-header';
+    const arrow = document.createElement('span');
+    arrow.className = 'quiz-card-arrow';
+    arrow.textContent = '▶';
+    header.innerHTML = `<span class="quiz-card-num">${escHtml(label)}</span><span class="quiz-card-title">${escHtml(title)}</span>`;
+
+    const btnModal = document.createElement('button');
+    btnModal.className = 'btn-modal-open';
+    btnModal.textContent = '⛶ Full';
+    btnModal.addEventListener('click', (e) => { e.stopPropagation(); openQuizModal(label, parsed, card); });
+    const btnFlashcard = document.createElement('button');
+    btnFlashcard.className = 'btn-modal-open';
+    btnFlashcard.textContent = '🃏 Cards';
+    btnFlashcard.addEventListener('click', (e) => { e.stopPropagation(); openFlashcardModal(label, parsed.questions); });
+
+    header.appendChild(btnModal);
+    header.appendChild(btnFlashcard);
+    header.appendChild(arrow);
+
+    let body = buildQuizBody(parsed, card);
+    header.addEventListener('click', () => {
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
+    });
+    card.appendChild(header);
+    card.appendChild(body);
+    list.appendChild(card);
+}
+
+function parseQuizFromText(text) {
+    const result = { title: '', questions: [] };
+
+    // ── 1. Split off Answer Key before doing anything ──────────────
+    const keyMatch = text.search(/answer\s+key/i);
+    const mainText  = keyMatch > -1 ? text.slice(0, keyMatch) : text;
+    const keyText   = keyMatch > -1 ? text.slice(keyMatch)    : '';
+
+    // ── 2. Extract answers from key into a map { qNum → answerStr } ─
+    const answerMap = {};
+    if (keyText) {
+        keyText.split('\n').forEach(line => {
+            const m = line.trim().match(/^(\d+)[).:\s]+(.+)/);
+            if (m) {
+                // Strip leading "a) b) c)" letter labels from MCQ answers in key
+                const raw = m[2].trim().replace(/^[a-e][).:\s]/i, '').trim();
+                answerMap[parseInt(m[1])] = raw;
+            }
+        });
     }
 
-    /* ── FLASHCARD BODY BUILDER ── */
+    // ── 3. Clean markdown from main text ───────────────────────────
+    const clean = mainText
+        .replace(/\\_/g, '_')  
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/^---+$/gm, '')
+        .replace(/^#+\s*/gm, '');
+
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // ── 4. Extract title ───────────────────────────────────────────
+    let startIdx = 0;
+    for (let i = 0; i < Math.min(5, lines.length); i++) {
+        if (lines[i].match(/^(instructions?|answer the|directions?|section)/i)) continue;
+        if (!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)) {
+            result.title = lines[i].slice(0, 60);
+            startIdx = i + 1;
+            break;
+        }
+    }
+
+    let currentQ  = null;
+    let currentNum = 0;
+
+    const pushQ = () => {
+        if (!currentQ || !currentQ.question) return;
+        // Fill answer from key map if not already set
+        if (answerMap[currentNum] !== undefined) {
+            const keyAns = answerMap[currentNum];
+            if (currentQ.options.length > 0) {
+                // Match key answer letter (e.g. "b)") to option index
+                const letterM = keyAns.match(/^([a-e])[).:\s]/i);
+                if (letterM) {
+                    currentQ.answerIndex = letterM[1].toUpperCase().charCodeAt(0) - 65;
+                } else {
+                    // Try to match by answer text content
+                    const lc = keyAns.toLowerCase();
+                    const found = currentQ.options.findIndex(o => lc.includes(o.toLowerCase().slice(0,10)));
+                    if (found > -1) currentQ.answerIndex = found;
+                }
+            } else {
+                // Fill-in-the-blank — take just the first meaningful word/phrase
+                // Strip parenthetical notes like "(The document mentions...)"
+                currentQ.answer = keyAns.replace(/\(.*?\)/g, '').split('/')[0].trim();
+                currentQ.type   = 'fillblank';
+            }
+        }
+        // Determine type
+        if (currentQ.type !== 'fillblank') {
+            if (currentQ.options.length === 2 &&
+                currentQ.options.map(o => o.toLowerCase()).some(o => o === 'true' || o === 'false')) {
+                currentQ.type = 'truefalse';
+            } else if (currentQ.options.length > 0) {
+                currentQ.type = 'mcq';
+            } else {
+                // No options and no answer from key → short answer, skip
+                currentQ = null;
+                return;
+            }
+        }
+        result.questions.push(currentQ);
+        currentQ = null;
+    };
+
+    const fillRegex    = /_{2,}|\.{3,}/;
+    const optRegex     = /^([A-Ea-e])[).:\s]\s*(.+)/;
+    const qNumRegex    = /^(\d+)[).:\s]\s*(.+)/;
+    const qLabelRegex  = /^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i;
+    const sectionRegex = /^section\s*\d/i;
+
+    for (let i = startIdx; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Skip section headers like "Section 1: Multiple Choice"
+        if (sectionRegex.test(line)) continue;
+
+        // Q-label format "Q1. text" or "Question 1. text"
+        const qLabelMatch = line.match(qLabelRegex);
+        if (qLabelMatch) {
+            pushQ();
+            currentNum = parseInt(qLabelMatch[1]);
+            currentQ = { question: qLabelMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Numbered question "1. text" — only if not an option letter
+        const qNumMatch = line.match(qNumRegex);
+        if (qNumMatch && !optRegex.test(line) && line.length > 8) {
+            pushQ();
+            currentNum = parseInt(qNumMatch[1]);
+            currentQ = { question: qNumMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Option line "a) ..." / "A. ..."
+        const optMatch = line.match(optRegex);
+        if (optMatch && currentQ) {
+            currentQ.options.push(optMatch[2]);
+            continue;
+        }
+
+        // True/False inline
+        if (currentQ && currentQ.options.length === 0 &&
+            line.toLowerCase().match(/^(true or false|true\/false)/)) {
+            currentQ.options = ['True', 'False'];
+            continue;
+        }
+
+        // Continuation of question text (before any options)
+        if (currentQ && currentQ.options.length === 0 && line.length > 2) {
+            currentQ.question += ' ' + line;
+            if (fillRegex.test(line)) currentQ.type = 'fillblank';
+        }
+    }
+
+    pushQ();
+    return result;
+}
+    function clearQuizList() {
+        document.getElementById('quizList').innerHTML = '';
+        quizCount = 0;
+    }
+
+    // ══ UI STATE ══════════════════════════════════════════
+    function showChatUI() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('messagesArea').classList.add('visible');
+    }
+
+    function resetUI() {
+        activeChatId = -1;
+        document.getElementById('welcomeScreen').style.display = '';
+        document.getElementById('messagesArea').classList.remove('visible');
+        clearMessages();
+        clearQuizList();
+        clearSourceList();
+        document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+    }
+
+    function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
+    function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    async function logout() { if (confirm('Are you sure you want to logout?')) window.location.href = '/Account/Logout'; }
+
+    function openQuizModal(label, parsed, card) {
+    document.getElementById('modalQuizLabel').textContent = label;
+    const body = document.getElementById('modalQuizBody');
+    body.innerHTML = '';
+
+    // Re-use buildBody logic but rendered fresh inside the modal
+    const tempCard = document.createElement('div');
+    // Clone a fresh quiz card body by calling a standalone builder
+    const freshBody = buildQuizBody(parsed, tempCard);
+    freshBody.classList.add('open');
+    freshBody.style.cssText = 'display:block;padding:0;border:none;';
+    body.appendChild(freshBody);
+    document.getElementById('quizModal').classList.add('open');
+}
+
+    function closeQuizModal() {
+        document.getElementById('quizModal').classList.remove('open');
+        document.getElementById('modalQuizBody').innerHTML = '';
+    }
+
+    // Close on backdrop click
+    document.getElementById('quizModal').addEventListener('click', function(e) {
+        if (e.target === this) closeQuizModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeQuizModal();
+    });
+
+    function buildQuizBody(parsed, card) {
+        let body = document.createElement('div');
+        body.className = 'quiz-card-body';
+
+        if (parsed.questions.length === 0) {
+            const raw = document.createElement('div');
+            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            raw.textContent = 'Could not parse quiz questions.';
+            body.appendChild(raw);
+            return body;
+        }
+
+        let score = 0, answered = 0;
+        const scoreEl = document.createElement('div');
+        scoreEl.className = 'quiz-score';
+
+    parsed.questions.forEach((q, idx) => {
+        const qwrap = document.createElement('div');
+        qwrap.style.marginBottom = '12px';
+
+        const qtext = document.createElement('div');
+        qtext.className = 'quiz-q-text';
+        qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
+        qwrap.appendChild(qtext);
+
+        if (q.type === 'mcq' || q.type === 'truefalse') {
+            const letters = ['A','B','C','D','E'];
+            let picked = false;
+
+            q.options.forEach((opt, oi) => {
+                const ob = document.createElement('div');
+                ob.className = 'quiz-opt';
+                const letter = q.type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                ob.innerHTML = `<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
+                ob.addEventListener('click', () => {
+                    if (picked) return;
+                    picked = true; answered++;
+                    const fb = qwrap.querySelector('.quiz-feedback');
+                    if (oi === q.answerIndex) {
+                        score++;
+                        ob.classList.add('correct');
+                        fb.className = 'quiz-feedback show correct';
+                        fb.textContent = '✓ Correct!';
+                    } else {
+                        ob.classList.add('wrong');
+                        const allOpts = qwrap.querySelectorAll('.quiz-opt');
+                        if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
+                        fb.className = 'quiz-feedback show wrong';
+                        fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
+                    }
+                    scoreEl.textContent = `${score}/${answered} correct`;
+                });
+                qwrap.appendChild(ob);
+            });
+
+            const fb = document.createElement('div');
+            fb.className = 'quiz-feedback';
+            qwrap.appendChild(fb);
+
+        } else if (q.type === 'fillblank') {
+            const inputRow = document.createElement('div');
+            inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
+
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.placeholder = 'Type your answer…';
+            inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.textContent = 'Check';
+            submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
+
+            const fb = document.createElement('div');
+            fb.className = 'quiz-feedback';
+            let picked = false;
+
+            submitBtn.addEventListener('click', () => {
+                if (picked) return;
+                const userAnswer = inp.value.trim().toLowerCase();
+                const correct = q.answer.toLowerCase();
+                if (userAnswer === correct || (correct.includes(userAnswer) && userAnswer.length > 2)) {
+                    picked = true; answered++; score++;
+                    fb.className = 'quiz-feedback show correct';
+                    fb.textContent = '✓ Correct!';
+                    inp.style.borderColor = '#2d522d';
+                } else {
+                    picked = true; answered++;
+                    fb.className = 'quiz-feedback show wrong';
+                    fb.textContent = `✗ Answer: ${q.answer}`;
+                    inp.style.borderColor = '#52302d';
+                }
+                scoreEl.textContent = `${score}/${answered} correct`;
+            });
+
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+            inputRow.appendChild(inp);
+            inputRow.appendChild(submitBtn);
+            qwrap.appendChild(inputRow);
+            qwrap.appendChild(fb);
+        }
+
+        body.appendChild(qwrap);
+    });
+
+    const retryRow = document.createElement('div');
+    retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
+    retryRow.appendChild(scoreEl);
+
+    const btnRetry = document.createElement('button');
+    btnRetry.textContent = '↺ Retry';
+    btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
+    btnRetry.onmouseenter = () => { btnRetry.style.background = 'rgba(124,92,191,0.12)'; btnRetry.style.borderColor = 'var(--accent)'; };
+    btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
+    btnRetry.addEventListener('click', () => {
+        const wasOpen = body.classList.contains('open');
+        const fresh = buildQuizBody(parsed, card);
+        if (wasOpen) fresh.classList.add('open');
+        card.replaceChild(fresh, body);
+        body = fresh;
+    });
+
+    retryRow.appendChild(btnRetry);
+    body.appendChild(retryRow);
+    return body;
+    }
+
+    function openFlashcardModal(label, questions) {
+        // Convert quiz questions into flashcard format
+        const flashcards = questions.map(q => {
+            const letters = ['A','B','C','D','E'];
+            let back = '';
+            if (q.type === 'mcq' || q.type === 'truefalse') {
+                const letter = q.type === 'truefalse'
+                    ? (q.answerIndex === 0 ? 'True' : 'False')
+                    : letters[q.answerIndex];
+                back = `${letter}) ${q.options[q.answerIndex] || ''}`;
+            } else {
+                back = q.answer;
+            }
+            return { front: q.question, back };
+        });
+
+        document.getElementById('modalQuizLabel').textContent = label + ' — Flashcards';
+        const body = document.getElementById('modalQuizBody');
+        body.innerHTML = '';
+        const fc = buildFlashcardBody({ flashcards }, null);
+        fc.classList.add('open');
+        fc.style.cssText = 'display:block;padding:0;border:none;';
+        body.appendChild(fc);
+        document.getElementById('quizModal').classList.add('open');
+    }
+
+function parseFlashcardsFromText(text) {
+    const cards = [];
+
+    // Clean markdown
+    const clean = text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/^#+\s*/gm, '')
+        .replace(/^---+$/gm, '');
+
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // Patterns to detect front/back pairs
+    // Supports: "Q: ... A: ...", "Term: ... Definition: ...", "Front: ... Back: ...", numbered "1. Q: A:"
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i];
+
+        // Pattern: Q: ... / A: ... (on same or next line)
+        const qMatch = line.match(/^(?:\d+[).:\s]+)?(?:Q|Question|Front|Term)[).:]\s*(.+)/i);
+        if (qMatch) {
+            const front = qMatch[1].trim();
+            let back = '';
+            // Look ahead for answer line
+            for (let j = i + 1; j < Math.min(i + 4, lines.length); j++) {
+                const aMatch = lines[j].match(/^(?:A|Answer|Back|Definition)[).:]\s*(.+)/i);
+                if (aMatch) { back = aMatch[1].trim(); i = j; break; }
+            }
+            if (front && back) cards.push({ front, back });
+            i++; continue;
+        }
+
+        // Pattern: "Term — Definition" or "Term: Definition" (single line)
+        const dashMatch = line.match(/^(?:\d+[).:\s]+)?(.+?)\s*[—–:]\s{1,4}(.{10,})/);
+        if (dashMatch && !line.match(/^(?:Q|A|Front|Back|Term|Definition|Answer|Question)[).:]/i)) {
+            cards.push({ front: dashMatch[1].trim(), back: dashMatch[2].trim() });
+            i++; continue;
+        }
+
+        i++;
+    }
+
+    return cards;
+}
+
     function buildFlashcardBody(parsed, card) {
         const body = document.createElement('div');
         body.className = 'quiz-card-body';
-        const cards = parsed.flashcards || [];
-        if (!cards.length) { body.innerHTML='<div style="font-size:12px;color:#888;padding:8px 0">No flashcards.</div>'; return body; }
-        let current=0, flipped=false, known=0, unknown=0;
-        const cardWrap=document.createElement('div'); cardWrap.style.cssText='perspective:800px;margin:8px 0 10px;cursor:pointer;';
-        const cardInner=document.createElement('div'); cardInner.style.cssText='position:relative;width:100%;min-height:90px;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);border-radius:10px;';
-        const makeFace=side=>{
-            const face=document.createElement('div');
-            face.style.cssText=`position:${side==='back'?'absolute':'relative'};inset:0;background:${side==='front'?'#252535':'#1e2d1e'};border:1px solid ${side==='front'?'#3a3a52':'#2d522d'};border-radius:10px;padding:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;gap:4px;${side==='back'?'transform:rotateY(180deg);':''}`;
-            const lbl=document.createElement('div'); lbl.style.cssText=`font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${side==='front'?'var(--accent)':'#6dbf6d'};margin-bottom:4px;`; lbl.textContent=side==='front'?'▸ FRONT':'▸ BACK';
-            const txt=document.createElement('div'); txt.style.cssText='font-size:12.5px;color:#ddd;line-height:1.5;';
-            face.appendChild(lbl); face.appendChild(txt); return {face,text:txt};
-        };
-        const {face:ff,text:ft}=makeFace('front'); const {face:bf,text:bt}=makeFace('back');
-        cardInner.appendChild(ff); cardInner.appendChild(bf); cardWrap.appendChild(cardInner);
-        cardWrap.addEventListener('click',()=>{flipped=!flipped;cardInner.style.transform=flipped?'rotateY(180deg)':'';});
-        const counter=document.createElement('div'); counter.style.cssText='font-size:10px;color:#555;text-align:center;margin-bottom:6px;';
-        const pw=document.createElement('div'); pw.style.cssText='height:3px;background:#2a2a2a;border-radius:2px;margin-bottom:10px;overflow:hidden;';
-        const pb=document.createElement('div'); pb.style.cssText='height:100%;background:var(--accent);border-radius:2px;transition:width .3s;'; pw.appendChild(pb);
-        const navRow=document.createElement('div'); navRow.style.cssText='display:flex;gap:6px;margin-bottom:8px;';
-        const mkBtn=(t,s)=>{ const b=document.createElement('button'); b.textContent=t; b.style.cssText=s; return b; };
-        const btnPrev=mkBtn('← Prev','flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;');
-        const btnFlip=mkBtn('↺ Flip','flex:1;background:rgba(108,70,184,.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;');
-        const btnNext=mkBtn('Next →','flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;');
-        const knowRow=document.createElement('div'); knowRow.style.cssText='display:flex;gap:6px;margin-bottom:6px;';
-        const btnKnow=mkBtn('✓ Know it','flex:1;background:#1a2d1a;border:1px solid #2d522d;border-radius:6px;color:#6dbf6d;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;');
-        const btnDont=mkBtn('✗ Still learning','flex:1;background:#2d1a1a;border:1px solid #52302d;border-radius:6px;color:#e07070;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;');
-        const scoreRow=document.createElement('div'); scoreRow.style.cssText='display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
-        const knownEl=document.createElement('span'); knownEl.style.color='#6dbf6d';
-        const unkEl=document.createElement('span'); unkEl.style.color='#e07070';
-        scoreRow.appendChild(knownEl); scoreRow.appendChild(unkEl);
-        function render(){
-            const c=cards[current]; flipped=false; cardInner.style.transform='';
-            ft.textContent=c.front; bt.textContent=c.back;
-            counter.textContent=`${current+1} / ${cards.length}`;
-            pb.style.width=`${((current+1)/cards.length)*100}%`;
-            btnPrev.disabled=current===0; btnPrev.style.opacity=current===0?.3:1;
-            btnNext.disabled=current===cards.length-1; btnNext.style.opacity=current===cards.length-1?.3:1;
-            knownEl.textContent=known?`✓ ${known} known`:'';
-            unkEl.textContent=unknown?`✗ ${unknown} learning`:'';
+
+        const cards = typeof parsed === 'string'
+            ? parseFlashcardsFromText(parsed)
+            : (parsed.flashcards || []);
+
+        if (cards.length === 0) {
+            const empty = document.createElement('div');
+            empty.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            empty.textContent = 'Could not parse flashcards.';
+            body.appendChild(empty);
+            return body;
         }
-        btnFlip.addEventListener('click',()=>{flipped=!flipped;cardInner.style.transform=flipped?'rotateY(180deg)':'';});
-        btnPrev.addEventListener('click',()=>{if(current>0){current--;render();}});
-        btnNext.addEventListener('click',()=>{if(current<cards.length-1){current++;render();}});
-        btnKnow.addEventListener('click',()=>{known++;if(current<cards.length-1)current++;render();});
-        btnDont.addEventListener('click',()=>{unknown++;if(current<cards.length-1)current++;render();});
-        document.addEventListener('keydown', e=>{
-            if(!body.closest('body')){return;}
-            if(e.key==='ArrowRight'&&current<cards.length-1){current++;render();}
-            if(e.key==='ArrowLeft'&&current>0){current--;render();}
-            if(e.key===' '){e.preventDefault();btnFlip.click();}
+
+        let current = 0;
+        let flipped = false;
+        let known = 0;
+        let unknown = 0;
+
+        // ── Card display ──
+        const cardWrap = document.createElement('div');
+        cardWrap.style.cssText = 'perspective:800px;margin:8px 0 10px;cursor:pointer;';
+
+        const cardInner = document.createElement('div');
+        cardInner.style.cssText = `
+            position:relative;width:100%;min-height:90px;
+            transform-style:preserve-3d;
+            transition:transform 0.45s cubic-bezier(.4,0,.2,1);
+            border-radius:10px;
+        `;
+
+        const makeFace = (side) => {
+            const face = document.createElement('div');
+            face.style.cssText = `
+                position:${side === 'back' ? 'absolute' : 'relative'};
+                inset:0;
+                background:${side === 'front' ? '#252535' : '#1e2d1e'};
+                border:1px solid ${side === 'front' ? '#3a3a52' : '#2d522d'};
+                border-radius:10px;
+                padding:12px;
+                backface-visibility:hidden;
+                -webkit-backface-visibility:hidden;
+                display:flex;flex-direction:column;gap:4px;
+                ${side === 'back' ? 'transform:rotateY(180deg);' : ''}
+            `;
+            const label = document.createElement('div');
+            label.style.cssText = `font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${side === 'front' ? 'var(--accent)' : '#6dbf6d'};margin-bottom:4px;`;
+            label.textContent = side === 'front' ? '▸ FRONT' : '▸ BACK';
+            const text = document.createElement('div');
+            text.style.cssText = 'font-size:12.5px;color:#ddd;line-height:1.5;';
+            face.appendChild(label);
+            face.appendChild(text);
+            return { face, text };
+        };
+
+        const { face: frontFace, text: frontText } = makeFace('front');
+        const { face: backFace,  text: backText  } = makeFace('back');
+        cardInner.appendChild(frontFace);
+        cardInner.appendChild(backFace);
+        cardWrap.appendChild(cardInner);
+
+        // Flip on click
+        cardWrap.addEventListener('click', () => {
+            flipped = !flipped;
+            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
         });
-        navRow.appendChild(btnPrev); navRow.appendChild(btnFlip); navRow.appendChild(btnNext);
-        knowRow.appendChild(btnKnow); knowRow.appendChild(btnDont);
-        body.appendChild(counter); body.appendChild(pw); body.appendChild(cardWrap);
-        body.appendChild(navRow); body.appendChild(knowRow); body.appendChild(scoreRow);
-        render(); return body;
-    }
 
-    /* ── QUIZ PARSER ── */
-    function parseQuizFromText(text) {
-        const result={title:'',questions:[]};
-        const keyMatch=text.search(/answer\s+key/i);
-        const mainText=keyMatch>-1?text.slice(0,keyMatch):text;
-        const keyText=keyMatch>-1?text.slice(keyMatch):'';
-        const answerMap={};
-        if(keyText){keyText.split('\n').forEach(line=>{const m=line.trim().match(/^(\d+)[).:\s]+(.+)/);if(m){const raw=m[2].trim().replace(/^[a-e][).:\s]/i,'').trim();answerMap[parseInt(m[1])]=raw;}});}
-        const clean=mainText.replace(/\\_/g,'_').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/^---+$/gm,'').replace(/^#+\s*/gm,'');
-        const lines=clean.split('\n').map(l=>l.trim()).filter(Boolean);
-        let currentQ=null,currentNum=0;
-        const pushQ=()=>{
-            if(!currentQ||!currentQ.question)return;
-            if(answerMap[currentNum]!==undefined){
-                const keyAns=answerMap[currentNum];
-                if(currentQ.options.length>0){const lm=keyAns.match(/^([a-e])[).:\s]/i);if(lm)currentQ.answerIndex=lm[1].toUpperCase().charCodeAt(0)-65;else{const lc=keyAns.toLowerCase();const f=currentQ.options.findIndex(o=>lc.includes(o.toLowerCase().slice(0,10)));if(f>-1)currentQ.answerIndex=f;}}
-                else{currentQ.answer=keyAns.replace(/\(.*?\)/g,'').split('/')[0].trim();currentQ.type='fillblank';}
-            }
-            if(currentQ.type!=='fillblank'){if(currentQ.options.length===2&&currentQ.options.map(o=>o.toLowerCase()).some(o=>o==='true'||o==='false'))currentQ.type='truefalse';else if(currentQ.options.length>0)currentQ.type='mcq';else{currentQ=null;return;}}
-            result.questions.push(currentQ);currentQ=null;
-        };
-        const fillRe=/_{2,}|\.{3,}/,optRe=/^([A-Ea-e])[).:\s]\s*(.+)/,qNumRe=/^(\d+)[).:\s]\s*(.+)/,qLblRe=/^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i,secRe=/^section\s*\d/i;
-        let si=0;
-        for(let i=0;i<Math.min(5,lines.length);i++){if(lines[i].match(/^(instructions?|answer the|directions?|section)/i))continue;if(!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)){result.title=lines[i].slice(0,60);si=i+1;break;}}
-        for(let i=si;i<lines.length;i++){
-            const line=lines[i];
-            if(secRe.test(line))continue;
-            const qlm=line.match(qLblRe);if(qlm){pushQ();currentNum=parseInt(qlm[1]);currentQ={question:qlm[2],options:[],answerIndex:0,answer:'',type:'mcq'};if(fillRe.test(currentQ.question))currentQ.type='fillblank';continue;}
-            const qnm=line.match(qNumRe);if(qnm&&!optRe.test(line)&&line.length>8){pushQ();currentNum=parseInt(qnm[1]);currentQ={question:qnm[2],options:[],answerIndex:0,answer:'',type:'mcq'};if(fillRe.test(currentQ.question))currentQ.type='fillblank';continue;}
-            const om=line.match(optRe);if(om&&currentQ){currentQ.options.push(om[2]);continue;}
-            if(currentQ&&currentQ.options.length===0&&line.toLowerCase().match(/^(true or false|true\/false)/)){currentQ.options=['True','False'];continue;}
-            if(currentQ&&currentQ.options.length===0&&line.length>2){currentQ.question+=' '+line;if(fillRe.test(line))currentQ.type='fillblank';}
+        // ── Counter ──
+        const counter = document.createElement('div');
+        counter.style.cssText = 'font-size:10px;color:#555;text-align:center;margin-bottom:6px;';
+
+        // ── Progress bar ──
+        const progressWrap = document.createElement('div');
+        progressWrap.style.cssText = 'height:3px;background:#2a2a2a;border-radius:2px;margin-bottom:10px;overflow:hidden;';
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = 'height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;';
+        progressWrap.appendChild(progressBar);
+
+        // ── Navigation ──
+        const navRow = document.createElement('div');
+        navRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
+
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '← Prev';
+        btnPrev.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnFlip = document.createElement('button');
+        btnFlip.textContent = '↺ Flip';
+        btnFlip.style.cssText = 'flex:1;background:rgba(124,92,191,0.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnNext = document.createElement('button');
+        btnNext.textContent = 'Next →';
+        btnNext.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        // ── Know / Don't Know ──
+        const knowRow = document.createElement('div');
+        knowRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
+
+        const btnKnow = document.createElement('button');
+        btnKnow.textContent = '✓ Know it';
+        btnKnow.style.cssText = 'flex:1;background:#1a2d1a;border:1px solid #2d522d;border-radius:6px;color:#6dbf6d;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        const btnDontKnow = document.createElement('button');
+        btnDontKnow.textContent = '✗ Still learning';
+        btnDontKnow.style.cssText = 'flex:1;background:#2d1a1a;border:1px solid #52302d;border-radius:6px;color:#e07070;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
+
+        // ── Score row ──
+        const scoreRow = document.createElement('div');
+        scoreRow.style.cssText = 'display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
+        const knownEl   = document.createElement('span');
+        const unknownEl = document.createElement('span');
+        knownEl.style.color   = '#6dbf6d';
+        unknownEl.style.color = '#e07070';
+        scoreRow.appendChild(knownEl);
+        scoreRow.appendChild(unknownEl);
+
+        // ── Render card ──
+        function renderCard() {
+            const c = cards[current];
+            // Reset flip
+            flipped = false;
+            cardInner.style.transform = '';
+            frontText.textContent = c.front;
+            backText.textContent  = c.back;
+            counter.textContent   = `${current + 1} / ${cards.length}`;
+            progressBar.style.width = `${((current + 1) / cards.length) * 100}%`;
+            btnPrev.disabled = current === 0;
+            btnPrev.style.opacity = current === 0 ? '0.3' : '1';
+            btnNext.disabled = current === cards.length - 1;
+            btnNext.style.opacity = current === cards.length - 1 ? '0.3' : '1';
+            knownEl.textContent   = known   ? `✓ ${known} known`   : '';
+            unknownEl.textContent = unknown ? `✗ ${unknown} learning` : '';
         }
-        pushQ(); return result;
+
+        btnFlip.addEventListener('click', () => {
+            flipped = !flipped;
+            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
+        });
+        btnPrev.addEventListener('click', () => { if (current > 0) { current--; renderCard(); } });
+        btnNext.addEventListener('click', () => { if (current < cards.length - 1) { current++; renderCard(); } });
+
+        btnKnow.addEventListener('click', () => {
+            known++;
+            if (current < cards.length - 1) { current++; renderCard(); }
+            else renderCard();
+        });
+        btnDontKnow.addEventListener('click', () => {
+            unknown++;
+            if (current < cards.length - 1) { current++; renderCard(); }
+            else renderCard();
+        });
+
+        // ── Keyboard nav ──
+        const keyHandler = (e) => {
+            if (!body.closest('body')) { document.removeEventListener('keydown', keyHandler); return; }
+            if (e.key === 'ArrowRight' && current < cards.length - 1) { current++; renderCard(); }
+            if (e.key === 'ArrowLeft'  && current > 0)                { current--; renderCard(); }
+            if (e.key === ' ') { e.preventDefault(); btnFlip.click(); }
+        };
+        document.addEventListener('keydown', keyHandler);
+
+        navRow.appendChild(btnPrev);
+        navRow.appendChild(btnFlip);
+        navRow.appendChild(btnNext);
+        knowRow.appendChild(btnKnow);
+        knowRow.appendChild(btnDontKnow);
+
+        body.appendChild(counter);
+        body.appendChild(progressWrap);
+        body.appendChild(cardWrap);
+        body.appendChild(navRow);
+        body.appendChild(knowRow);
+        body.appendChild(scoreRow);
+
+        renderCard();
+        return body;
     }
 
-    /* ── UI STATE ── */
-    function showChatUI() { document.getElementById('welcomeScreen').style.display='none'; document.getElementById('messagesArea').classList.add('visible'); }
-    function resetUI() { activeChatId=-1; document.getElementById('welcomeScreen').style.display=''; document.getElementById('messagesArea').classList.remove('visible'); clearMessages(); clearStudyList(); clearDocList(); }
 </script>
+
 </body>
 </html>
