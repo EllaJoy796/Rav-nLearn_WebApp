@@ -706,31 +706,45 @@
     async function loadChat(chatId) {
         activeChatId = parseInt(chatId);
         showChatUI(); clearMessages(); clearStudyList(); clearDocList();
+
+        // Messages + docs (already works via GetMessages returning docFilenames)
         try {
             const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
-            if (!res.ok) throw new Error('HTTP '+res.status);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
             if (data.docFilenames?.length) data.docFilenames.forEach(n => addDocItem(n, false));
             else if (data.docFilename) addDocItem(data.docFilename, false);
-            if (!data.messages?.length) appendBubble('No messages yet. Start the conversation!','ai');
-            else data.messages.forEach(m => appendBubble(m.content, m.role==='user'?'user':'ai'));
+            if (!data.messages?.length) appendBubble('No messages yet. Start the conversation!', 'ai');
+            else data.messages.forEach(m => appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
             scrollToBottom();
-        } catch(e) { appendBubble('Could not load messages: '+e.message,'ai'); }
+        } catch(e) { appendBubble('Could not load messages: ' + e.message, 'ai'); }
+
+        // Quizzes
         try {
-            const qres = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
-            const quizzes = await qres.json();
+            const res = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
+            const quizzes = await res.json();
             if (quizzes.length > 0) {
-                const reconstructed = quizzes.map(q => ({
+                const questions = quizzes.map(q => ({
                     question: q.question,
                     options: [q.choiceA, q.choiceB, q.choiceC, q.choiceD],
                     answerIndex: ['A','B','C','D'].indexOf(q.correctAnswer.toUpperCase()),
-                    type:'mcq', answer:''
+                    type: 'mcq', answer: ''
                 }));
-                addStudyCard('quiz', reconstructed);
+                addStudyCard('quiz', questions);
             }
-        } catch(e) { console.error('Quiz load error:',e); }
-    }
+        } catch(e) { console.error('Quiz load error:', e); }
 
+        // Flashcards
+        try {
+            const res = await fetch(`/Chat/GetFlashcardsByChat?chatId=${activeChatId}`);
+            const cards = await res.json();
+            if (cards.length > 0) {
+                const flashcards = cards.map(c => ({ front: c.front, back: c.back }));
+                addStudyCard('flashcard', flashcards);
+            }
+        } catch(e) { console.error('Flashcard load error:', e); }
+    }
+    
     /* ── SEND MESSAGE ── */
     async function sendMessage() {
         if (isSending) return;
@@ -754,16 +768,22 @@
             else {
                 appendBubble(data.reply,'ai');
                 const rl = data.reply?.toLowerCase()||'';
-                const hasQuiz = rl.match(/\b(q1[).:\s]|question\s*1[).:\s]|\b1[).]\s)/i)
-                    && data.reply.includes('\n') && !rl.includes('i am sorry') && !rl.includes('unable to');
-                if (hasQuiz) {
-                    const parsed = parseQuizFromText(data.reply);
+                const parsed = parseQuizFromText(data.reply);
+                if (parsed.questions.length > 0) {
                     addStudyCard('quiz', parsed.questions);
-                    if (activeChatId>0) {
-                        const qs = parsed.questions.filter(q=>q.type==='mcq'&&q.options.length===4)
-                            .map(q=>({question:q.question,choiceA:q.options[0],choiceB:q.options[1],choiceC:q.options[2],choiceD:q.options[3],correctAnswer:['A','B','C','D'][q.answerIndex]||'A'}));
-                        if (qs.length) fetch('/Chat/SaveQuizQuestions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chatId:activeChatId,questions:qs})}).catch(console.error);
-                    }
+                    const qs = parsed.questions
+                        .filter(q => q.type === 'mcq' && q.options.length === 4)
+                        .map(q => ({
+                            question: q.question,
+                            choiceA: q.options[0], choiceB: q.options[1],
+                            choiceC: q.options[2], choiceD: q.options[3],
+                            correctAnswer: ['A','B','C','D'][q.answerIndex] || 'A'
+                        }));
+                    if (qs.length) fetch('/Chat/SaveQuizQuestions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ chatId: sendingTo, questions: qs })
+                    }).catch(console.error);
                 }
             }
         } catch(e) { hideTyping(); appendBubble('Network error: '+e.message,'ai'); }
@@ -847,59 +867,63 @@
 
     /* ══════════ STUDY GUIDE CARDS (right panel) ══════════ */
     function addStudyCard(type, questions) {
-        quizCount++;
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-        const label = type==='quiz' ? `Reviewer ${quizCount}` : `Cards ${quizCount}`;
-        const countLabel = type==='quiz' ? `${questions.length} Questions` : `${questions.length} Cards`;
-        const parsed = { title: label, questions };
+    quizCount++;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const label = type==='quiz' ? `Reviewer ${quizCount}` : `Cards ${quizCount}`;
+    const countLabel = type==='quiz' ? `${questions.length} Questions` : `${questions.length} Cards`;
+    const parsed = { title: label, questions };
 
-        const list = document.getElementById('studyList');
-        const card = document.createElement('div');
-        card.className = 'study-card';
+    const list = document.getElementById('studyList');
+    const card = document.createElement('div');
+    card.className = 'study-card';
 
-        const badgeClass = type==='quiz' ? 'badge-quiz' : 'badge-flashcard';
-        const badgeText  = type==='quiz' ? 'QUIZ' : 'FLASHCARD';
-        const icon       = type==='quiz' ? '📋' : '🃏';
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('.study-card-actions')) return;
+        openQuizModal(label, parsed);
+    });  // ← closing brace and paren were missing here
 
-        card.innerHTML = `
-            <div class="study-card-top">
-                <div class="study-card-icon">${icon}</div>
-                <div class="study-card-info">
-                    <div class="study-card-title">${escHtml(label)}</div>
-                    <div class="study-card-meta">${escHtml(countLabel)} · ${dateStr}</div>
-                </div>
-                <span class="study-card-badge ${badgeClass}">${badgeText}</span>
+    const badgeClass = type==='quiz' ? 'badge-quiz' : 'badge-flashcard';
+    const badgeText  = type==='quiz' ? 'QUIZ' : 'FLASHCARD';
+    const icon       = type==='quiz' ? '📋' : '🃏';
+
+    card.innerHTML = `
+        <div class="study-card-top">
+            <div class="study-card-icon">${icon}</div>
+            <div class="study-card-info">
+                <div class="study-card-title">${escHtml(label)}</div>
+                <div class="study-card-meta">${escHtml(countLabel)} · ${dateStr}</div>
             </div>
-            <div class="study-card-actions"></div>
-        `;
+            <span class="study-card-badge ${badgeClass}">${badgeText}</span>
+        </div>
+        <div class="study-card-actions"></div>
+    `;
 
-        const actions = card.querySelector('.study-card-actions');
+    const actions = card.querySelector('.study-card-actions');
 
-        // Study Buddy button
-        const btnStudy = document.createElement('button');
-        btnStudy.className = 'btn-card-action';
-        btnStudy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Study Buddy`;
-        btnStudy.onclick = () => openQuizModal(label, parsed);
+    const btnStudy = document.createElement('button');
+    btnStudy.className = 'btn-card-action';
+    btnStudy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Study Buddy`;
+    btnStudy.onclick = () => openQuizModal(label, parsed);
+    actions.appendChild(btnStudy);
 
-        actions.appendChild(btnStudy);
-
-        if (type === 'quiz') {
-            const btnFlash = document.createElement('button');
-            btnFlash.className = 'btn-card-action';
-            btnFlash.innerHTML = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Flashcard`;
-            btnFlash.onclick = () => openFlashcardModal(label, questions);
-            actions.appendChild(btnFlash);
-        } else {
-            const btnTake = document.createElement('button');
-            btnTake.className = 'btn-card-action';
-            btnTake.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Take Quiz`;
-            btnTake.onclick = () => openQuizModal(label, parsed);
-            actions.appendChild(btnTake);
-        }
-
-        list.appendChild(card);
+    if (type === 'quiz') {
+        const btnFlash = document.createElement('button');
+        btnFlash.className = 'btn-card-action';
+        btnFlash.innerHTML = `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Flashcard`;
+        btnFlash.onclick = () => openFlashcardModal(label, questions);
+        actions.appendChild(btnFlash);
+    } else {
+        const btnTake = document.createElement('button');
+        btnTake.className = 'btn-card-action';
+        btnTake.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Take Quiz`;
+        btnTake.onclick = () => openQuizModal(label, parsed);
+        actions.appendChild(btnTake);
     }
+
+    list.appendChild(card);
+}
 
     function clearStudyList() { document.getElementById('studyList').innerHTML=''; quizCount=0; }
 

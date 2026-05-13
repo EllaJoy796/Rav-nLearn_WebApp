@@ -452,15 +452,19 @@ namespace RavnLearnWeb.Controllers
                 cmd.Parameters.AddWithValue("cid", chatId);
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
+                {
+                    var question = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                    if (string.IsNullOrEmpty(question)) continue; // skip old quiz_text-only rows
                     questions.Add(new {
                         id            = reader.GetInt32(0),
-                        question      = reader.GetString(1),
-                        choiceA       = reader.GetString(2),
-                        choiceB       = reader.GetString(3),
-                        choiceC       = reader.GetString(4),
-                        choiceD       = reader.GetString(5),
-                        correctAnswer = reader.GetString(6)
+                        question,
+                        choiceA       = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                        choiceB       = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                        choiceC       = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                        choiceD       = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                        correctAnswer = reader.IsDBNull(6) ? "" : reader.GetString(6)
                     });
+                }
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
             return Json(questions);
@@ -845,13 +849,28 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
-        public IActionResult Open(int id)
+        public async Task<IActionResult> Open(int id)
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-            ViewBag.FolderId     = id;
-            ViewBag.ChatId       = -1;
-            ViewBag.Username     = Username;
-            ViewBag.UserInitial  = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+
+            // Get the most recent chat in this project
+            int lastChatId = -1;
+            using var conn = RavnLearnWeb.Database.GetConnection();
+            await conn.OpenAsync();
+            using var cmd = new NpgsqlCommand(
+                @"SELECT chat_id FROM chats 
+                WHERE project_id = @pid AND user_id = @uid 
+                ORDER BY created_at DESC LIMIT 1", conn);
+            cmd.Parameters.AddWithValue("pid", id);
+            cmd.Parameters.AddWithValue("uid", UserId);
+            var result = await cmd.ExecuteScalarAsync();
+            if (result != null && result != DBNull.Value)
+                lastChatId = Convert.ToInt32(result);
+
+            ViewBag.FolderId    = id;
+            ViewBag.ChatId      = lastChatId;  // ← now passes the real chat ID
+            ViewBag.Username    = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
             return View("Index");
         }
 
@@ -962,4 +981,6 @@ namespace RavnLearnWeb.Controllers
         public int    Id   { get; set; }
         public string Name { get; set; } = "";
     }
+
+    
 }
