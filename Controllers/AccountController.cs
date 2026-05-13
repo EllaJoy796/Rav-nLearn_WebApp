@@ -34,7 +34,7 @@ namespace RavnLearnWeb.Controllers
                         {
                             HttpContext.Session.SetString("Username", username);
                             HttpContext.Session.SetInt32("UserId", Convert.ToInt32(result));
-                            return RedirectToAction("Index", "Chat");
+                            return RedirectToAction("MyChats", "Chat");
                         }
                         else
                         {

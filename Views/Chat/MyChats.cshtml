@@ -1,0 +1,746 @@
+@{
+    ViewData["Title"] = "My Chats";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rev'nLearn - My Chats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg:            #0d0d12;
+            --sidebar-bg:    #111118;
+            --sidebar-width: 72px;
+            --sidebar-expanded: 220px;
+            --card-bg:       #1e1a2e;
+            --card-hover:    #251f3a;
+            --card-new-bg:   #16132a;
+            --accent:        #7c5cbf;
+            --accent-soft:   rgba(124, 92, 191, 0.18);
+            --accent-chip:   #5a3f9e;
+            --text-white:    #f0eeff;
+            --text-muted:    #7a7490;
+            --text-dim:      #4e4868;
+            --border:        rgba(124, 92, 191, 0.12);
+            --icon-bg:       rgba(124, 92, 191, 0.22);
+            --topbar-h:      64px;
+        }
+
+        html, body {
+            height: 100%;
+            background-color: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-white);
+            overflow: hidden;
+        }
+
+        .shell {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ═══════════════════════════════════════
+           SIDEBAR
+        ═══════════════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px 0;
+            gap: 0;
+            flex-shrink: 0;
+            z-index: 100;
+            overflow: hidden;
+            transition: width 0.25s ease;
+            position: relative;
+        }
+
+        .sidebar:hover {
+            width: var(--sidebar-expanded);
+        }
+
+        /* ── Logo row ── */
+        .sidebar-logo {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 15px;
+            margin-bottom: 28px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-icon img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-white);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.05s;
+        }
+
+        .sidebar:hover .logo-text {
+            opacity: 1;
+        }
+
+        /* ── Nav groups ── */
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            width: 100%;
+            padding: 0 12px;
+        }
+
+        .nav-group + .nav-group {
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-group-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 0 4px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.2s ease, max-height 0.2s ease;
+        }
+
+        .sidebar:hover .nav-group-label {
+            opacity: 1;
+            max-height: 20px;
+        }
+
+        .nav-item {
+            width: 100%;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 11px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+            color: white;
+            text-decoration: none;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-soft);
+            color: var(--text-white);
+        }
+
+        .nav-item.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-label {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease 0.05s;
+            overflow: hidden;
+        }
+
+        .sidebar:hover .nav-label {
+            opacity: 1;
+        }
+
+        /* ── Tooltip (only when collapsed) ── */
+        .nav-item::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 82px;
+            top: auto;
+            background: #1e1e2e;
+            color: var(--text-white);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            border: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        /* Show tooltip only when sidebar is NOT hovered */
+        .sidebar:not(:hover) .nav-item:hover::after {
+            opacity: 1;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            width: 100%;
+            padding: 0 12px;
+        }
+
+        /* ═══════════════════════════════════════
+           MAIN
+        ═══════════════════════════════════════ */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+            .page-title {
+                font-family: 'Syne', sans-serif;
+                font-size: 20px;
+                font-weight: 900;
+                color: var(--text-white);
+                letter-spacing: -0.3px;
+                white-space: nowrap;
+                flex: 1;          /* ← pushes search+button to the right */
+            }
+
+            .search-bar {
+                width: 600px;     /* ← fixed width instead of flex: 1 */
+                position: relative;
+                /* remove margin-left: 12px */
+            }
+
+        .search-bar input {
+            width: 100%;
+            height: 40px;
+            background: #1a1726;
+            border: 1px solid white;
+            border-radius: 10px;
+            padding: 0 16px 0 40px;
+            color: var(--text-white);
+            font-size: 13px;
+            font-family: inherit;
+            outline: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-bar input:focus { border-color: var(--accent); }
+        .search-bar input::placeholder { color: var(--text-dim); }
+
+        .search-bar .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        .search-bar .search-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-new {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 300;
+            transition: background 0.2s ease, transform 0.1s ease;
+            flex-shrink: 0;
+            /* margin-left: auto; ← DELETE THIS LINE */
+            line-height: 1;
+        }
+
+        .btn-new:hover { background: #6b4daa; }
+        .btn-new:active { transform: scale(0.95); }
+
+        /* ─── CONTENT ─── */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 28px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-track { background: transparent; }
+        .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        /* ─── GRID ─── */
+        .chats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        /* ─── NEW CHAT CARD ─── */
+        .card-new {
+            background: var(--card-new-bg);
+            border: 1.5px dashed rgba(124, 92, 191, 0.3);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            min-height: 170px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            text-decoration: none;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .card-new:hover {
+            border-color: var(--accent);
+            background: rgba(124, 92, 191, 0.07);
+        }
+
+        .card-new .plus-icon {
+            width: 44px;
+            height: 44px;
+            border: 1.5px solid rgba(124, 92, 191, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card-new:hover .plus-icon {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+
+        .card-new span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* ─── CHAT CARD ─── */
+        .card-chat {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+            min-height: 170px;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .card-chat:hover {
+            background: var(--card-hover);
+            border-color: rgba(124, 92, 191, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-chat:nth-child(2) { animation-delay: 0.05s; }
+        .card-chat:nth-child(3) { animation-delay: 0.1s; }
+        .card-chat:nth-child(4) { animation-delay: 0.15s; }
+        .card-chat:nth-child(5) { animation-delay: 0.2s; }
+        .card-chat:nth-child(6) { animation-delay: 0.25s; }
+
+        .card-top-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .chat-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--icon-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .chat-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-more {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-dim);
+            padding: 2px 4px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-more:hover {
+            color: var(--text-muted);
+            background: var(--accent-soft);
+        }
+
+        .btn-more span {
+            width: 3px;
+            height: 3px;
+            background: currentColor;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .card-body { flex: 1; }
+
+        .chat-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 3px 10px;
+            background: var(--accent-chip);
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #c8b8f0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            margin-top: auto;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        .meta-item svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 640px) {
+            html, body { overflow: auto; }
+            .shell { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar {
+                width: 100% !important;
+                flex-direction: row;
+                height: 56px;
+                padding: 0 16px;
+                gap: 8px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .sidebar-logo { margin-bottom: 0; margin-right: 8px; }
+            .logo-icon { width: 34px; height: 34px; min-width: 34px; }
+            .logo-text { opacity: 1; }
+            .nav-group { flex-direction: row; padding: 0 4px; }
+            .nav-group + .nav-group { margin-top: 0; padding-top: 0; border-top: none; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
+            .nav-group-label { display: none; }
+            .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
+            .nav-item::after { display: none; }
+            .nav-label { display: none; }
+            .chats-grid { grid-template-columns: 1fr 1fr; }
+            .content { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside class="sidebar">
+
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
+                     alt="Rev'nLearn"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='🐦';" />
+            </div>
+            <span class="logo-text">Rev'nLearn</span>
+        </div>
+
+        <!-- Main nav -->
+        <div class="nav-group">
+            <div class="nav-group-label">Main</div>
+            <a class="nav-item active" href="/Chat/MyChats" data-tip="Home / Chat">
+                <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+                <span class="nav-label">Home / Chat</span>
+            </a>
+            <a class="nav-item" href="/Chat/Flashcards" data-tip="Flashcards">
+                <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <span class="nav-label">Flashcards</span>
+            </a>
+            <a class="nav-item" href="/Chat/Quizzes" data-tip="Quizzes">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <span class="nav-label">Quizzes</span>
+            </a>
+        </div>
+
+        <!-- Support nav -->
+        <div class="nav-group">
+            <div class="nav-group-label">Support</div>
+            <a class="nav-item" href="/Help/Index" data-tip="How to use">
+                <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span class="nav-label">How to use</span>
+            </a>
+            <a class="nav-item" href="/Settings/Index" data-tip="Settings">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span class="nav-label">Settings</span>
+            </a>
+        </div>
+
+        <!-- Bottom: user + logout -->
+        <div class="sidebar-bottom">
+            <a class="nav-item" href="/Account/Profile" data-tip="User">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="nav-label">Profile</span>
+            </a>
+            <a class="nav-item" href="/Account/Logout" data-tip="Log Out">
+                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span class="nav-label">Log Out</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- ══════════════ MAIN ══════════════ -->
+    <div class="main">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <span class="page-title">My Chats</span>
+
+            <div class="search-bar">
+                <span class="search-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <input type="text" placeholder="Search chats..." id="searchInput" oninput="filterChats()" />
+            </div>
+
+            <button class="btn-new" onclick="window.location.href='/Chat/New'" title="New chat">+</button>
+        </header>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <div class="section-label">Recent chats</div>
+
+            <div class="chats-grid" id="chatsGrid">
+
+                <!-- New Chat Card -->
+                <a class="card-new" href="/Chat/New">
+                    <div class="plus-icon">+</div>
+                    <span>New chat</span>
+                </a>
+
+                @if (ViewBag.Chats != null)
+                {
+                    foreach (var chat in ViewBag.Chats)
+                    {
+                        <div class="card-chat" onclick="window.location.href='/Chat/Open/@chat.Id'">
+                            <div class="card-top-row">
+                                <div class="chat-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <button class="btn-more" onclick="event.stopPropagation(); showMenu(@chat.Id)">
+                                    <span></span><span></span><span></span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="chat-name">@chat.Name?.ToUpper()</div>
+                                <span class="chip">@chat.Subject</span>
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    @chat.Date?.ToString("MMM dd, yyyy")
+                                </div>
+                                <div class="meta-item">
+                                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    @chat.FileCount Files
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        <div class="card-chat demo-card">
+                            <div class="card-top-row">
+                                <div class="chat-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <button class="btn-more" onclick="event.stopPropagation()">
+                                    <span></span><span></span><span></span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="chat-name">LINUX REVIEWER</div>
+                                <span class="chip">OS102</span>
+                            </div>
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    May 13, 2026
+                                </div>
+                                <div class="meta-item">
+                                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    2 Files
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function filterChats() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.card-chat').forEach(card => {
+            const name = card.querySelector('.chat-name')?.textContent.toLowerCase() ?? '';
+            const chip = card.querySelector('.chip')?.textContent.toLowerCase() ?? '';
+            card.style.display = (name.includes(q) || chip.includes(q)) ? '' : 'none';
+        });
+    }
+
+    function showMenu(chatId) {
+        alert('Options for chat ' + chatId);
+    }
+</script>
+</body>
+</html>

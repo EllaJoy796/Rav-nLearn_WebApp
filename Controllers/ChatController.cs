@@ -19,6 +19,29 @@ namespace RavnLearnWeb.Controllers
             return View();
         }
 
+        public IActionResult MyChats()
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.Username = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            return View();
+        }
+
+            public IActionResult Flashcards()
+            {
+                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+                ViewBag.Username = Username;
+                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+                return View();
+            }
+
+            public IActionResult Quizzes()
+            {
+                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+                ViewBag.Username = Username;
+                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+                return View();
+            }
         [HttpGet]
         public async Task<IActionResult> GetChats()
         {
@@ -67,7 +90,6 @@ namespace RavnLearnWeb.Controllers
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
 
-                // Explicit delete in case cascade isn't set up
                 using var cmd0 = new NpgsqlCommand("DELETE FROM chat_documents WHERE chat_id = @cid", conn);
                 cmd0.Parameters.AddWithValue("cid", id);
                 await cmd0.ExecuteNonQueryAsync();
@@ -97,7 +119,6 @@ namespace RavnLearnWeb.Controllers
 
             try
             {
-                // Get chat title
                 using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
                     await conn.OpenAsync();
@@ -108,7 +129,6 @@ namespace RavnLearnWeb.Controllers
                     chatTitle = result as string;
                 }
 
-                // Get ALL uploaded filenames for this chat
                 using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
                     await conn.OpenAsync();
@@ -120,7 +140,6 @@ namespace RavnLearnWeb.Controllers
                         docFilenames.Add(reader.GetString(0));
                 }
 
-                // Get messages
                 using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
                     await conn.OpenAsync();
@@ -137,8 +156,8 @@ namespace RavnLearnWeb.Controllers
             return Json(new
             {
                 messages,
-                docFilenames,                              // array — what the frontend uses
-                docFilename = docFilenames.FirstOrDefault(), // single — backwards compat
+                docFilenames,
+                docFilename = docFilenames.FirstOrDefault(),
                 chatTitle
             });
         }
@@ -154,7 +173,6 @@ namespace RavnLearnWeb.Controllers
             {
                 int chatId = req.ChatId;
 
-                // Create chat if needed
                 if (chatId <= 0)
                 {
                     using var conn = RavnLearnWeb.Database.GetConnection();
@@ -167,7 +185,6 @@ namespace RavnLearnWeb.Controllers
                     chatId = Convert.ToInt32(await newCmd.ExecuteScalarAsync());
                 }
 
-                // Auto-rename on first user message
                 string newTitle = "";
                 using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
@@ -190,7 +207,6 @@ namespace RavnLearnWeb.Controllers
                     }
                 }
 
-                // Combine ALL document texts for context
                 var docContextBuilder = new StringBuilder();
                 using (var conn = RavnLearnWeb.Database.GetConnection())
                 {
@@ -229,7 +245,6 @@ namespace RavnLearnWeb.Controllers
 
             try
             {
-                // Create chat if needed
                 if (chatId <= 0)
                 {
                     using var conn0 = RavnLearnWeb.Database.GetConnection();
@@ -251,7 +266,6 @@ namespace RavnLearnWeb.Controllers
                                : ext == ".pdf" ? ExtractPdfText(fileBytes)
                                : ExtractDocxText(fileBytes);
 
-                // INSERT a new row instead of overwriting
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
                 using var cmd = new NpgsqlCommand(
@@ -270,7 +284,6 @@ namespace RavnLearnWeb.Controllers
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
-
 
         [HttpPost]
         public async Task<IActionResult> SaveQuiz([FromBody] SaveQuizRequest req)
@@ -325,28 +338,29 @@ namespace RavnLearnWeb.Controllers
         }
 
         private string ExtractPdfText(byte[] bytes)
-{
-    var sb = new StringBuilder();
-    try
-    {
-        using var doc = UglyToad.PdfPig.PdfDocument.Open(bytes);
-        foreach (var page in doc.GetPages())
         {
-            var words = page.GetWords();
-            sb.AppendLine(string.Join(" ", words.Select(w => w.Text)));
+            var sb = new StringBuilder();
+            try
+            {
+                using var doc = UglyToad.PdfPig.PdfDocument.Open(bytes);
+                foreach (var page in doc.GetPages())
+                {
+                    var words = page.GetWords();
+                    sb.AppendLine(string.Join(" ", words.Select(w => w.Text)));
+                }
+
+                string result = sb.ToString().Trim();
+                if (string.IsNullOrWhiteSpace(result))
+                    return "[This PDF appears to be image-based or scanned. Text could not be extracted.]";
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return $"[Could not extract PDF text: {ex.Message}]";
+            }
         }
 
-        string result = sb.ToString().Trim();
-        if (string.IsNullOrWhiteSpace(result))
-            return "[This PDF appears to be image-based or scanned. Text could not be extracted.]";
-
-        return result;
-    }
-    catch (Exception ex)
-    {
-        return $"[Could not extract PDF text: {ex.Message}]";
-    }
-}
         private string ExtractDocxText(byte[] bytes)
         {
             try
@@ -364,9 +378,10 @@ namespace RavnLearnWeb.Controllers
         public int ChatId { get; set; }
         public string Message { get; set; } = "";
     }
+
     public class SaveQuizRequest
-{
-    public int ChatId { get; set; }
-    public string QuizText { get; set; } = "";
-}
+    {
+        public int ChatId { get; set; }
+        public string QuizText { get; set; } = "";
+    }
 }
