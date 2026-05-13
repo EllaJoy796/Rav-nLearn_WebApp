@@ -362,7 +362,8 @@
     </div>
 </div>
 <script>
-    let activeChatId = -1;
+    let activeFolderId = @(ViewBag.FolderId ?? -1); 
+    let activeChatId = @(ViewBag.ChatId ?? -1);
     let isSending = false;
     let speakingBtn = null;
     let quizCount = 0;
@@ -399,6 +400,11 @@
         setupResizeHandles();
         setupVerticalResize();
         initSourcesSectionHeight();
+
+         // ADD THIS — auto-load if opened from MyChats
+        if (activeChatId !== -1) {
+            await loadChat(activeChatId);
+        }
     });
 
     function setupEventListeners() {
@@ -524,14 +530,18 @@
 
     // ══ CHAT LIST ════════════════════════════════════════
     async function loadChatList() {
+        if (activeFolderId === -1) return;
         try {
-            const res = await fetch('/Chat/GetChats');
+            const res = await fetch(`/Chat/GetChatsInProject?projectId=${activeFolderId}`);
             const chats = await res.json();
             const list = document.getElementById('chatList');
             list.innerHTML = '';
             chats.forEach(c => list.appendChild(makeChatItem(c.id, c.title)));
+            if (activeChatId !== -1) setActiveChatItem(activeChatId);
         } catch (err) { console.error('loadChatList error:', err); }
     }
+
+
 
     function makeChatItem(id, title) {
         const el = document.createElement('div');
@@ -563,7 +573,11 @@
 
     async function newChat() {
         try {
-            const res = await fetch('/Chat/NewChat', { method: 'POST' });
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
             const data = await res.json();
             addChatItemToTop(data.id, data.title);
             await loadChat(data.id);
@@ -578,47 +592,60 @@
         if (activeChatId === id) resetUI();
     }
 
+
     // ══ LOAD CHAT ════════════════════════════════════════
-async function loadChat(chatId) {
-    activeChatId = parseInt(chatId);
-    setActiveChatItem(activeChatId);
-    showChatUI();
-    clearMessages();
-    clearQuizList();
-    clearSourceList();
+    async function loadChat(chatId) {
+        activeChatId = parseInt(chatId);
+        setActiveChatItem(activeChatId);
+        showChatUI();
+        clearMessages();
+        clearQuizList();
+        clearSourceList();
 
-    try {
-        const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-
-        if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
-            data.docFilenames.forEach(name => addSourceItem(name, false));
-        } else if (data.docFilename) {
-            addSourceItem(data.docFilename, false);
-        }
-
-        if (!data.messages || data.messages.length === 0) {
-            appendBubble('No messages yet. Start the conversation!', 'ai');
-        } else {
-            data.messages.forEach(m =>
-                appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
-        }
-
-        scrollToBottom();
-
-        // Load saved quizzes for this chat  ← ADD THIS BLOCK
         try {
-            const qres = await fetch(`/Chat/GetQuizzes?chatId=${activeChatId}`);
-            const quizzes = await qres.json();
-            quizzes.forEach(q => addQuizToPanel(q.text, false));
-        } catch (err) { console.error('Quiz load error:', err); }
+            const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
 
-    } catch (err) {
-        appendBubble('Could not load messages: ' + err.message, 'ai');
+            if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
+                data.docFilenames.forEach(name => addSourceItem(name, false));
+            } else if (data.docFilename) {
+                addSourceItem(data.docFilename, false);
+            }
+
+            if (!data.messages || data.messages.length === 0) {
+                appendBubble('No messages yet. Start the conversation!', 'ai');
+            } else {
+                data.messages.forEach(m =>
+                    appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
+            }
+
+            scrollToBottom();
+
+        } catch (err) {
+            appendBubble('Could not load messages: ' + err.message, 'ai');
+        }
+
+        // Quiz loading in its own separate try/catch
+        try {
+            const qres = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
+            const quizzes = await qres.json();
+            if (quizzes.length > 0) {
+                const reconstructed = quizzes.map(q => ({
+                    question: q.question,
+                    options: [q.choiceA, q.choiceB, q.choiceC, q.choiceD],
+                    answerIndex: ['A','B','C','D'].indexOf(q.correctAnswer.toUpperCase()),
+                    type: 'mcq',
+                    answer: ''
+                }));
+                if (reconstructed.length > 0) {
+                    addQuizToPanel_structured(reconstructed);
+                }
+            }
+        } catch (err) { console.error('Quiz load error:', err); }
     }
-}
-   
+    
+    
     // ══ SEND MESSAGE ══════════════════════════════════════
     async function sendMessage() {
         if (isSending) return;
@@ -627,13 +654,15 @@ async function loadChat(chatId) {
         if (!message) return;
 
         if (activeChatId === -1) {
-            try {
-                const res = await fetch('/Chat/NewChat', { method: 'POST' });
-                const data = await res.json();
-                activeChatId = parseInt(data.id);
-                addChatItemToTop(data.id, data.title);
-                setActiveChatItem(activeChatId);
-            } catch (err) { alert('Could not create chat: ' + err.message); return; }
+            const res = await fetch('/Chat/NewSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
+            const data = await res.json();
+            activeChatId = parseInt(data.id);
+            addChatItemToTop(data.id, data.title);
+            setActiveChatItem(activeChatId);
         }
 
         showChatUI();
@@ -1060,13 +1089,66 @@ function addQuizToPanel(text, save = true) {
     list.appendChild(card);
 
     if (save && activeChatId > 0) {
-        fetch('/Chat/SaveQuiz', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: activeChatId, quizText: text })
-        }).catch(err => console.error('Quiz save error:', err));
+        const questions = parsed.questions
+            .filter(q => q.type === 'mcq' && q.options.length === 4)
+            .map(q => ({
+                question:      q.question,
+                choiceA:       q.options[0] || '',
+                choiceB:       q.options[1] || '',
+                choiceC:       q.options[2] || '',
+                choiceD:       q.options[3] || '',
+                correctAnswer: ['A','B','C','D'][q.answerIndex] || 'A'
+            }));
+        if (questions.length > 0) {
+            fetch('/Chat/SaveQuizQuestions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: activeChatId, questions })
+            }).catch(err => console.error('Quiz save error:', err));
+        }
     }
 }
+
+function addQuizToPanel_structured(questions) {
+    quizCount++;
+    const parsed = { title: '', questions };
+    const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
+    const title = questions[0]?.question?.slice(0, 50) || label;
+    const list = document.getElementById('quizList');
+
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    const header = document.createElement('div');
+    header.className = 'quiz-card-header';
+    const arrow = document.createElement('span');
+    arrow.className = 'quiz-card-arrow';
+    arrow.textContent = '▶';
+    header.innerHTML = `<span class="quiz-card-num">${escHtml(label)}</span><span class="quiz-card-title">${escHtml(title)}</span>`;
+
+    const btnModal = document.createElement('button');
+    btnModal.className = 'btn-modal-open';
+    btnModal.textContent = '⛶ Full';
+    btnModal.addEventListener('click', (e) => { e.stopPropagation(); openQuizModal(label, parsed, card); });
+    const btnFlashcard = document.createElement('button');
+    btnFlashcard.className = 'btn-modal-open';
+    btnFlashcard.textContent = '🃏 Cards';
+    btnFlashcard.addEventListener('click', (e) => { e.stopPropagation(); openFlashcardModal(label, parsed.questions); });
+
+    header.appendChild(btnModal);
+    header.appendChild(btnFlashcard);
+    header.appendChild(arrow);
+
+    let body = buildQuizBody(parsed, card);
+    header.addEventListener('click', () => {
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
+    });
+    card.appendChild(header);
+    card.appendChild(body);
+    list.appendChild(card);
+}
+
 function parseQuizFromText(text) {
     const result = { title: '', questions: [] };
 
