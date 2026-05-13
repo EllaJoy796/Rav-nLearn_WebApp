@@ -470,7 +470,35 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
             line-height: 1.6;
         }
         .btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
-    </style>
+    
+        .btn-mic {
+        background: none; border: none; border-radius: 8px;
+        width: 34px; height: 34px; display: flex; align-items: center;
+        justify-content: center; cursor: pointer; flex-shrink: 0;
+        color: var(--text-dim); transition: color 0.18s, background 0.18s;
+        }
+        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
+        .btn-mic.recording { color: #e74c3c; animation: micPulse 1.2s ease-in-out infinite; }
+        @@keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .voice-status-bar {
+            display: none; align-items: center; justify-content: space-between;
+            padding: 5px 14px 0; font-size: 11px; gap: 8px;
+        }
+        .voice-status-bar.visible { display: flex; }
+        .voice-status-text { color: #e74c3c; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+        .voice-status-text .mic-dot {
+            width: 7px; height: 7px; background: #e74c3c; border-radius: 50%;
+            animation: micPulse 1.2s ease-in-out infinite; flex-shrink: 0;
+        }
+        .voice-countdown { color: var(--text-dim); font-size: 11px; flex-shrink: 0; transition: color 0.3s; }
+        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
+        .voice-cancel-btn {
+            background: none; border: 1px solid #3a3a3a; border-radius: 5px;
+            color: var(--text-dim); font-size: 10px; padding: 2px 8px;
+            cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0;
+        }
+        .voice-cancel-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+     </style>
 </head>
 <body>
 
@@ -547,13 +575,27 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
             </div>
         </div>
         <div class="input-bar">
-            <div class="input-row">
-                <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
-                <button class="btn-send" id="btnSend" title="Send">
-                    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-                </button>
+        <div class="input-row">
+            <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
+            <button class="btn-mic" id="btnMic" title="Voice input">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+                </svg>
+            </button>
+            <button class="btn-send" id="btnSend" title="Send">
+                <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+            </button>
+        </div>
+        <div class="voice-status-bar" id="voiceStatusBar">
+            <div class="voice-status-text">
+                <span class="mic-dot"></span>
+                <span id="voiceStatusText">Listening…</span>
             </div>
-            <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+            <span class="voice-countdown" id="voiceCountdown"></span>
+            <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
+        </div>
+        <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
         </div>
     </main>
 
@@ -1458,6 +1500,107 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
         handle.classList.remove('dragging');
     });
 }
+
+
+(function () {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btnMic        = document.getElementById('btnMic');
+    const txtInput      = document.getElementById('txtInput');
+    const statusBar     = document.getElementById('voiceStatusBar');
+    const statusText    = document.getElementById('voiceStatusText');
+    const countdownEl   = document.getElementById('voiceCountdown');
+    const cancelBtn     = document.getElementById('voiceCancelBtn');
+    const inputHint     = document.getElementById('inputHint');
+
+    if (!SpeechRecognition) { if (btnMic) btnMic.style.display = 'none'; return; }
+
+    let recognition = null, isRecording = false;
+    let countdownInterval = null, silenceSeconds = 0;
+    const SILENCE_LIMIT = 5;
+
+    function buildRecognition() {
+        const r = new SpeechRecognition();
+        r.continuous = true; r.interimResults = true; r.lang = 'en-US';
+        let finalTranscript = '';
+
+        r.onstart = () => {
+            finalTranscript = txtInput.value.trim();
+            statusBar.classList.add('visible');
+            inputHint.style.display = 'none';
+            setListeningState();
+        };
+        r.onresult = (e) => {
+            let interim = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                const t = e.results[i][0].transcript;
+                if (e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + t.trim();
+                else interim = t;
+            }
+            txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
+            autoResize(txtInput);
+            resetSilenceTimer();
+        };
+        r.onspeechend = () => startSilenceTimer();
+        r.onsoundend  = () => startSilenceTimer();
+        r.onerror = (e) => {
+            if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
+            if (e.error === 'aborted') return;
+            stopRecording(false);
+        };
+        r.onend = () => { if (isRecording) try { r.start(); } catch (_) {} };
+        return r;
+    }
+
+    function setListeningState() {
+        statusText.textContent = 'Listening…';
+        countdownEl.textContent = '';
+        countdownEl.classList.remove('urgent');
+    }
+    function startSilenceTimer() {
+        clearSilenceTimer();
+        silenceSeconds = SILENCE_LIMIT;
+        statusText.textContent = 'Auto-sending in…';
+        countdownInterval = setInterval(() => {
+            silenceSeconds--;
+            countdownEl.textContent = silenceSeconds + 's';
+            countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
+            if (silenceSeconds <= 0) { clearSilenceTimer(); stopRecording(true); }
+        }, 1000);
+    }
+    function resetSilenceTimer() { clearSilenceTimer(); setListeningState(); }
+    function clearSilenceTimer() { clearInterval(countdownInterval); countdownInterval = null; }
+
+    function startRecording() {
+        if (isRecording) return;
+        isRecording = true;
+        btnMic.classList.add('recording');
+        btnMic.title = 'Stop recording';
+        recognition = buildRecognition();
+        try { recognition.start(); } catch (_) {}
+    }
+    function stopRecording(andSend = false) {
+        if (!isRecording) return;
+        isRecording = false;
+        clearSilenceTimer();
+        btnMic.classList.remove('recording');
+        btnMic.title = 'Voice input';
+        statusBar.classList.remove('visible');
+        inputHint.style.display = '';
+        countdownEl.classList.remove('urgent');
+        try { recognition.abort(); } catch (_) {}
+        recognition = null;
+        if (andSend && txtInput.value.trim()) sendMessage();
+    }
+
+    btnMic.addEventListener('click', () => isRecording ? stopRecording(false) : startRecording());
+    cancelBtn.addEventListener('click', () => stopRecording(false));
+    txtInput.addEventListener('keydown', (e) => {
+        if (isRecording && e.key === 'Enter' && !e.shiftKey) stopRecording(false);
+    });
+    document.getElementById('btnSend').addEventListener('click', () => {
+        if (isRecording) stopRecording(false);
+    });
+})();
 </script>
 </body>
 </html>
