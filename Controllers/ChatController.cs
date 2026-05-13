@@ -27,21 +27,22 @@ namespace RavnLearnWeb.Controllers
             return View();
         }
 
-            public IActionResult Flashcards()
-            {
-                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-                ViewBag.Username = Username;
-                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
-                return View();
-            }
+        public IActionResult Flashcards()
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.Username = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            return View();
+        }
 
-            public IActionResult Quizzes()
-            {
-                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-                ViewBag.Username = Username;
-                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
-                return View();
-            }
+        public IActionResult Quizzes()
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.Username = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            return View();
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetChats()
         {
@@ -89,7 +90,7 @@ namespace RavnLearnWeb.Controllers
             if (!IsLoggedIn()) return Unauthorized();
             if (string.IsNullOrWhiteSpace(req.Name))
                 return BadRequest(new { error = "Name is required" });
-        
+
             try
             {
                 using var conn = RavnLearnWeb.Database.GetConnection();
@@ -107,8 +108,7 @@ namespace RavnLearnWeb.Controllers
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
- 
-// 2. GET all chats for MyChats page (with file count per card)
+
         [HttpGet]
         public async Task<IActionResult> GetMyChats()
         {
@@ -146,8 +146,7 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
             return Json(chats);
         }
-            
-       
+
         [HttpDelete]
         public async Task<IActionResult> DeleteChat(int id)
         {
@@ -161,7 +160,6 @@ namespace RavnLearnWeb.Controllers
                 cmdF.Parameters.AddWithValue("cid", id);
                 await cmdF.ExecuteNonQueryAsync();
 
-                // ✅ UPDATED — through session_id na, hindi na chat_id
                 using var cmdQ = new NpgsqlCommand(
                     @"DELETE FROM quizzes WHERE session_id IN 
                     (SELECT session_id FROM chat_sessions WHERE chat_id = @cid)", conn);
@@ -174,7 +172,6 @@ namespace RavnLearnWeb.Controllers
                 cmdFc.Parameters.AddWithValue("cid", id);
                 await cmdFc.ExecuteNonQueryAsync();
 
-                // ✅ DELETE sessions din
                 using var cmdSess = new NpgsqlCommand(
                     "DELETE FROM chat_sessions WHERE chat_id = @cid", conn);
                 cmdSess.Parameters.AddWithValue("cid", id);
@@ -198,13 +195,14 @@ namespace RavnLearnWeb.Controllers
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetMessages(int chatId)
         {
             if (!IsLoggedIn()) return Unauthorized();
             var messages = new List<object>();
             var docFilenames = new List<string>();
-            string chatTitle = "New Chat";  // Default value
+            string chatTitle = "New Chat";
 
             try
             {
@@ -215,11 +213,8 @@ namespace RavnLearnWeb.Controllers
                        "SELECT COALESCE(name, 'New Chat') FROM chats WHERE chat_id = @cid", conn);
                     cmd.Parameters.AddWithValue("cid", chatId);
                     var result = await cmd.ExecuteScalarAsync();
-                    // Properly handle null/DBNull
                     if (result != null && result != DBNull.Value)
-                    {
                         chatTitle = result.ToString() ?? "New Chat";
-                    }
                 }
 
                 using (var conn = RavnLearnWeb.Database.GetConnection())
@@ -426,18 +421,16 @@ namespace RavnLearnWeb.Controllers
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
 
-                // Step 1: Gumawa ng chat_session muna
                 using var sessionCmd = new NpgsqlCommand(
                     @"INSERT INTO chat_sessions (chat_id, title, created_at)
                     VALUES (@cid, @title, @now)
                     RETURNING session_id", conn);
                 sessionCmd.Parameters.AddWithValue("cid", req.ChatId);
-              var pst = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Asia/Manila");
-sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
+                var pst = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Asia/Manila");
+                sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 sessionCmd.Parameters.AddWithValue("now", DateTime.UtcNow);
                 int sessionId = Convert.ToInt32(await sessionCmd.ExecuteScalarAsync());
 
-                // Step 2: I-save ang bawat question under that session
                 foreach (var q in req.Questions)
                 {
                     using var cmd = new NpgsqlCommand(
@@ -466,7 +459,7 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
-            
+
         [HttpGet]
         public async Task<IActionResult> GetQuizzesByChat(int chatId)
         {
@@ -505,8 +498,7 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
             return Json(questions);
         }
-            
-       
+
         [HttpPost]
         public async Task<IActionResult> SaveFlashcards([FromBody] SaveFlashcardsRequest req)
         {
@@ -556,8 +548,6 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             return Json(cards);
         }
 
-        // Add these new endpoints to ChatController
-
         [HttpPost]
         public async Task<IActionResult> NewSession([FromBody] NewSessionRequest req)
         {
@@ -567,14 +557,12 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
 
-                // Verify project belongs to this user
                 using var check = new NpgsqlCommand(
                     "SELECT 1 FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
                 check.Parameters.AddWithValue("pid", req.FolderId);
                 check.Parameters.AddWithValue("uid", UserId);
                 if (await check.ExecuteScalarAsync() == null) return Forbid();
 
-                // Create a chat under this project
                 using var chatCmd = new NpgsqlCommand(
                     @"INSERT INTO chats (user_id, project_id, name, created_at)
                     VALUES (@uid, @pid, 'New Chat', @now)
@@ -584,7 +572,6 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 chatCmd.Parameters.AddWithValue("now", DateTime.UtcNow);
                 int chatId = Convert.ToInt32(await chatCmd.ExecuteScalarAsync());
 
-                // Create a session under that chat
                 using var cmd = new NpgsqlCommand(
                     @"INSERT INTO chat_sessions (chat_id, title, created_at)
                     VALUES (@cid, 'New Chat', @now)
@@ -596,7 +583,7 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetSessions(int folderId)
         {
@@ -631,8 +618,6 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             {
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
-                // Cascade deletes messages, files, quizzes, flashcards if you set ON DELETE CASCADE
-                // Otherwise delete children first:
                 foreach (var tbl in new[] { "files", "quizzes", "flashcards", "messages" })
                 {
                     using var del = new NpgsqlCommand(
@@ -647,6 +632,87 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 cmd.Parameters.AddWithValue("sid", id);
                 cmd.Parameters.AddWithValue("uid", UserId);
                 await cmd.ExecuteNonQueryAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RenameProject([FromBody] RenameProjectRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Name))
+                return BadRequest(new { error = "Name is required" });
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    "UPDATE projects SET name = @name WHERE project_id = @pid AND user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("name", req.Name);
+                cmd.Parameters.AddWithValue("pid", req.Id);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                int rows = await cmd.ExecuteNonQueryAsync();
+                if (rows == 0) return NotFound(new { error = "Project not found" });
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+
+                var chatIds = new List<int>();
+                using (var cmd = new NpgsqlCommand(
+                    "SELECT chat_id FROM chats WHERE project_id = @pid AND user_id = @uid", conn))
+                {
+                    cmd.Parameters.AddWithValue("pid", id);
+                    cmd.Parameters.AddWithValue("uid", UserId);
+                    using var r = await cmd.ExecuteReaderAsync();
+                    while (await r.ReadAsync()) chatIds.Add(r.GetInt32(0));
+                }
+
+                foreach (var cid in chatIds)
+                {
+                    using var cmdF = new NpgsqlCommand("DELETE FROM files WHERE chat_id = @cid", conn);
+                    cmdF.Parameters.AddWithValue("cid", cid);
+                    await cmdF.ExecuteNonQueryAsync();
+
+                    using var cmdQ = new NpgsqlCommand(
+                        "DELETE FROM quizzes WHERE session_id IN (SELECT session_id FROM chat_sessions WHERE chat_id = @cid)", conn);
+                    cmdQ.Parameters.AddWithValue("cid", cid);
+                    await cmdQ.ExecuteNonQueryAsync();
+
+                    using var cmdFc = new NpgsqlCommand("DELETE FROM flashcards WHERE chat_id = @cid", conn);
+                    cmdFc.Parameters.AddWithValue("cid", cid);
+                    await cmdFc.ExecuteNonQueryAsync();
+
+                    using var cmdSess = new NpgsqlCommand("DELETE FROM chat_sessions WHERE chat_id = @cid", conn);
+                    cmdSess.Parameters.AddWithValue("cid", cid);
+                    await cmdSess.ExecuteNonQueryAsync();
+
+                    using var cmdM = new NpgsqlCommand("DELETE FROM messages WHERE chat_id = @cid", conn);
+                    cmdM.Parameters.AddWithValue("cid", cid);
+                    await cmdM.ExecuteNonQueryAsync();
+
+                    using var cmdC = new NpgsqlCommand("DELETE FROM chats WHERE chat_id = @cid", conn);
+                    cmdC.Parameters.AddWithValue("cid", cid);
+                    await cmdC.ExecuteNonQueryAsync();
+                }
+
+                using var cmdP = new NpgsqlCommand(
+                    "DELETE FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+                cmdP.Parameters.AddWithValue("pid", id);
+                cmdP.Parameters.AddWithValue("uid", UserId);
+                await cmdP.ExecuteNonQueryAsync();
+
                 return Json(new { success = true });
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
@@ -750,7 +816,6 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
 
-                // Verify project belongs to user
                 using var check = new NpgsqlCommand(
                     "SELECT 1 FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
                 check.Parameters.AddWithValue("pid", req.FolderId);
@@ -776,11 +841,11 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             public string Subject { get; set; } = "";
         }
 
-        public IActionResult Open(int id)  // id = folderId
+        public IActionResult Open(int id)
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
             ViewBag.FolderId     = id;
-            ViewBag.ChatId       = -1;   // no session selected yet
+            ViewBag.ChatId       = -1;
             ViewBag.Username     = Username;
             ViewBag.UserInitial  = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
             return View("Index");
@@ -810,11 +875,9 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                     var words = page.GetWords();
                     sb.AppendLine(string.Join(" ", words.Select(w => w.Text)));
                 }
-
                 string result = sb.ToString().Trim();
                 if (string.IsNullOrWhiteSpace(result))
                     return "[This PDF appears to be image-based or scanned. Text could not be extracted.]";
-
                 return result;
             }
             catch (Exception ex)
@@ -847,25 +910,32 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
         public string QuizText { get; set; } = "";
     }
 
-    public class SaveQuizQuestionsRequest {
-    public int ChatId { get; set; }
-    public List<QuizQuestionItem> Questions { get; set; } = new();
-}
-    public class QuizQuestionItem {
+    public class SaveQuizQuestionsRequest
+    {
+        public int ChatId { get; set; }
+        public List<QuizQuestionItem> Questions { get; set; } = new();
+    }
+
+    public class QuizQuestionItem
+    {
         public string Question      { get; set; } = "";
-        public string QuestionType  { get; set; } = "mcq";   // "mcq" | "truefalse" | "fillblank"
+        public string QuestionType  { get; set; } = "mcq";
         public string ChoiceA       { get; set; } = "";
         public string ChoiceB       { get; set; } = "";
         public string ChoiceC       { get; set; } = "";
         public string ChoiceD       { get; set; } = "";
         public string CorrectAnswer { get; set; } = "";
-        public string AnswerText    { get; set; } = "";       // for fillblank
+        public string AnswerText    { get; set; } = "";
     }
-    public class SaveFlashcardsRequest {
+
+    public class SaveFlashcardsRequest
+    {
         public int ChatId { get; set; }
         public List<FlashcardItem> Cards { get; set; } = new();
     }
-    public class FlashcardItem {
+
+    public class FlashcardItem
+    {
         public string Front { get; set; } = "";
         public string Back  { get; set; } = "";
     }
@@ -873,5 +943,11 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
     public class NewSessionRequest
     {
         public int FolderId { get; set; }
+    }
+
+    public class RenameProjectRequest
+    {
+        public int Id      { get; set; }
+        public string Name { get; set; } = "";
     }
 }
