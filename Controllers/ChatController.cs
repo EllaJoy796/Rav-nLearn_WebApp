@@ -442,13 +442,14 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
                 {
                     using var cmd = new NpgsqlCommand(
                         @"INSERT INTO quizzes 
-                            (session_id, question, question_type,
+                            (chat_id, session_id, question, question_type,
                             choice_a, choice_b, choice_c, choice_d,
                             correct_answer, answer_text, created_at)
                         VALUES 
-                            (@sid, @q, @qtype,
+                            (@cid, @sid, @q, @qtype,
                             @a, @b, @c, @d,
                             @ans, @atxt, @now)", conn);
+                    cmd.Parameters.AddWithValue("cid",   req.ChatId);
                     cmd.Parameters.AddWithValue("sid",   sessionId);
                     cmd.Parameters.AddWithValue("q",     q.Question);
                     cmd.Parameters.AddWithValue("qtype", q.QuestionType);
@@ -770,6 +771,52 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
+        [HttpGet]
+        public IActionResult QuizzesView(int id)
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetQuizzesByProject(int projectId)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            var result = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(@"
+                    SELECT q.quiz_id, q.question, q.choice_a, q.choice_b, q.choice_c, q.choice_d,
+                        q.correct_answer, q.question_type, q.answer_text, q.session_id, q.created_at
+                    FROM quizzes q
+                    JOIN chats c ON c.chat_id = q.chat_id
+                    WHERE c.project_id = @pid AND c.user_id = @uid
+                    ORDER BY q.session_id, q.quiz_id", conn);
+                cmd.Parameters.AddWithValue("pid", projectId);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    result.Add(new {
+                        quizId       = reader.GetInt32(0),
+                        question     = reader.GetString(1),
+                        choiceA      = reader.IsDBNull(2)  ? "" : reader.GetString(2),
+                        choiceB      = reader.IsDBNull(3)  ? "" : reader.GetString(3),
+                        choiceC      = reader.IsDBNull(4)  ? "" : reader.GetString(4),
+                        choiceD      = reader.IsDBNull(5)  ? "" : reader.GetString(5),
+                        correctAnswer= reader.IsDBNull(6)  ? "" : reader.GetString(6),
+                        questionType = reader.IsDBNull(7)  ? "mcq" : reader.GetString(7),
+                        answerText   = reader.IsDBNull(8)  ? "" : reader.GetString(8),
+                        sessionId    = reader.IsDBNull(9)  ? 0  : reader.GetInt32(9),
+                        createdAt    = reader.GetDateTime(10).ToString("MMM dd, yyyy")
+                    });
+                }
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+            return Json(result);
+        }
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";
@@ -874,4 +921,6 @@ sessionCmd.Parameters.AddWithValue("title", $"Session {pst:MMM dd, h:mm tt}");
     {
         public int FolderId { get; set; }
     }
+
+    
 }

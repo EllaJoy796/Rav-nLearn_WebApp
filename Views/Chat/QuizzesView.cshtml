@@ -520,18 +520,300 @@
         </div>
 
     </div>
+
+    <!-- QUIZ MODAL -->
+<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1a2e;border:1px solid rgba(124,92,191,0.3);border-radius:20px;width:min(620px,92vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid rgba(124,92,191,0.15);flex-shrink:0;">
+            <div>
+                <div id="modalQuizTitle" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#f0eeff;"></div>
+                <div id="modalQuizSub" style="font-size:12px;color:#7a7490;margin-top:2px;"></div>
+            </div>
+            <button onclick="closeQuizModal()" style="background:none;border:none;color:#555;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;">✕</button>
+        </div>
+        <!-- Progress bar -->
+        <div style="height:3px;background:rgba(124,92,191,0.15);flex-shrink:0;">
+            <div id="modalProgress" style="height:100%;background:#7c5cbf;border-radius:2px;transition:width 0.3s;width:0%;"></div>
+        </div>
+        <!-- Body -->
+        <div id="modalBody" style="flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:rgba(124,92,191,0.2) transparent;"></div>
+        <!-- Footer -->
+        <div style="padding:16px 24px;border-top:1px solid rgba(124,92,191,0.15);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div id="modalScore" style="font-size:13px;color:#7a7490;"></div>
+            <div style="display:flex;gap:10px;">
+                <button onclick="retryQuiz()" style="background:none;border:1px solid rgba(124,92,191,0.3);border-radius:10px;color:#c8b8f0;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .2s;">↺ Retry</button>
+                <button onclick="closeQuizModal()" style="background:#7c5cbf;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .2s;">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <script>
-    /* ── THEME INIT ── */
-    (function () {
-        if (localStorage.getItem('lightMode') === 'true')
-            document.body.classList.add('light-mode');
-    })();
+  (function () {
+    if (localStorage.getItem('lightMode') === 'true')
+        document.body.classList.add('light-mode');
+})();
 
-    function showQuizMenu(cardId) {
-        alert('Options for quiz ' + cardId);
-    }
+const projectId = new URLSearchParams(window.location.search).get('id');
+let allSessions = [];
+let currentSession = [];
+let score = 0;
+let answered = 0;
+
+document.addEventListener('DOMContentLoaded', loadQuizzes);
+
+async function loadQuizzes() {
+    try {
+        const res  = await fetch(`/Chat/GetQuizzesByProject?projectId=${projectId}`);
+        const data = await res.json();
+        const grid = document.querySelector('.cards-grid');
+        grid.innerHTML = '';
+
+        if (!data.length) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
+                    gap:12px;padding:60px 20px;color:var(--text-dim);text-align:center;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none"
+                        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    <p style="font-size:14px">No quizzes yet.<br>Go to a chat and ask to create a quiz.</p>
+                </div>`;
+            return;
+        }
+
+        // Group by session_id
+        const sessions = new Map();
+        data.forEach(q => {
+            const sid = q.sessionId || q.quizId;
+            if (!sessions.has(sid)) sessions.set(sid, []);
+            sessions.get(sid).push(q);
+        });
+
+        allSessions = [...sessions.values()];
+
+        let cardNum = 1;
+        sessions.forEach((questions) => {
+            grid.appendChild(makeQuizCard(cardNum++, questions));
+        });
+
+        // Update topbar count
+        const countEl = document.querySelector('.set-meta');
+        if (countEl) countEl.innerHTML = countEl.innerHTML.replace(/\d+ Quizzes?/, `${sessions.size} Quiz${sessions.size !== 1 ? 'zes' : ''}`);
+
+    } catch (err) { console.error('Failed to load quizzes:', err); }
+}
+
+function makeQuizCard(num, questions) {
+    const total = questions.length;
+    const date  = questions[0]?.createdAt ?? '';
+    const label = `QUIZ ${String(num).padStart(2, '0')}`;
+
+    const div = document.createElement('div');
+    div.className = 'qz-item';
+    div.style.animationDelay = `${(num - 1) * 0.05}s`;
+    div.innerHTML = `
+        <div class="qz-toprow">
+            <div class="qz-chips">
+                <div class="chip chip-download">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download
+                </div>
+                <div class="chip chip-buddy">
+                    <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    Study Buddy
+                </div>
+            </div>
+            <button class="btn-dots" onclick="event.stopPropagation()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div>
+            <div class="qz-name">${label}</div>
+            <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${date}</div>
+        </div>
+        <div>
+            <div class="qz-prog-row">
+                <span>Progress</span>
+                <span>0/${total}</span>
+            </div>
+            <div class="qz-prog-bar">
+                <div class="qz-prog-fill" style="width:0%"></div>
+            </div>
+        </div>
+        <button class="btn-take">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+            Take the Quiz
+        </button>`;
+
+    div.querySelector('.btn-take').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openQuizModal(label, questions);
+    });
+
+    return div;
+}
+
+// ── MODAL ──────────────────────────────────────────────
+function openQuizModal(label, questions) {
+    currentSession = questions;
+    score = 0;
+    answered = 0;
+
+    document.getElementById('modalQuizTitle').textContent = label;
+    document.getElementById('modalQuizSub').textContent = `${questions.length} Questions`;
+    document.getElementById('modalScore').textContent = '';
+    document.getElementById('modalProgress').style.width = '0%';
+
+    buildModalBody(questions);
+
+    const modal = document.getElementById('quizModal');
+    modal.style.display = 'flex';
+}
+
+function closeQuizModal() {
+    document.getElementById('quizModal').style.display = 'none';
+    document.getElementById('modalBody').innerHTML = '';
+}
+
+function retryQuiz() {
+    score = 0;
+    answered = 0;
+    document.getElementById('modalScore').textContent = '';
+    document.getElementById('modalProgress').style.width = '0%';
+    buildModalBody(currentSession);
+}
+
+function buildModalBody(questions) {
+    const body = document.getElementById('modalBody');
+    body.innerHTML = '';
+
+    const letters = ['A','B','C','D'];
+
+    questions.forEach((q, idx) => {
+        const qwrap = document.createElement('div');
+        qwrap.style.cssText = 'margin-bottom:24px;';
+
+        const qtext = document.createElement('div');
+        qtext.style.cssText = 'font-size:14px;color:#f0eeff;line-height:1.6;margin-bottom:10px;';
+        qtext.innerHTML = `<span style="color:#7c5cbf;font-weight:700;">Q${idx+1}.</span> ${escHtml(q.question)}`;
+        qwrap.appendChild(qtext);
+
+        const type = q.questionType || 'mcq';
+
+        if (type === 'fillblank') {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;gap:8px;';
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.placeholder = 'Type your answer…';
+            inp.style.cssText = 'flex:1;background:#13101f;border:1px solid rgba(124,92,191,0.25);border-radius:8px;padding:8px 12px;color:#f0eeff;font-size:13px;font-family:inherit;outline:none;';
+            const btn = document.createElement('button');
+            btn.textContent = 'Check';
+            btn.style.cssText = 'background:#7c5cbf;border:none;border-radius:8px;color:#fff;font-size:13px;padding:8px 16px;cursor:pointer;font-family:inherit;';
+            const fb = document.createElement('div');
+            fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
+            let picked = false;
+            btn.onclick = () => {
+                if (picked) return;
+                picked = true; answered++;
+                const ua = inp.value.trim().toLowerCase();
+                const ca = (q.answerText || '').toLowerCase();
+                const correct = ua === ca || (ca.length > 2 && ca.includes(ua) && ua.length > 2);
+                if (correct) {
+                    score++;
+                    fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;';
+                    fb.textContent = '✓ Correct!';
+                    inp.style.borderColor = '#2d522d';
+                } else {
+                    fb.style.cssText += 'display:block;background:#2d1a1a;color:#e07070;';
+                    fb.textContent = `✗ Answer: ${q.answerText}`;
+                    inp.style.borderColor = '#52302d';
+                }
+                updateModalScore();
+            };
+            inp.onkeydown = e => { if (e.key === 'Enter') btn.click(); };
+            row.appendChild(inp); row.appendChild(btn);
+            qwrap.appendChild(row); qwrap.appendChild(fb);
+
+        } else {
+            // MCQ or True/False
+            const opts = type === 'truefalse'
+                ? ['True', 'False']
+                : [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean);
+
+            const correctLetter = (q.correctAnswer || '').toUpperCase();
+            const correctIndex  = type === 'truefalse'
+                ? (correctLetter === 'A' ? 0 : 1)
+                : letters.indexOf(correctLetter);
+
+            let picked = false;
+            const fb = document.createElement('div');
+            fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
+
+            const optEls = [];
+            opts.forEach((opt, oi) => {
+                const ob = document.createElement('div');
+                ob.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid rgba(124,92,191,0.15);transition:background .15s,border-color .15s;';
+                const letter = type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                ob.innerHTML = `<span style="font-size:11px;font-weight:700;color:#7c5cbf;flex-shrink:0;width:16px;">${letter}</span><span style="font-size:13px;color:#ccc;line-height:1.5;">${escHtml(opt)}</span>`;
+                ob.onmouseenter = () => { if (!picked) ob.style.background = 'rgba(124,92,191,0.1)'; };
+                ob.onmouseleave = () => { if (!picked) ob.style.background = ''; };
+                ob.onclick = () => {
+                    if (picked) return;
+                    picked = true; answered++;
+                    if (oi === correctIndex) {
+                        score++;
+                        ob.style.cssText += 'background:#1a2d1a!important;border-color:#2d522d;cursor:default;';
+                        fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;';
+                        fb.textContent = '✓ Correct!';
+                    } else {
+                        ob.style.cssText += 'background:#2d1a1a!important;border-color:#52302d;cursor:default;';
+                        if (optEls[correctIndex]) optEls[correctIndex].style.cssText += 'background:#1a2d1a!important;border-color:#2d522d;';
+                        fb.style.cssText += 'display:block;background:#2d1a1a;color:#e07070;';
+                        fb.textContent = `✗ Correct: ${type === 'truefalse' ? (correctIndex === 0 ? 'True' : 'False') : letters[correctIndex]}`;
+                    }
+                    optEls.forEach(el => el.onclick = null);
+                    updateModalScore();
+                };
+                optEls.push(ob);
+                qwrap.appendChild(ob);
+            });
+            qwrap.appendChild(fb);
+        }
+
+        // Divider
+        if (idx < questions.length - 1) {
+            const hr = document.createElement('hr');
+            hr.style.cssText = 'border:none;border-top:1px solid rgba(124,92,191,0.1);margin-top:20px;';
+            qwrap.appendChild(hr);
+        }
+
+        body.appendChild(qwrap);
+    });
+}
+
+function updateModalScore() {
+    const total = currentSession.length;
+    document.getElementById('modalScore').textContent = `${score}/${answered} correct`;
+    document.getElementById('modalProgress').style.width = `${(answered / total) * 100}%`;
+}
+
+// Close on backdrop click
+document.getElementById('quizModal').addEventListener('click', function(e) {
+    if (e.target === this) closeQuizModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuizModal(); });
+
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 </script>
 </body>
 </html>
