@@ -30,6 +30,24 @@
             --section-bg:       #17151f;
         }
 
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --section-bg:  #f9f8ff;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+        }
+        body.light-mode .field-input { background: #edeaf8; color: var(--text-white); }
+        body.light-mode .pref-row    { background: #edeaf8; }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
         html, body {
             height: 100%;
             background: var(--bg);
@@ -469,9 +487,21 @@
         .catch(() => alert('Request failed.'));
     }
 
+    /* ── THEME INIT ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
     function toggleLightMode(on) {
-        document.body.style.filter = on ? 'invert(1) hue-rotate(180deg)' : '';
+        document.body.classList.toggle('light-mode', on);
+        localStorage.setItem('lightMode', on ? 'true' : 'false');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggle = document.getElementById('lightToggle');
+        if (toggle) toggle.checked = localStorage.getItem('lightMode') === 'true';
+    });
 </script>
 </body>
 </html>

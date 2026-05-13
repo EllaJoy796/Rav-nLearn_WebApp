@@ -35,6 +35,22 @@
             --topbar-h:         64px;
         }
 
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --card-hover:  #ede9fa;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+        }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
         html, body {
             height: 100%;
             background: var(--bg);
@@ -502,6 +518,12 @@
 </div>
 
 <script>
+    /* ── THEME INIT ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
     function showCardMenu(cardId) {
         alert('Options for card ' + cardId);
     }
