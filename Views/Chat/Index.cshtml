@@ -654,7 +654,7 @@
         if (!message) return;
 
         if (activeChatId === -1) {
-            const res = await fetch('/Chat/NewSession', {
+            const res = await fetch('/Chat/NewChatInProject', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folderId: activeFolderId })
@@ -782,7 +782,11 @@
         if (!files.length) return;
 
         if (activeChatId === -1) {
-            const res = await fetch('/Chat/NewChat', { method: 'POST' });
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
             const data = await res.json();
             activeChatId = parseInt(data.id);
             addChatItemToTop(data.id, data.title);
@@ -816,7 +820,6 @@
 
         e.target.value = '';
     }
-
     // ── Source list helpers ───────────────────────────────
     let dragSrcEl = null;
 
