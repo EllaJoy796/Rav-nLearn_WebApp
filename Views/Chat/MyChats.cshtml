@@ -33,14 +33,13 @@
         }
 
         html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
-
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ── SIDEBAR ── */
         .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; padding: 16px 0; flex-shrink: 0; z-index: 100; overflow: hidden; transition: width 0.25s ease; position: relative; }
         .sidebar:hover { width: var(--sidebar-expanded); }
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; flex-shrink: 0; overflow: hidden; }
-        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
         .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
         .sidebar:hover .logo-text { opacity: 1; }
@@ -79,15 +78,15 @@
         .chats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
 
         /* ── NEW CHAT CARD ── */
-        .card-new { background: var(--card-new-bg); border: 1.5px dashed rgba(124, 92, 191, 0.3); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; min-height: 170px; transition: border-color 0.2s ease, background 0.2s ease; text-decoration: none; animation: fadeUp 0.4s ease both; }
-        .card-new:hover { border-color: var(--accent); background: rgba(124, 92, 191, 0.07); }
-        .card-new .plus-icon { width: 44px; height: 44px; border: 1.5px solid rgba(124, 92, 191, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 24px; font-weight: 300; line-height: 1; transition: background 0.2s ease, border-color 0.2s ease; }
+        .card-new { background: var(--card-new-bg); border: 1.5px dashed rgba(124,92,191,0.3); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; min-height: 170px; transition: border-color 0.2s ease, background 0.2s ease; text-decoration: none; animation: fadeUp 0.4s ease both; }
+        .card-new:hover { border-color: var(--accent); background: rgba(124,92,191,0.07); }
+        .card-new .plus-icon { width: 44px; height: 44px; border: 1.5px solid rgba(124,92,191,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 24px; font-weight: 300; line-height: 1; transition: background 0.2s ease, border-color 0.2s ease; }
         .card-new:hover .plus-icon { background: var(--accent-soft); border-color: var(--accent); }
         .card-new span { font-size: 13px; font-weight: 600; color: var(--text-muted); }
 
         /* ── CHAT CARD ── */
         .card-chat { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; position: relative; min-height: 170px; transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease; animation: fadeUp 0.4s ease both; }
-        .card-chat:hover { background: var(--card-hover); border-color: rgba(124, 92, 191, 0.3); transform: translateY(-2px); }
+        .card-chat:hover { background: var(--card-hover); border-color: rgba(124,92,191,0.3); transform: translateY(-2px); }
         .card-top-row { display: flex; align-items: flex-start; justify-content: space-between; }
         .chat-icon { width: 42px; height: 42px; background: var(--icon-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0; }
         .chat-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -134,6 +133,13 @@
         .btn-create:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
         .error-msg { font-size: 12px; color: #e07070; margin-top: -10px; margin-bottom: 12px; display: none; }
         .error-msg.visible { display: block; }
+
+        /* ── DELETE CONFIRM MODAL ── */
+        .delete-modal { background: #1a1626; border: 1px solid rgba(224,112,112,0.2); border-radius: 20px; padding: 32px; width: min(380px, 90vw); box-shadow: 0 24px 60px rgba(0,0,0,0.5); animation: modalIn 0.2s ease; }
+        .delete-modal .modal-title { color: #e07070; }
+        .btn-delete-confirm { flex: 2; height: 44px; background: #c0392b; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; }
+        .btn-delete-confirm:hover { background: #a93226; }
+        .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
         @@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -215,12 +221,10 @@
         <div class="content">
             <div class="section-label">Recent chats</div>
             <div class="chats-grid" id="chatsGrid">
-                <!-- New Chat Card — triggers modal -->
                 <div class="card-new" id="cardNew" onclick="openModal()">
                     <div class="plus-icon">+</div>
                     <span>New chat</span>
                 </div>
-                <!-- Dynamic cards injected here by JS -->
             </div>
         </div>
     </div>
@@ -250,32 +254,71 @@
     </div>
 </div>
 
-<!-- ── CONTEXT MENU (three-dot) ── -->
+<!-- ── RENAME MODAL ── -->
+<div class="modal-overlay" id="renameOverlay" onclick="handleRenameOverlayClick(event)">
+    <div class="modal">
+        <div class="modal-title">Rename Chat</div>
+        <div class="modal-sub">Enter a new name for this chat folder.</div>
+
+        <label class="field-label" for="renameInput">New name</label>
+        <input class="field-input" id="renameInput" type="text"
+               placeholder="e.g. Linux Reviewer" maxlength="100"
+               oninput="validateRenameForm()" onkeydown="handleRenameKey(event)" />
+        <div class="error-msg" id="renameError">Please enter a name.</div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeRenameModal()">Cancel</button>
+            <button class="btn-create" id="btnRename" onclick="submitRename()" disabled>Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div class="modal-overlay" id="deleteOverlay" onclick="handleDeleteOverlayClick(event)">
+    <div class="delete-modal">
+        <div class="modal-title">Delete Chat?</div>
+        <div class="modal-sub" id="deleteModalSub">This will permanently delete this chat and all its messages, files, and quizzes. This cannot be undone.</div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-delete-confirm" id="btnDeleteConfirm" onclick="submitDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── CONTEXT MENU ── -->
 <div class="ctx-menu" id="ctxMenu">
-    <div class="ctx-item" onclick="ctxOpen()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Open
+    <div class="ctx-item" onclick="ctxRename()">
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Rename
     </div>
     <div class="ctx-item danger" onclick="ctxDelete()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+        </svg>
         Delete
     </div>
 </div>
 
 <script>
-    let ctxChatId = null;
+    let ctxChatId   = null;
+    let ctxChatName = '';
 
-    // ── LOAD CHATS ON PAGE LOAD ───────────────────────────
+    // ── LOAD CHATS ────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', loadChats);
 
     async function loadChats() {
         try {
-            const res = await fetch('/Chat/GetMyProjects');
+            const res   = await fetch('/Chat/GetMyProjects');
             const chats = await res.json();
-            const grid = document.getElementById('chatsGrid');
+            const grid  = document.getElementById('chatsGrid');
 
-            // Remove any old dynamic cards (keep the "New chat" card)
-            grid.querySelectorAll('.card-chat').forEach(c => c.remove());
+            grid.querySelectorAll('.card-chat, .empty-state').forEach(c => c.remove());
 
             if (chats.length === 0) {
                 const empty = document.createElement('div');
@@ -283,25 +326,20 @@
                 empty.id = 'emptyState';
                 empty.innerHTML = `
                     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <p>No chats yet.<br>Click <strong>New chat</strong> to get started.</p>
-                `;
+                    <p>No chats yet.<br>Click <strong>New chat</strong> to get started.</p>`;
                 grid.appendChild(empty);
                 return;
             }
 
-            chats.forEach((chat, i) => {
-                grid.appendChild(makeCard(chat, i));
-            });
-        } catch (err) {
-            console.error('Failed to load chats:', err);
-        }
+            chats.forEach((chat, i) => grid.appendChild(makeCard(chat, i)));
+        } catch (err) { console.error('Failed to load chats:', err); }
     }
 
     function makeCard(chat, index) {
         const card = document.createElement('div');
-        card.className = 'card-chat';
-        card.dataset.id = chat.id;
-        card.dataset.name = chat.name.toLowerCase();
+        card.className   = 'card-chat';
+        card.dataset.id      = chat.id;
+        card.dataset.name    = chat.name.toLowerCase();
         card.dataset.subject = (chat.subject || '').toLowerCase();
         card.style.animationDelay = `${index * 0.05}s`;
         card.onclick = () => openChat(chat.id);
@@ -328,126 +366,175 @@
                     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     ${chat.fileCount} ${chat.fileCount === 1 ? 'File' : 'Files'}
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        // Three-dot button opens context menu
         card.querySelector('.btn-more').addEventListener('click', (e) => {
             e.stopPropagation();
-            showContextMenu(e, chat.id);
+            showContextMenu(e, chat.id, chat.name);
         });
 
         return card;
     }
 
-    function openChat(id) {
-        window.location.href = `/Chat/Open/${id}`;
-    }
+    function openChat(id) { window.location.href = `/Chat/Open/${id}`; }
 
-    // ── MODAL ─────────────────────────────────────────────
+    // ── CREATE MODAL ──────────────────────────────────────
     function openModal() {
-        document.getElementById('inputName').value = '';
+        document.getElementById('inputName').value    = '';
         document.getElementById('inputSubject').value = '';
         document.getElementById('errorName').classList.remove('visible');
         document.getElementById('btnCreate').disabled = true;
         document.getElementById('modalOverlay').classList.add('open');
         setTimeout(() => document.getElementById('inputName').focus(), 100);
     }
-
-    function closeModal() {
-        document.getElementById('modalOverlay').classList.remove('open');
-    }
-
-    function handleOverlayClick(e) {
-        if (e.target === document.getElementById('modalOverlay')) closeModal();
-    }
-
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
     function handleModalKey(e) {
         if (e.key === 'Escape') closeModal();
-        if (e.key === 'Enter') {
-            const btn = document.getElementById('btnCreate');
-            if (!btn.disabled) createChat();
-        }
+        if (e.key === 'Enter' && !document.getElementById('btnCreate').disabled) createChat();
     }
-
     function validateForm() {
         const name = document.getElementById('inputName').value.trim();
-        const btn = document.getElementById('btnCreate');
-        const err = document.getElementById('errorName');
-        if (name.length === 0) {
-            btn.disabled = true;
-            err.classList.remove('visible');
-        } else {
-            btn.disabled = false;
-            err.classList.remove('visible');
-        }
+        document.getElementById('btnCreate').disabled = name.length === 0;
+        document.getElementById('errorName').classList.remove('visible');
     }
 
     async function createChat() {
-        const name = document.getElementById('inputName').value.trim();
+        const name    = document.getElementById('inputName').value.trim();
         const subject = document.getElementById('inputSubject').value.trim();
-        if (!name) {
-            document.getElementById('errorName').classList.add('visible');
-            return;
-        }
+        if (!name) { document.getElementById('errorName').classList.add('visible'); return; }
 
         const btn = document.getElementById('btnCreate');
-        btn.disabled = true;
-        btn.textContent = 'Creating…';
-
+        btn.disabled = true; btn.textContent = 'Creating…';
         try {
-            const res = await fetch('/Chat/CreateProject', {
+            const res  = await fetch('/Chat/CreateProject', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, subject })
             });
             const data = await res.json();
             if (data.error) { alert('Error: ' + data.error); return; }
-
             closeModal();
-            // Navigate straight into the new chat
             await loadChats();
-        } catch (err) {
-            alert('Network error: ' + err.message);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Create';
-        }
+        } catch (err) { alert('Network error: ' + err.message); }
+        finally { btn.disabled = false; btn.textContent = 'Create'; }
+    }
+
+    // ── RENAME MODAL ──────────────────────────────────────
+    function openRenameModal(id, currentName) {
+        ctxChatId = id;
+        const input = document.getElementById('renameInput');
+        input.value = currentName;
+        document.getElementById('renameError').classList.remove('visible');
+        document.getElementById('btnRename').disabled = false;
+        document.getElementById('renameOverlay').classList.add('open');
+        setTimeout(() => { input.focus(); input.select(); }, 100);
+    }
+    function closeRenameModal() { document.getElementById('renameOverlay').classList.remove('open'); }
+    function handleRenameOverlayClick(e) { if (e.target === document.getElementById('renameOverlay')) closeRenameModal(); }
+    function handleRenameKey(e) {
+        if (e.key === 'Escape') closeRenameModal();
+        if (e.key === 'Enter' && !document.getElementById('btnRename').disabled) submitRename();
+    }
+    function validateRenameForm() {
+        const val = document.getElementById('renameInput').value.trim();
+        document.getElementById('btnRename').disabled = val.length === 0;
+        document.getElementById('renameError').classList.remove('visible');
+    }
+
+    async function submitRename() {
+        const newName = document.getElementById('renameInput').value.trim();
+        if (!newName) { document.getElementById('renameError').classList.add('visible'); return; }
+
+        const btn = document.getElementById('btnRename');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        try {
+            const res  = await fetch('/Chat/RenameProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: ctxChatId, name: newName })
+            });
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+
+            // Update card in-place without full reload
+            const card = document.querySelector(`.card-chat[data-id="${ctxChatId}"]`);
+            if (card) {
+                card.dataset.name = newName.toLowerCase();
+                const nameEl = card.querySelector('.chat-name');
+                if (nameEl) nameEl.textContent = newName.toUpperCase();
+            }
+            closeRenameModal();
+        } catch (err) { alert('Network error: ' + err.message); }
+        finally { btn.disabled = false; btn.textContent = 'Save'; }
+    }
+
+    // ── DELETE CONFIRM MODAL ──────────────────────────────
+    function openDeleteModal(id, name) {
+        ctxChatId = id;
+        document.getElementById('deleteModalSub').textContent =
+            `"${name}" and all its messages, files, and quizzes will be permanently deleted. This cannot be undone.`;
+        document.getElementById('deleteOverlay').classList.add('open');
+    }
+    function closeDeleteModal() { document.getElementById('deleteOverlay').classList.remove('open'); }
+    function handleDeleteOverlayClick(e) { if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal(); }
+
+    async function submitDelete() {
+        if (!ctxChatId) return;
+        const btn = document.getElementById('btnDeleteConfirm');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        try {
+            const res  = await fetch(`/Chat/DeleteProject/${ctxChatId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+
+            // Remove card from grid
+            document.querySelector(`.card-chat[data-id="${ctxChatId}"]`)?.remove();
+            ctxChatId = null;
+            closeDeleteModal();
+
+            // Show empty state if no cards left
+            const remaining = document.querySelectorAll('.card-chat');
+            if (remaining.length === 0) {
+                const grid  = document.getElementById('chatsGrid');
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.innerHTML = `
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <p>No chats yet.<br>Click <strong>New chat</strong> to get started.</p>`;
+                grid.appendChild(empty);
+            }
+        } catch (err) { alert('Network error: ' + err.message); }
+        finally { btn.disabled = false; btn.textContent = 'Delete'; }
     }
 
     // ── CONTEXT MENU ──────────────────────────────────────
-    function showContextMenu(e, chatId) {
-        ctxChatId = chatId;
-        const menu = document.getElementById('ctxMenu');
+    function showContextMenu(e, chatId, chatName) {
+        ctxChatId   = chatId;
+        ctxChatName = chatName;
+        const menu  = document.getElementById('ctxMenu');
         menu.classList.add('visible');
-        // Position near the button
         const x = Math.min(e.clientX, window.innerWidth - 170);
         const y = Math.min(e.clientY + 4, window.innerHeight - 100);
         menu.style.left = x + 'px';
         menu.style.top  = y + 'px';
     }
 
-    function hideContextMenu() {
-        document.getElementById('ctxMenu').classList.remove('visible');
-    }
+    function hideContextMenu() { document.getElementById('ctxMenu').classList.remove('visible'); }
 
     document.addEventListener('click', hideContextMenu);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideContextMenu(); closeModal(); } });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { hideContextMenu(); closeModal(); closeRenameModal(); closeDeleteModal(); }
+    });
 
-    function ctxOpen() {
-        if (ctxChatId) openChat(ctxChatId);
+    function ctxRename() {
         hideContextMenu();
+        openRenameModal(ctxChatId, ctxChatName);
     }
 
-    async function ctxDelete() {
-        if (!ctxChatId) return;
+    function ctxDelete() {
         hideContextMenu();
-        if (!confirm('Delete this chat and all its messages? This cannot be undone.')) return;
-        try {
-            await fetch(`/Chat/DeleteChat/${ctxChatId}`, { method: 'DELETE' });
-            document.querySelector(`.card-chat[data-id="${ctxChatId}"]`)?.remove();
-            ctxChatId = null;
-        } catch (err) { alert('Delete failed: ' + err.message); }
+        openDeleteModal(ctxChatId, ctxChatName);
     }
 
     // ── SEARCH ────────────────────────────────────────────
@@ -460,10 +547,7 @@
     }
 
     function escHtml(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 </script>
 </body>
