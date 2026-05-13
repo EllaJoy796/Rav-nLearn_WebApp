@@ -27,42 +27,48 @@ namespace RavnLearnWeb.Controllers
             return View();
         }
 
-            public IActionResult Flashcards()
-            {
-                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-                ViewBag.Username = Username;
-                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
-                return View();
-            }
-
-            public IActionResult Quizzes()
-            {
-                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-                ViewBag.Username = Username;
-                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
-                return View();
-            }
-        [HttpGet]
-        public async Task<IActionResult> GetChats()
+        public IActionResult Flashcards()
         {
-            if (!IsLoggedIn()) return Unauthorized();
-            var chats = new List<object>();
-            try
-            {
-                using var conn = RavnLearnWeb.Database.GetConnection();
-                await conn.OpenAsync();
-                using var cmd = new NpgsqlCommand(
-                    @"SELECT chat_id, COALESCE(name, 'New Chat') AS title 
-                    FROM chats WHERE user_id = @uid 
-                    ORDER BY created_at DESC", conn);
-                cmd.Parameters.AddWithValue("uid", UserId);
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                    chats.Add(new { id = reader.GetInt32(0), title = reader.GetString(1) });
-            }
-            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
-            return Json(chats);
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.Username = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            ViewBag.Flashcards = null;
+            return View();
         }
+
+        public IActionResult FlashcardView(int id)
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.SetName   = "FLASHCARD SET";
+            ViewBag.SetDate   = DateTime.Now.ToString("MMM dd, yyyy");
+            ViewBag.CardCount = 0;
+            ViewBag.Cards     = null;
+            ViewBag.ChatId    = id;
+            ViewBag.Username  = Username;
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            return View();
+        }
+                [HttpGet]
+                public async Task<IActionResult> GetChats()
+                {
+                    if (!IsLoggedIn()) return Unauthorized();
+                    var chats = new List<object>();
+                    try
+                    {
+                        using var conn = RavnLearnWeb.Database.GetConnection();
+                        await conn.OpenAsync();
+                        using var cmd = new NpgsqlCommand(
+                            @"SELECT chat_id, COALESCE(name, 'New Chat') AS title 
+                            FROM chats WHERE user_id = @uid 
+                            ORDER BY created_at DESC", conn);
+                        cmd.Parameters.AddWithValue("uid", UserId);
+                        using var reader = await cmd.ExecuteReaderAsync();
+                        while (await reader.ReadAsync())
+                            chats.Add(new { id = reader.GetInt32(0), title = reader.GetString(1) });
+                    }
+                    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+                    return Json(chats);
+                }
 
         [HttpPost]
         public async Task<IActionResult> NewChat()
@@ -582,7 +588,28 @@ namespace RavnLearnWeb.Controllers
             return Json(sessions);
         }
 
-        [HttpDelete]
+        public IActionResult Quizzes()
+            {
+                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+                ViewBag.Username = Username;
+                ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+                ViewBag.Quizzes = null;
+                return View();
+            }
+
+    public IActionResult QuizzesView(int id)
+    {
+        if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+        ViewBag.SetName   = "LINUX REVIEWER";
+        ViewBag.SetDate   = DateTime.Now.ToString("MMM dd, yyyy");
+        ViewBag.QuizCount = 6;
+        ViewBag.Quizzes   = null;
+        ViewBag.ChatId    = id;
+        ViewBag.Username  = Username;
+        ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+        return View();
+    }
+            [HttpDelete]
         public async Task<IActionResult> DeleteSession(int id)
         {
             if (!IsLoggedIn()) return Unauthorized();
