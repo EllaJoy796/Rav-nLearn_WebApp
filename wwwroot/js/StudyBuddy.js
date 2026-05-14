@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    STUDY BUDDY — Drop-in for QuizSet.cshtml
+   Voice is configured once in Profile > Study Buddy settings.
    ═══════════════════════════════════════════════════════════════ */
 
 const GEMINI_API_KEY = 'AIzaSyC1DHJFbCXy8kLZQ6_F0B7-pIk-JMY8k44';
@@ -80,55 +81,6 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemi
         height: 100%; background: var(--accent);
         border-radius: 2px; transition: width .4s ease; width: 0%;
     }
-
-    /* ── VOICE PICKER ── */
-    #sbVoicePicker {
-        display: none; flex-direction: column; gap: 14px;
-        padding: 24px 28px 28px;
-        overflow-y: auto;
-    }
-    #sbVoicePickerTitle {
-        font-size: 13px; font-weight: 700; color: var(--text-muted);
-        letter-spacing: .5px; text-transform: uppercase;
-    }
-    #sbVoiceList {
-        display: flex; flex-direction: column; gap: 8px;
-        max-height: 300px; overflow-y: auto;
-        scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    }
-    .sb-voice-item {
-        display: flex; align-items: center; gap: 12px;
-        padding: 10px 14px; border-radius: 10px;
-        border: 1px solid var(--border);
-        cursor: pointer; transition: all .2s;
-        background: transparent;
-    }
-    .sb-voice-item:hover { background: var(--accent-soft); border-color: rgba(124,92,191,.35); }
-    .sb-voice-item.selected { background: var(--accent-soft); border-color: var(--accent); }
-    .sb-voice-name { font-size: 13px; font-weight: 600; color: var(--text-white); }
-    .sb-voice-lang { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-    .sb-voice-badge {
-        margin-left: auto; font-size: 10px; font-weight: 700;
-        padding: 2px 8px; border-radius: 20px; letter-spacing: .4px;
-        white-space: nowrap; flex-shrink: 0;
-    }
-    .sb-voice-badge.female { background: rgba(191,93,160,.15); color: #bf5da0; border: 1px solid rgba(191,93,160,.3); }
-    .sb-voice-badge.male   { background: rgba(93,138,191,.15); color: #5d8abf; border: 1px solid rgba(93,138,191,.3); }
-    .sb-voice-preview {
-        background: none; border: 1px solid var(--border);
-        border-radius: 6px; color: var(--text-dim);
-        font-size: 11px; padding: 4px 10px; cursor: pointer;
-        font-family: inherit; transition: all .2s; white-space: nowrap;
-        flex-shrink: 0;
-    }
-    .sb-voice-preview:hover { background: var(--accent-soft); color: var(--text-white); border-color: var(--accent); }
-    #sbStartBtn {
-        height: 44px; background: var(--accent); border: none;
-        border-radius: 12px; color: #fff; font-size: 14px; font-weight: 700;
-        font-family: inherit; cursor: pointer; transition: background .2s;
-        flex-shrink: 0;
-    }
-    #sbStartBtn:hover { background: #6b4daa; }
 
     /* ── STAGE ── */
     #sbStage {
@@ -290,7 +242,7 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemi
 })();
 
 /* ══════════════════════════════════════
-   INJECT HTML
+   INJECT HTML  (no voice picker panel)
 ══════════════════════════════════════ */
 (function injectHTML() {
     const el = document.createElement('div');
@@ -321,13 +273,6 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemi
 
       <!-- PROGRESS -->
       <div id="sbProgressBar"><div id="sbProgressFill"></div></div>
-
-      <!-- VOICE PICKER -->
-      <div id="sbVoicePicker">
-        <div id="sbVoicePickerTitle">Choose a Voice</div>
-        <div id="sbVoiceList"></div>
-        <button id="sbStartBtn" onclick="window.SB.startWithVoice()">▶ Start Session</button>
-      </div>
 
       <!-- STAGE -->
       <div id="sbStage">
@@ -414,7 +359,7 @@ window.SB = (() => {
     let synth            = window.speechSynthesis;
     let speechSupported  = false;
     let selectedVoice    = null;
-    let closed = false; // ← bagong flag
+    let closed           = false;
 
     /* ── DOM helpers ── */
     const $           = id => document.getElementById(id);
@@ -433,7 +378,6 @@ window.SB = (() => {
     const stage       = () => $('sbStage');
     const results     = () => $('sbResults');
     const fallbackRow = () => $('sbFallbackRow');
-    const voicePicker = () => $('sbVoicePicker');
     const footer      = () => $('sbFooter');
 
     /* ── helpers ── */
@@ -493,75 +437,30 @@ window.SB = (() => {
         return text;
     }
 
-    /* ── Voice picker ── */
-    function guessGender(voice) {
-        const f = ['female','woman','girl','zira','samantha','victoria',
-                   'karen','moira','tessa','fiona','veena','allison',
-                   'ava','susan','kathy','nicky'];
-        const m = ['male','man','david','mark','daniel','alex','fred',
-                   'jorge','diego','thomas','oliver'];
-        const n = voice.name.toLowerCase();
-        if (f.some(w => n.includes(w))) return 'female';
-        if (m.some(w => n.includes(w))) return 'male';
-        return 'unknown';
-    }
-
-    function showVoicePicker() {
-        voicePicker().style.display = 'flex';
-        stage().style.display       = 'none';
-        results().style.display     = 'none';
-        footer().style.display      = 'none';
-
-        const list   = $('sbVoiceList');
-        list.innerHTML = '';
-
-        const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    /* ── Load saved voice from Profile settings ── */
+    function loadSavedVoice() {
+        const savedName = localStorage.getItem('sbVoiceName');
+        // Only include voices that have a name and actually produce audio
+        const voices = synth.getVoices().filter(v =>
+            v.lang.startsWith('en') &&
+            v.name &&
+            v.name.trim() !== '' &&
+            !v.name.toLowerCase().includes('espeak') // exclude known silent/robotic fallbacks
+        );
 
         if (!voices.length) {
-            list.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">No English voices found on this device.</div>`;
+            selectedVoice = null;
             return;
         }
 
-        // Default: first female voice
-        if (!selectedVoice) {
-            selectedVoice = voices.find(v => guessGender(v) === 'female') || voices[0];
+        if (savedName) {
+            selectedVoice = voices.find(v => v.name === savedName);
         }
 
-        voices.forEach(voice => {
-            const gender     = guessGender(voice);
-            const isSelected = selectedVoice && selectedVoice.name === voice.name;
-
-            const row = document.createElement('div');
-            row.className = 'sb-voice-item' + (isSelected ? ' selected' : '');
-            row.innerHTML = `
-                <div style="flex:1;min-width:0;">
-                    <div class="sb-voice-name">${voice.name}</div>
-                    <div class="sb-voice-lang">${voice.lang}</div>
-                </div>
-                ${gender !== 'unknown' ? `<span class="sb-voice-badge ${gender}">${gender === 'female' ? '♀ Female' : '♂ Male'}</span>` : ''}
-                <button class="sb-voice-preview">▶ Preview</button>
-            `;
-
-            // Select voice on row click
-            row.addEventListener('click', e => {
-                if (e.target.classList.contains('sb-voice-preview')) return;
-                selectedVoice = voice;
-                list.querySelectorAll('.sb-voice-item').forEach(r => r.classList.remove('selected'));
-                row.classList.add('selected');
-            });
-
-            // Preview button
-            row.querySelector('.sb-voice-preview').addEventListener('click', e => {
-                e.stopPropagation();
-                synth.cancel();
-                const utt = new SpeechSynthesisUtterance("Hi! I'm your Study Buddy. How do I sound?");
-                utt.voice = voice;
-                utt.rate  = 0.95;
-                synth.speak(utt);
-            });
-
-            list.appendChild(row);
-        });
+        // Fallback: pick first available voice if saved one not found
+        if (!selectedVoice) {
+            selectedVoice = voices[0];
+        }
     }
 
     /* ── TTS ── */
@@ -656,7 +555,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
 
     /* ── Quiz flow ── */
     async function showQuestion() {
-        if (closed) return; 
+        if (closed) return;
         if (idx >= questions.length) { showResults(); return; }
 
         const q   = questions[idx];
@@ -678,8 +577,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
             : `Question ${num}. ${spokenQ}`;
 
         speak(intro, () => {
-            if (!waitingAns) return;
-            if (closed) return;
+            if (!waitingAns || closed) return;
             setOrb('idle');
             stateLabel().textContent = 'YOUR TURN';
             setTab('user');
@@ -712,7 +610,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
         feedback().style.display  = 'block';
 
         speak(fbText, () => {
-          if (closed) return; 
+            if (closed) return;
             setOrb('idle');
             stateLabel().textContent = 'READY';
             idx++;
@@ -739,22 +637,48 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
         speak(msg);
     }
 
+    /* ── Opening greeting ── */
+    function SB_startGreeting() {
+        const greeting = `Hi! I'm your Study Buddy! I'll be quizzing you on ${quizLabel}. Say "ready" when you want to begin!`;
+        speak(greeting, () => {
+            stateLabel().textContent = 'SAY "READY" TO BEGIN';
+            setTab('user');
+            waitingAns = false;
+
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SR) {
+                const r = new SR();
+                r.lang     = 'en-US';
+                r.onresult = () => { r.stop(); showQuestion(); };
+                r.onerror  = ()  => showQuestion();
+                r.onend    = ()  => {};
+                try { r.start(); } catch(e) { showQuestion(); }
+            } else {
+                const btn = document.createElement('button');
+                btn.textContent = '▶ Start Quiz';
+                btn.className   = 'sb-btn';
+                btn.style.cssText = 'background:var(--accent);border:none;color:#fff;margin-top:4px;';
+                btn.onclick = () => { btn.remove(); showQuestion(); };
+                stage().appendChild(btn);
+            }
+        });
+    }
+
     /* ══════════════════════════════════════
        PUBLIC API
     ══════════════════════════════════════ */
     return {
 
         open(label, qs) {
-            closed = false;
+            closed    = false;
             quizLabel = label;
             questions = qs;
             idx = 0; score = 0; answered = 0; waitingAns = false;
 
-            // Reset all panels
-            voicePicker().style.display = 'none';
-            stage().style.display       = 'none';
-            results().style.display     = 'none';
-            footer().style.display      = 'none';
+            // Reset panels
+            stage().style.display   = 'none';
+            results().style.display = 'none';
+            footer().style.display  = 'none';
             feedback().style.display    = 'none';
             transcript().textContent    = '';
             fallbackRow().style.display = 'none';
@@ -766,46 +690,20 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
             overlay().classList.add('open');
             initRecognition();
 
-            // Show voice picker — wait for voices to load if needed
-            const loadPicker = () => showVoicePicker();
+            // Load saved voice, then start immediately
+            const startSession = () => {
+                loadSavedVoice();
+                stage().style.display  = 'flex';
+                footer().style.display = 'flex';
+                SB_startGreeting();
+            };
+
             if (synth.getVoices().length > 0) {
-                loadPicker();
+                startSession();
             } else {
-                synth.onvoiceschanged = () => { synth.onvoiceschanged = null; loadPicker(); };
-                // Fallback: if onvoiceschanged never fires (some browsers), try after 800ms
-                setTimeout(() => { if (voicePicker().style.display === 'none') loadPicker(); }, 800);
+                synth.onvoiceschanged = () => { synth.onvoiceschanged = null; startSession(); };
+                setTimeout(() => { if (stage().style.display === 'none') startSession(); }, 800);
             }
-        },
-
-        startWithVoice() {
-            voicePicker().style.display = 'none';
-            stage().style.display       = 'flex';
-            footer().style.display      = 'flex';
-
-            const greeting = `Hi! I'm your Study Buddy! I'll be quizzing you on ${quizLabel}. Say "ready" when you want to begin!`;
-            speak(greeting, () => {
-                stateLabel().textContent = 'SAY "READY" TO BEGIN';
-                setTab('user');
-                waitingAns = false;
-
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (SR) {
-                    const r = new SR();
-                    r.lang     = 'en-US';
-                    r.onresult = () => { r.stop(); showQuestion(); };
-                    r.onerror  = ()  => showQuestion();
-                    r.onend    = ()  => {};
-                    try { r.start(); } catch(e) { showQuestion(); }
-                } else {
-                    // No speech support — show a Start button
-                    const btn = document.createElement('button');
-                    btn.textContent = '▶ Start Quiz';
-                    btn.className   = 'sb-btn';
-                    btn.style.cssText = 'background:var(--accent);border:none;color:#fff;margin-top:4px;';
-                    btn.onclick = () => { btn.remove(); showQuestion(); };
-                    stage().appendChild(btn);
-                }
-            });
         },
 
         close() {
