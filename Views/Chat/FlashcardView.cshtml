@@ -2,10 +2,16 @@
     ViewData["Title"] = "Flashcard Set";
     Layout = null;
 
-    // Sample data fallback
-    var setName  = ViewBag.SetName  ?? "LINUX REVIEWER";
-    var setDate  = ViewBag.SetDate  ?? "May 13, 2026";
-    var cards    = ViewBag.Cards    as IEnumerable<dynamic>;
+    var setName  = (string)(ViewBag.SetName  ?? "FLASHCARD SET");
+    var setDate  = (string)(ViewBag.SetDate  ?? "");
+    var cardCount = (int)(ViewBag.CardCount ?? 0);
+    var cards    = ViewBag.Cards as IEnumerable<dynamic>;
+
+var cardsList = cards == null 
+    ? new List<object>()
+    : cards.Select(c => (object)new { front = (string)c.Front, back = (string)c.Back }).ToList();
+
+var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsList);
 }
 
 <!DOCTYPE html>
@@ -35,7 +41,6 @@
             --topbar-h:         64px;
         }
 
-        /* ── LIGHT MODE ── */
         body.light-mode {
             --bg:          #f4f3ff;
             --sidebar-bg:  #ede9fa;
@@ -47,306 +52,177 @@
             --border:      rgba(124,92,191,.2);
             --accent-soft: rgba(124,92,191,.12);
         }
-        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item { color: #2d1f5e; }
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
+        body.light-mode .flip-card-inner .flip-front,
+        body.light-mode .flip-card-inner .flip-back { background: #fff; border-color: rgba(124,92,191,.25); }
+        body.light-mode .fc-list-item { background: #fff; border-color: rgba(124,92,191,.2); }
 
-        html, body {
-            height: 100%;
-            background: var(--bg);
-            font-family: 'DM Sans', sans-serif;
-            color: var(--text-white);
-            overflow: hidden;
-        }
-
+        html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
-        /* ══════════ SIDEBAR ══════════ */
+        /* ══ SIDEBAR ══ */
         .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
+            width: var(--sidebar-width); background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 16px 0;
-            flex-shrink: 0;
-            z-index: 100;
-            overflow: hidden;
-            transition: width .25s ease;
+            display: flex; flex-direction: column; align-items: flex-start;
+            padding: 16px 0; flex-shrink: 0; z-index: 100;
+            overflow: hidden; transition: width .25s ease;
         }
         .sidebar:hover { width: var(--sidebar-expanded); }
-
-        .sidebar-logo {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 15px;
-            margin-bottom: 28px;
-            overflow: hidden;
-        }
-        .logo-icon {
-            width: 42px; height: 42px; min-width: 42px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
-        }
+        .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden; }
+        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 15px; font-weight: 800;
-            color: var(--text-white); white-space: nowrap;
-            opacity: 0; transition: opacity .2s ease .05s;
-        }
+        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
         .sidebar:hover .logo-text { opacity: 1; }
-
-        .nav-group {
-            display: flex; flex-direction: column;
-            align-items: flex-start; gap: 2px;
-            width: 100%; padding: 0 12px;
-        }
-        .nav-group + .nav-group {
-            margin-top: 8px; padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        .nav-group-label {
-            font-size: 10px; font-weight: 700;
-            color: var(--text-dim); letter-spacing: .8px;
-            text-transform: uppercase;
-            padding: 0 4px; margin-bottom: 6px;
-            white-space: nowrap; opacity: 0;
-            max-height: 0; overflow: hidden;
-            transition: opacity .2s ease, max-height .2s ease;
-        }
+        .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
+        .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .nav-group-label { font-size: 10px; font-weight: 700; color: var(--text-dim); letter-spacing: .8px; text-transform: uppercase; padding: 0 4px; margin-bottom: 6px; white-space: nowrap; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .2s ease, max-height .2s ease; }
         .sidebar:hover .nav-group-label { opacity: 1; max-height: 20px; }
-
-        .nav-item {
-            width: 100%; height: 44px; border-radius: 10px;
-            display: flex; align-items: center; gap: 12px;
-            padding: 0 11px; cursor: pointer;
-            transition: background .2s ease, color .2s ease;
-            color: white; text-decoration: none;
-            overflow: hidden; white-space: nowrap;
-            position: relative;
-        }
+        .nav-item { width: 100%; height: 44px; border-radius: 10px; display: flex; align-items: center; gap: 12px; padding: 0 11px; cursor: pointer; transition: background .2s ease, color .2s ease; color: white; text-decoration: none; overflow: hidden; white-space: nowrap; position: relative; }
         .nav-item:hover { background: var(--accent-soft); color: var(--text-white); }
         .nav-item.active { background: var(--accent-soft); color: var(--accent); }
-        .nav-item svg {
-            width: 20px; height: 20px; min-width: 20px;
-            stroke: currentColor; fill: none;
-            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-        }
-        .nav-label {
-            font-size: 13px; font-weight: 600;
-            opacity: 0; transition: opacity .2s ease .05s; overflow: hidden;
-        }
+        .nav-item svg { width: 20px; height: 20px; min-width: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-label { font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .2s ease .05s; overflow: hidden; }
         .sidebar:hover .nav-label { opacity: 1; }
-
-        .nav-item::after {
-            content: attr(data-tip);
-            position: absolute; left: 82px;
-            background: #1e1e2e; color: var(--text-white);
-            font-size: 12px; font-weight: 600;
-            padding: 5px 10px; border-radius: 6px;
-            white-space: nowrap; pointer-events: none;
-            opacity: 0; transition: opacity .15s ease;
-            border: 1px solid var(--border); z-index: 200;
-        }
+        .nav-item::after { content: attr(data-tip); position: absolute; left: 82px; background: #1e1e2e; color: var(--text-white); font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s ease; border: 1px solid var(--border); z-index: 200; }
         .sidebar:not(:hover) .nav-item:hover::after { opacity: 1; }
+        .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
 
-        .sidebar-bottom {
-            margin-top: auto;
-            display: flex; flex-direction: column;
-            align-items: flex-start; gap: 2px;
-            width: 100%; padding: 0 12px;
-        }
-
-        /* ══════════ MAIN ══════════ */
+        /* ══ MAIN ══ */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 
-        /* ── TOP BAR ── */
-        .topbar {
-            height: var(--topbar-h);
-            display: flex; align-items: center; gap: 16px;
-            padding: 0 28px;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-
-        .btn-back {
-            display: flex; align-items: center; gap: 8px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-white);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            padding: 0 14px; height: 36px;
-            cursor: pointer; text-decoration: none;
-            flex-shrink: 0;
-            transition: background .2s ease, border-color .2s ease;
-        }
+        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
         .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
-        .btn-back svg {
-            width: 14px; height: 14px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
-        }
+        .btn-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-
-        .set-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 20px; font-weight: 900;
-            color: var(--text-white); letter-spacing: -.3px;
-        }
-
-        .set-meta {
-            font-size: 12px; color: var(--text-muted);
-            display: flex; align-items: center; gap: 6px;
-        }
+        .set-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
+        .set-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
 
+        /* View toggle */
+        .view-toggle { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-view { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s ease; display: flex; align-items: center; gap: 6px; }
+        .btn-view svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-view:hover { border-color: var(--accent); color: var(--text-white); }
+        .btn-view.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
         /* ── CONTENT ── */
-        .content {
-            flex: 1; overflow-y: auto;
-            padding: 32px 28px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
-        }
+        .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         .content::-webkit-scrollbar { width: 4px; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        .section-label {
-            font-size: 13px; font-weight: 600;
-            color: var(--text-muted); letter-spacing: .5px;
-            margin-bottom: 20px;
-        }
+        /* ══ STUDY MODE (big flip card) ══ */
+        .study-view { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+        .study-view.hidden { display: none; }
 
-        /* ── GRID ── */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
+        .card-counter { font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
-        /* ── INDIVIDUAL FLASHCARD ITEM ── */
-        .fc-item {
+        .flip-card {
+            width: 100%; max-width: 680px;
+            height: 320px;
+            perspective: 1200px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+        }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+        .flip-front, .flip-back {
+            position: absolute; inset: 0;
+            backface-visibility: hidden;
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex; flex-direction: column;
-            padding: 16px;
-            gap: 12px;
-            cursor: pointer;
-            transition: background .2s ease, border-color .2s ease, transform .15s ease;
-            animation: fadeUp .4s ease both;
-            position: relative;
-        }
-        .fc-item:hover {
-            background: var(--card-hover);
-            border-color: rgba(124,92,191,.35);
-            transform: translateY(-2px);
-        }
-        .fc-item:nth-child(2) { animation-delay: .05s; }
-        .fc-item:nth-child(3) { animation-delay: .10s; }
-        .fc-item:nth-child(4) { animation-delay: .15s; }
-        .fc-item:nth-child(5) { animation-delay: .20s; }
-        .fc-item:nth-child(6) { animation-delay: .25s; }
-
-        /* top row: Study Buddy chip + three-dot */
-        .fc-item-toprow {
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
-        .chip-buddy {
-            display: flex; align-items: center; gap: 6px;
-            background: var(--accent-soft);
-            border: 1px solid rgba(124,92,191,.25);
             border-radius: 20px;
-            padding: 4px 10px 4px 8px;
-            font-size: 11px; font-weight: 700;
-            color: #c8b8f0; letter-spacing: .3px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px;
+            text-align: center;
+            gap: 16px;
         }
-        .chip-buddy svg {
-            width: 13px; height: 13px;
-            stroke: #c8b8f0; fill: none;
-            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-        }
+        .flip-back { transform: rotateY(180deg); background: #1a1630; border-color: rgba(124,92,191,.3); }
 
-        .btn-dots {
-            background: none; border: 1px solid var(--border);
-            border-radius: 7px; cursor: pointer;
-            color: var(--text-dim);
-            width: 28px; height: 28px;
-            display: flex; align-items: center; justify-content: center;
-            gap: 2.5px; flex-direction: column;
-            transition: color .2s ease, background .2s ease;
-        }
-        .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
-        .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
+        .flip-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+        .flip-front .flip-label { color: var(--text-muted); }
+        .flip-back .flip-label { color: #9b7ee0; }
 
-        /* card name + sub */
-        .fc-item-name {
-            font-family: 'Syne', sans-serif;
-            font-size: 15px; font-weight: 800;
-            color: var(--text-white); letter-spacing: .3px;
-        }
-        .fc-item-sub {
-            font-size: 12px; color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .flip-text { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-white); line-height: 1.4; }
+        .flip-back .flip-text { color: #e8deff; }
 
-        /* progress */
-        .fc-prog-row {
+        .flip-hint { font-size: 11px; color: var(--text-dim); margin-top: 8px; }
+
+        /* nav buttons */
+        .study-nav { display: flex; align-items: center; gap: 16px; }
+        .btn-nav { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border); background: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s ease; }
+        .btn-nav:hover { border-color: var(--accent); color: var(--text-white); background: var(--accent-soft); }
+        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-nav svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-shuffle { height: 38px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s ease; }
+        .btn-shuffle:hover { border-color: var(--accent); color: var(--text-white); }
+        .btn-shuffle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* progress dots */
+        .progress-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 500px; }
+        .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); transition: background .3s ease; }
+        .prog-dot.active { background: var(--accent); }
+        .prog-dot.visited { background: rgba(124,92,191,.4); }
+
+        /* ══ LIST MODE ══ */
+        .list-view { display: flex; flex-direction: column; gap: 12px; }
+        .list-view.hidden { display: none; }
+
+        .fc-list-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            min-height: 72px;
+            overflow: hidden;
+            animation: fadeUp .3s ease both;
+            transition: border-color .2s ease;
+        }
+        .fc-list-item:hover { border-color: rgba(124,92,191,.3); }
+
+        .fc-list-item:nth-child(2) { animation-delay: .03s; }
+        .fc-list-item:nth-child(3) { animation-delay: .06s; }
+        .fc-list-item:nth-child(4) { animation-delay: .09s; }
+        .fc-list-item:nth-child(5) { animation-delay: .12s; }
+
+        .fc-list-divider { background: var(--border); }
+
+        .fc-list-front, .fc-list-back {
+            padding: 16px 20px;
             display: flex; align-items: center;
-            justify-content: space-between;
-            font-size: 11px; color: var(--text-muted);
         }
-        .fc-prog-bar {
-            height: 4px; background: rgba(124,92,191,.15);
-            border-radius: 2px; overflow: hidden;
-            margin-top: 6px;
-        }
-        .fc-prog-fill {
-            height: 100%; background: var(--accent);
-            border-radius: 2px; transition: width .4s ease;
-        }
+        .fc-list-front { border-right: none; }
 
-        /* study button */
-        .btn-study {
-            width: 100%; height: 38px;
-            background: transparent;
-            border: 1px solid rgba(124,92,191,.35);
-            border-radius: 10px;
-            color: var(--text-white);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; cursor: pointer;
-            transition: background .2s ease, border-color .2s ease;
-            margin-top: auto;
-        }
-        .btn-study:hover { background: var(--accent-soft); border-color: var(--accent); }
-        .btn-study svg {
-            width: 14px; height: 14px;
-            stroke: none; fill: currentColor;
-        }
+        .fc-list-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); display: block; margin-bottom: 6px; }
+        .fc-list-front .fc-list-label { color: var(--text-muted); }
+        .fc-list-back .fc-list-label { color: #9b7ee0; }
 
-        @@keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        .fc-list-text { font-size: 14px; color: var(--text-white); line-height: 1.5; }
+        .fc-list-back .fc-list-text { color: #ddd4f8; }
+
+        .fc-list-num { font-size: 10px; font-weight: 700; color: var(--text-dim); margin-right: 12px; flex-shrink: 0; }
+
+        /* empty */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 80px 20px; color: var(--text-dim); text-align: center; }
+        .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; opacity: 0.5; }
+        .empty-state p { font-size: 14px; }
+
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
         @@media (max-width: 640px) {
             html, body { overflow: auto; }
             .shell { flex-direction: column; height: auto; min-height: 100vh; }
-            .sidebar {
-                width: 100% !important; flex-direction: row;
-                height: 56px; padding: 0 16px; gap: 8px;
-                border-right: none; border-bottom: 1px solid var(--border);
-            }
+            .sidebar { width: 100% !important; flex-direction: row; height: 56px; padding: 0 16px; gap: 8px; border-right: none; border-bottom: 1px solid var(--border); }
             .sidebar-logo { margin-bottom: 0; margin-right: 8px; }
             .logo-icon { width: 34px; height: 34px; min-width: 34px; }
             .logo-text { opacity: 1; }
@@ -356,25 +232,26 @@
             .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
             .nav-item::after { display: none; }
             .nav-label { display: none; }
-            .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
+            .flip-card { height: 260px; }
+            .flip-text { font-size: 17px; }
+            .fc-list-item { grid-template-columns: 1fr; }
+            .fc-list-divider { height: 1px; width: 100%; }
         }
     </style>
 </head>
 <body>
 <div class="shell">
 
-    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <div class="logo-icon">
-                <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
-                     alt="Rev'nLearn"
+                <img src="~/images/Untitled_design__4_-removebg-preview (1).png" alt="Rev'nLearn"
                      onerror="this.style.display='none'; this.parentElement.innerHTML='🐦';" />
             </div>
             <span class="logo-text">Rev'nLearn</span>
         </div>
-
         <div class="nav-group">
             <div class="nav-group-label">Main</div>
             <a class="nav-item" href="/Chat/MyChats" data-tip="Home / Chat">
@@ -390,7 +267,6 @@
                 <span class="nav-label">Quizzes</span>
             </a>
         </div>
-
         <div class="nav-group">
             <div class="nav-group-label">Support</div>
             <a class="nav-item" href="/Help/Index" data-tip="How to use">
@@ -398,7 +274,6 @@
                 <span class="nav-label">How to use</span>
             </a>
         </div>
-
         <div class="sidebar-bottom">
             <a class="nav-item" href="/Account/Profile" data-tip="User">
                 <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -411,122 +286,190 @@
         </div>
     </aside>
 
-    <!-- ══════════════ MAIN ══════════════ -->
+    <!-- MAIN -->
     <div class="main">
-
-        <!-- TOP BAR -->
         <header class="topbar">
             <a class="btn-back" href="/Chat/Flashcards">
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
                 Back
             </a>
-
             <div class="set-header">
                 <div class="set-title">@setName</div>
                 <div class="set-meta">
-                    @(ViewBag.CardCount ?? 6) Flashcards
+                    @cardCount @(cardCount == 1 ? "Flashcard" : "Flashcards")
                     <span class="dot"></span>
                     @setDate
                 </div>
             </div>
+            <div class="view-toggle">
+                <button class="btn-view active" id="btnStudy" onclick="setView('study')">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    Study
+                </button>
+                <button class="btn-view" id="btnList" onclick="setView('list')">
+                    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    List
+                </button>
+            </div>
         </header>
 
-        <!-- CONTENT -->
         <div class="content">
-            <div class="section-label">Flashcard Sets</div>
 
-            <div class="cards-grid" id="cardsGrid">
+            @if (cards == null || !((IEnumerable<dynamic>)ViewBag.Cards).Any())
+            {
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <p>No flashcards in this set yet.<br>Generate a quiz in <strong>My Chats</strong> to populate this set.</p>
+                </div>
+            }
+            else
+            {
+                <!-- STUDY VIEW -->
+                <div class="study-view" id="studyView">
+                    <div class="card-counter" id="cardCounter">1 / @cardCount</div>
 
-                @if (cards != null)
-                {
-                    int idx = 1;
-                    foreach (var card in cards)
-                    {
-                        int progress = (int)Math.Round((double)(card.Studied ?? 0) / (double)(card.Total > 0 ? card.Total : 1) * 100);
-                        <div class="fc-item" onclick="window.location.href='/Flashcards/Study/@card.Id'">
-                            <div class="fc-item-toprow">
-                            <div class="chip-buddy">
-                                <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                                Study Buddy
+                    <div class="flip-card" id="flipCard" onclick="flipCard()">
+                        <div class="flip-card-inner" id="flipCardInner">
+                            <div class="flip-front">
+                                <span class="flip-label">Question</span>
+                                <div class="flip-text" id="flipFront">Loading…</div>
+                                <span class="flip-hint">Click to reveal answer</span>
                             </div>
-                                <button class="btn-dots" onclick="event.stopPropagation(); showCardMenu(@card.Id)">
-                                    <span></span><span></span><span></span>
-                                </button>
+                            <div class="flip-back">
+                                <span class="flip-label">Answer</span>
+                                <div class="flip-text" id="flipBack"></div>
                             </div>
-                            <div>
-                                <div class="fc-item-name">@card.Name?.ToUpper()</div>
-                                <div class="fc-item-sub">@card.Total Cards</div>
-                            </div>
-                            <div>
-                                <div class="fc-prog-row">
-                                    <span>Progress</span>
-                                    <span>@(card.Studied ?? 0)/@(card.Total ?? 0)</span>
-                                </div>
-                                <div class="fc-prog-bar">
-                                    <div class="fc-prog-fill" style="width: @progress%"></div>
-                                </div>
-                            </div>
-                            <button class="btn-study" onclick="event.stopPropagation(); window.location.href='/Flashcards/Study/@card.Id'">
-                                <!-- play icon -->
-                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
-                                Study the Flashcard
-                            </button>
                         </div>
-                        idx++;
-                    }
-                }
-                else
-                {
-                    <!-- Demo cards (no real data) -->
-                    @for (int i = 1; i <= 6; i++)
-                    {
-                        <div class="fc-item">
-                            <div class="fc-item-toprow">
-                                <div class="chip-buddy">
-                                    <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                                    Study Buddy
-                                </div>
-                                <button class="btn-dots" onclick="event.stopPropagation()">
-                                    <span></span><span></span><span></span>
-                                </button>
-                            </div>
-                            <div>
-                                <div class="fc-item-name">FLASHCARD 0@i</div>
-                                <div class="fc-item-sub">10 Cards</div>
-                            </div>
-                            <div>
-                                <div class="fc-prog-row">
-                                    <span>Progress</span>
-                                    <span>5/8</span>
-                                </div>
-                                <div class="fc-prog-bar">
-                                    <div class="fc-prog-fill" style="width: 62%"></div>
-                                </div>
-                            </div>
-                            <button class="btn-study">
-                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
-                                Study the Flashcard
-                            </button>
-                        </div>
-                    }
-                }
+                    </div>
 
-            </div>
+                    <div class="study-nav">
+                        <button class="btn-nav" id="btnPrev" onclick="prevCard()" disabled>
+                            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <button class="btn-shuffle" onclick="shuffleCards()">
+                            <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+                            Shuffle
+                        </button>
+                        <button class="btn-nav" id="btnNext" onclick="nextCard()">
+                            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="progress-dots" id="progressDots"></div>
+                </div>
+
+                <!-- LIST VIEW -->
+                <div class="list-view hidden" id="listView">
+                    @{
+                        int i = 0;
+                        foreach (var card in cards)
+                        {
+                            i++;
+                            <div class="fc-list-item" style="animation-delay: @((i-1) * 0.03)s">
+                                <div class="fc-list-front">
+                                    <span class="fc-list-num">@i</span>
+                                    <div>
+                                        <span class="fc-list-label">Question</span>
+                                        <div class="fc-list-text">@card.Front</div>
+                                    </div>
+                                </div>
+                                <div class="fc-list-divider"></div>
+                                <div class="fc-list-back">
+                                    <div>
+                                        <span class="fc-list-label">Answer</span>
+                                        <div class="fc-list-text">@card.Back</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+
         </div>
-
     </div>
 </div>
 
 <script>
-    /* ── THEME INIT ── */
-    (function () {
-        if (localStorage.getItem('lightMode') === 'true')
-            document.body.classList.add('light-mode');
-    })();
+    (function () { if (localStorage.getItem('lightMode') === 'true') document.body.classList.add('light-mode'); })();
 
-    function showCardMenu(cardId) {
-        alert('Options for card ' + cardId);
+    // ── Card data from Razor ──
+    const allCards = @Html.Raw(cardsJson);
+
+    let deck = [...allCards];
+    let current = 0;
+    let isFlipped = false;
+
+    function renderCard() {
+        if (!deck.length) return;
+        const card = deck[current];
+        document.getElementById('flipFront').textContent = card.front;
+        document.getElementById('flipBack').textContent  = card.back;
+        document.getElementById('cardCounter').textContent = `${current + 1} / ${deck.length}`;
+
+        // Reset flip
+        isFlipped = false;
+        document.getElementById('flipCard').classList.remove('flipped');
+
+        // Buttons
+        document.getElementById('btnPrev').disabled = current === 0;
+        document.getElementById('btnNext').disabled = current === deck.length - 1;
+
+        // Dots
+        const dots = document.querySelectorAll('.prog-dot');
+        dots.forEach((d, idx) => {
+            d.classList.toggle('active', idx === current);
+            d.classList.toggle('visited', idx < current);
+        });
     }
+
+    function buildDots() {
+        const container = document.getElementById('progressDots');
+        if (!container) return;
+        container.innerHTML = '';
+        deck.forEach((_, idx) => {
+            const d = document.createElement('div');
+            d.className = 'prog-dot' + (idx === 0 ? ' active' : '');
+            d.onclick = () => { current = idx; renderCard(); };
+            container.appendChild(d);
+        });
+    }
+
+    function flipCard() {
+        isFlipped = !isFlipped;
+        document.getElementById('flipCard').classList.toggle('flipped', isFlipped);
+    }
+
+    function nextCard() { if (current < deck.length - 1) { current++; renderCard(); } }
+    function prevCard() { if (current > 0) { current--; renderCard(); } }
+
+    function shuffleCards() {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        current = 0;
+        buildDots();
+        renderCard();
+    }
+
+    function setView(v) {
+        const isStudy = v === 'study';
+        document.getElementById('studyView').classList.toggle('hidden', !isStudy);
+        document.getElementById('listView').classList.toggle('hidden', isStudy);
+        document.getElementById('btnStudy').classList.toggle('active', isStudy);
+        document.getElementById('btnList').classList.toggle('active', !isStudy);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') nextCard();
+        if (e.key === 'ArrowLeft')  prevCard();
+        if (e.key === ' ') { e.preventDefault(); flipCard(); }
+    });
+
+    // Init
+    if (allCards.length) { buildDots(); renderCard(); }
 </script>
 </body>
 </html>

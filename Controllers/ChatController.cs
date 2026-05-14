@@ -27,13 +27,50 @@ namespace RavnLearnWeb.Controllers
             return View();
         }
 
-        public IActionResult Flashcards()
+        public async Task<IActionResult> Flashcards()
+{
+    if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+    ViewBag.Username    = Username;
+    ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+
+    var projects = new List<dynamic>();
+    try
+    {
+        using var conn = RavnLearnWeb.Database.GetConnection();
+        await conn.OpenAsync();
+        using var cmd = new NpgsqlCommand(
+            @"SELECT p.project_id,
+                     p.name,
+                     COALESCE(p.subject, '')         AS subject,
+                     p.created_at,
+                     COUNT(DISTINCT fc.flashcard_id) AS card_count
+              FROM projects p
+              LEFT JOIN chats c        ON c.project_id = p.project_id
+              LEFT JOIN flashcards fc  ON fc.chat_id   = c.chat_id
+              WHERE p.user_id = @uid
+              GROUP BY p.project_id
+              ORDER BY p.created_at DESC", conn);
+        cmd.Parameters.AddWithValue("uid", UserId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
         {
-            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-            ViewBag.Username = Username;
-            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
-            return View();
+            projects.Add(new
+            {
+                Id        = reader.GetInt32(0),
+                Name      = reader.GetString(1),
+                Subject   = reader.GetString(2),
+                Date      = reader.GetDateTime(3),
+                CardCount = reader.GetInt64(4)
+            });
         }
+    }
+    catch { }
+
+    ViewBag.Flashcards = projects;
+    return View();
+}  
+        
+
 
         public IActionResult Quizzes()
         {
@@ -421,6 +458,7 @@ namespace RavnLearnWeb.Controllers
                 using var conn = RavnLearnWeb.Database.GetConnection();
                 await conn.OpenAsync();
 
+                // Step 1: Create a chat_session
                 using var sessionCmd = new NpgsqlCommand(
                     @"INSERT INTO chat_sessions (chat_id, title, created_at)
                     VALUES (@cid, @title, @now)
@@ -431,9 +469,11 @@ namespace RavnLearnWeb.Controllers
                 sessionCmd.Parameters.AddWithValue("now", DateTime.UtcNow);
                 int sessionId = Convert.ToInt32(await sessionCmd.ExecuteScalarAsync());
 
+                // Step 2: Save each question to quizzes AND flashcards
                 foreach (var q in req.Questions)
                 {
-                    using var cmd = new NpgsqlCommand(
+                    // ── Save to quizzes (unchanged) ──
+                    using var quizCmd = new NpgsqlCommand(
                         @"INSERT INTO quizzes 
                             (chat_id, session_id, question, question_type,
                             choice_a, choice_b, choice_c, choice_d,
@@ -442,25 +482,53 @@ namespace RavnLearnWeb.Controllers
                             (@cid, @sid, @q, @qtype,
                             @a, @b, @c, @d,
                             @ans, @atxt, @now)", conn);
-                    cmd.Parameters.AddWithValue("cid",   req.ChatId);
-                    cmd.Parameters.AddWithValue("sid",   sessionId);
-                    cmd.Parameters.AddWithValue("q",     q.Question);
-                    cmd.Parameters.AddWithValue("qtype", q.QuestionType);
-                    cmd.Parameters.AddWithValue("a",     q.ChoiceA);
-                    cmd.Parameters.AddWithValue("b",     q.ChoiceB);
-                    cmd.Parameters.AddWithValue("c",     q.ChoiceC);
-                    cmd.Parameters.AddWithValue("d",     q.ChoiceD);
-                    cmd.Parameters.AddWithValue("ans",   q.CorrectAnswer);
-                    cmd.Parameters.AddWithValue("atxt",  q.AnswerText);
-                    cmd.Parameters.AddWithValue("now",   DateTime.UtcNow);
-                    await cmd.ExecuteNonQueryAsync();
+                    quizCmd.Parameters.AddWithValue("cid",   req.ChatId);
+                    quizCmd.Parameters.AddWithValue("sid",   sessionId);
+                    quizCmd.Parameters.AddWithValue("q",     q.Question);
+                    quizCmd.Parameters.AddWithValue("qtype", q.QuestionType);
+                    quizCmd.Parameters.AddWithValue("a",     q.ChoiceA);
+                    quizCmd.Parameters.AddWithValue("b",     q.ChoiceB);
+                    quizCmd.Parameters.AddWithValue("c",     q.ChoiceC);
+                    quizCmd.Parameters.AddWithValue("d",     q.ChoiceD);
+                    quizCmd.Parameters.AddWithValue("ans",   q.CorrectAnswer);
+                    quizCmd.Parameters.AddWithValue("atxt",  q.AnswerText);
+                    quizCmd.Parameters.AddWithValue("now",   DateTime.UtcNow);
+                    await quizCmd.ExecuteNonQueryAsync();
+
+                    // ── Resolve the correct answer text for the flashcard back ──
+                    // flashcards.back = the full answer text, not just the letter
+                    string back = q.QuestionType switch
+                    {
+                        "fillblank" => q.AnswerText,
+                        "truefalse" => q.CorrectAnswer.ToUpper() == "A" ? "True" : "False",
+                        _           => q.CorrectAnswer.ToUpper() switch  // mcq default
+                        {
+                            "A" => q.ChoiceA,
+                            "B" => q.ChoiceB,
+                            "C" => q.ChoiceC,
+                            "D" => q.ChoiceD,
+                            _   => q.CorrectAnswer
+                        }
+                    };
+
+                    // ── Save to flashcards ──
+                    // Schema: flashcards(flashcard_id, chat_id, front, back, created_at, session_id)
+                    using var fcCmd = new NpgsqlCommand(
+                        @"INSERT INTO flashcards (chat_id, session_id, front, back, created_at)
+                        VALUES (@cid, @sid, @front, @back, @now)", conn);
+                    fcCmd.Parameters.AddWithValue("cid",   req.ChatId);
+                    fcCmd.Parameters.AddWithValue("sid",   sessionId);
+                    fcCmd.Parameters.AddWithValue("front", q.Question);
+                    fcCmd.Parameters.AddWithValue("back",  back);
+                    fcCmd.Parameters.AddWithValue("now",   DateTime.UtcNow);
+                    await fcCmd.ExecuteNonQueryAsync();
                 }
 
                 return Json(new { success = true, sessionId });
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
-
+      
         [HttpGet]
         public async Task<IActionResult> GetQuizzesByChat(int chatId)
         {
@@ -756,12 +824,14 @@ namespace RavnLearnWeb.Controllers
                 using var cmd = new NpgsqlCommand(
                     @"SELECT p.project_id,
                             p.name,
-                            COALESCE(p.subject, '') AS subject,
+                            COALESCE(p.subject, '')         AS subject,
                             p.created_at,
-                            COUNT(DISTINCT f.file_id) AS file_count
+                            COUNT(DISTINCT f.file_id)       AS file_count,
+                            COUNT(DISTINCT fc.flashcard_id) AS flashcard_count
                     FROM projects p
-                    LEFT JOIN chats c ON c.project_id = p.project_id
-                    LEFT JOIN files f ON f.chat_id = c.chat_id
+                    LEFT JOIN chats c       ON c.project_id = p.project_id
+                    LEFT JOIN files f       ON f.chat_id    = c.chat_id
+                    LEFT JOIN flashcards fc ON fc.chat_id   = c.chat_id
                     WHERE p.user_id = @uid
                     GROUP BY p.project_id
                     ORDER BY p.created_at DESC", conn);
@@ -771,11 +841,12 @@ namespace RavnLearnWeb.Controllers
                 {
                     projects.Add(new
                     {
-                        id        = reader.GetInt32(0),
-                        name      = reader.GetString(1),
-                        subject   = reader.GetString(2),
-                        date      = reader.GetDateTime(3).ToString("MMM dd, yyyy"),
-                        fileCount = reader.GetInt64(4)
+                        id             = reader.GetInt32(0),
+                        name           = reader.GetString(1),
+                        subject        = reader.GetString(2),
+                        date           = reader.GetDateTime(3).ToString("MMM dd, yyyy"),
+                        fileCount      = reader.GetInt64(4),
+                        flashcardCount = reader.GetInt64(5)
                     });
                 }
             }
@@ -882,6 +953,63 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
             return Json(result);
         }
+      
+        [HttpGet]
+        public async Task<IActionResult> FlashcardView(int id)
+{
+    if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+    var cards = new List<dynamic>();
+    string projectName = "";
+    DateTime projectDate = DateTime.UtcNow;
+
+    try
+    {
+        using var conn = RavnLearnWeb.Database.GetConnection();
+        await conn.OpenAsync();
+
+        // Get project info
+        using var infoCmd = new NpgsqlCommand(
+            "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+        infoCmd.Parameters.AddWithValue("pid", id);
+        infoCmd.Parameters.AddWithValue("uid", UserId);
+        using var infoReader = await infoCmd.ExecuteReaderAsync();
+        if (await infoReader.ReadAsync())
+        {
+            projectName = infoReader.GetString(0);
+            projectDate = infoReader.GetDateTime(1);
+        }
+        await infoReader.CloseAsync();
+
+        // Get flashcards of this project
+        using var cmd = new NpgsqlCommand(
+            @"SELECT fc.flashcard_id, fc.front, fc.back
+              FROM flashcards fc
+              JOIN chats c ON c.chat_id = fc.chat_id
+              WHERE c.project_id = @pid
+              ORDER BY fc.created_at ASC", conn);
+        cmd.Parameters.AddWithValue("pid", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            cards.Add(new
+            {
+                Id    = reader.GetInt32(0),
+                Front = reader.GetString(1),
+                Back  = reader.GetString(2)
+            });
+        }
+    }
+    catch { }
+
+    ViewBag.SetName   = projectName.ToUpper();
+    ViewBag.SetDate   = projectDate.ToString("MMM dd, yyyy");
+    ViewBag.CardCount = cards.Count;
+    ViewBag.Cards     = cards;
+    ViewBag.ProjectId = id;
+    return View();
+}
+
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";
