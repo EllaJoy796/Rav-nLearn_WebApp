@@ -233,6 +233,33 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RenameChat([FromBody] RenameChatRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (req.ChatId <= 0 || string.IsNullOrWhiteSpace(req.Title))
+                return BadRequest(new { error = "Chat title is required." });
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"UPDATE chats
+                      SET name = @title
+                      WHERE chat_id = @cid AND user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("title", req.Title.Trim());
+                cmd.Parameters.AddWithValue("cid", req.ChatId);
+                cmd.Parameters.AddWithValue("uid", UserId);
+
+                int rows = await cmd.ExecuteNonQueryAsync();
+                if (rows == 0) return NotFound(new { error = "Chat not found." });
+
+                return Json(new { success = true, title = req.Title.Trim() });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetMessages(int chatId)
         {
@@ -543,7 +570,9 @@ namespace RavnLearnWeb.Controllers
                             COALESCE(q.question_type, 'mcq') AS question_type,
                             q.choice_a, q.choice_b, q.choice_c, q.choice_d, 
                             q.correct_answer, COALESCE(q.answer_text,'') AS answer_text,
-                            q.session_id
+                            q.session_id,
+                            COALESCE(cs.title, 'Reviewer') AS session_title,
+                            cs.created_at
                     FROM quizzes q
                     JOIN chat_sessions cs ON cs.session_id = q.session_id
                     WHERE cs.chat_id = @cid
@@ -555,17 +584,56 @@ namespace RavnLearnWeb.Controllers
                         id            = reader.GetInt32(0),
                         question      = reader.GetString(1),
                         questionType  = reader.GetString(2),
-                        choiceA       = reader.GetString(3),
-                        choiceB       = reader.GetString(4),
-                        choiceC       = reader.GetString(5),
-                        choiceD       = reader.GetString(6),
-                        correctAnswer = reader.GetString(7),
+                        choiceA       = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                        choiceB       = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                        choiceC       = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                        choiceD       = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                        correctAnswer = reader.IsDBNull(7) ? "" : reader.GetString(7),
                         answerText    = reader.GetString(8),
-                        sessionId     = reader.GetInt32(9)
+                        sessionId     = reader.GetInt32(9),
+                        sessionTitle  = reader.GetString(10),
+                        createdAt     = reader.GetDateTime(11).ToString("MMM dd")
                     });
             }
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
             return Json(questions);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetChatDocuments(int chatId)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+
+            var docs = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"SELECT f.file_id,
+                             f.filename,
+                             COALESCE(f.extracted_text, '') AS extracted_text
+                      FROM files f
+                      JOIN chats c ON c.chat_id = f.chat_id
+                      WHERE f.chat_id = @cid AND c.user_id = @uid
+                      ORDER BY f.uploaded_at ASC", conn);
+                cmd.Parameters.AddWithValue("cid", chatId);
+                cmd.Parameters.AddWithValue("uid", UserId);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    docs.Add(new
+                    {
+                        id = reader.GetInt32(0),
+                        filename = reader.GetString(1),
+                        content = reader.GetString(2)
+                    });
+                }
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+
+            return Json(docs);
         }
 
         [HttpPost]
@@ -1583,6 +1651,12 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     {
         public int ChatId { get; set; }
         public string QuizText { get; set; } = "";
+    }
+
+    public class RenameChatRequest
+    {
+        public int ChatId { get; set; }
+        public string Title { get; set; } = "";
     }
 
         public class RenameQuizSessionRequest
