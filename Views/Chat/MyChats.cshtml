@@ -55,6 +55,8 @@
         body.light-mode .nav-item     { color: #2d1f5e; }
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
+        body.light-mode .filter-select { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
+        body.light-mode .filter-select:hover { border-color: var(--accent); }
 
         html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
@@ -84,13 +86,19 @@
         /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
-        .search-bar { width: 600px; position: relative; }
+        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; }
+        
+       .filters-group { display: flex; align-items: center; gap: 12px; min-width: 600px; }
+        .search-bar { width: 360px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar input::placeholder { color: var(--text-dim); }
         .search-bar .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
         .search-bar .search-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; min-width: 110px; }
+        .filter-select:hover { border-color: var(--accent); }
+        .filter-select:focus { border-color: var(--accent); }
 
         /* ── CONTENT ── */
         .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -114,7 +122,7 @@
         .card-top-row { display: flex; align-items: flex-start; justify-content: space-between; }
         .chat-icon { width: 42px; height: 42px; background: var(--icon-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0; }
         .chat-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-more { background: none; border: none; cursor: pointer; color: var(--text-dim); padding: 2px 4px; border-radius: 6px; display: flex; flex-direction: column; gap: 3px; align-items: center; transition: color 0.2s ease, background 0.2s ease; }
+        .btn-more { background: none; border: none; cursor: pointer; color: var(--text-dim); border-radius: 6px; display: flex; flex-direction: column; gap: 3px; align-items: center; transition: color 0.2s ease, background 0.2s ease; padding: 16px; }
         .btn-more:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-more span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
         .card-body { flex: 1; }
@@ -180,7 +188,9 @@
             .nav-label { display: none; }
             .chats-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
-            .search-bar { width: 100%; }
+            .filters-group { flex-wrap: wrap; }
+            .search-bar { max-width: 100%; flex: 1 1 100%; }
+            .filter-select { flex: 1; min-width: 120px; }
         }
     </style>
 </head>
@@ -248,11 +258,24 @@
     <div class="main">
         <header class="topbar">
             <span class="page-title">My Chats</span>
-            <div class="search-bar">
-                <span class="search-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </span>
-                <input type="text" placeholder="Search chats..." id="searchInput" oninput="filterChats()" />
+            <div style="flex:1;"></div>
+            <div class="filters-group" style="flex:0; justify-content:flex-end;">
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" placeholder="Search chats..." id="searchInput" oninput="applyFilters()" />
+                </div>
+                <select class="filter-select" id="filterDate" onchange="applyFilters()">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="older">Older</option>
+                </select>
+                <select class="filter-select" id="filterTag" onchange="applyFilters()">
+                    <option value="">All Tags</option>
+                </select>
             </div>
         </header>
 
@@ -394,6 +417,7 @@
 
     let ctxChatId   = null;
     let ctxChatName = '';
+    let allChats    = [];
 
     // ── LOAD CHATS ────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', loadChats);
@@ -402,23 +426,42 @@
         try {
             const res   = await fetch('/Chat/GetMyProjects');
             const chats = await res.json();
+            allChats    = chats;
             const grid  = document.getElementById('chatsGrid');
 
             grid.querySelectorAll('.card-chat, .empty-state').forEach(c => c.remove());
 
             if (chats.length === 0) {
-                const empty = document.createElement('div');
-                empty.className = 'empty-state';
-                empty.id = 'emptyState';
-                empty.innerHTML = `
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <p>No chats yet.<br>Click <strong>New chat</strong> to get started.</p>`;
-                grid.appendChild(empty);
+                showEmptyState();
                 return;
             }
 
+            // Populate tag filter dropdown
+            populateTagFilter(chats);
+
             chats.forEach((chat, i) => grid.appendChild(makeCard(chat, i)));
         } catch (err) { console.error('Failed to load chats:', err); }
+    }
+
+    function populateTagFilter(chats) {
+        const tagSet = new Set();
+        chats.forEach(chat => {
+            if (chat.subject && chat.subject.trim()) {
+                tagSet.add(chat.subject.trim());
+            }
+        });
+
+        const filterTag = document.getElementById('filterTag');
+        // Clear existing options except "All Tags"
+        filterTag.innerHTML = '<option value="">All Tags</option>';
+        
+        // Add sorted tags
+        Array.from(tagSet).sort().forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.toLowerCase();
+            option.textContent = tag;
+            filterTag.appendChild(option);
+        });
     }
 
     function makeCard(chat, index) {
@@ -427,6 +470,8 @@
         card.dataset.id      = chat.id;
         card.dataset.name    = chat.name.toLowerCase();
         card.dataset.subject = (chat.subject || '').toLowerCase();
+        card.dataset.date    = chat.date; // Store original date string
+        card.dataset.timestamp = parseDateToTimestamp(chat.date); // Store as comparable timestamp
         card.style.animationDelay = `${index * 0.05}s`;
         card.onclick = () => openChat(chat.id);
 
@@ -462,7 +507,85 @@
         return card;
     }
 
+    function parseDateToTimestamp(dateStr) {
+        // Parse date strings like "Jan 15, 2024" to timestamp
+        const date = new Date(dateStr);
+        return date.getTime();
+    }
+
+    function getDateCategory(timestamp) {
+        const now = new Date();
+        const chatDate = new Date(timestamp);
+        
+        // Reset time to compare only dates
+        now.setHours(0, 0, 0, 0);
+        chatDate.setHours(0, 0, 0, 0);
+        
+        const diffTime = now - chatDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return 'today';
+        if (diffDays <= 7) return 'week';
+        if (diffDays <= 30) return 'month';
+        return 'older';
+    }
+
     function openChat(id) { window.location.href = `/Chat/Open/${id}`; }
+
+    // ── FILTERS ───────────────────────────────────────────
+    function applyFilters() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const dateFilter = document.getElementById('filterDate').value;
+        const tagFilter = document.getElementById('filterTag').value;
+
+        let visibleCount = 0;
+
+        document.querySelectorAll('.card-chat').forEach(card => {
+            const name = card.dataset.name;
+            const subject = card.dataset.subject;
+            const timestamp = parseInt(card.dataset.timestamp);
+            const dateCategory = getDateCategory(timestamp);
+
+            // Check search match
+            const searchMatch = !searchQuery || name.includes(searchQuery) || subject.includes(searchQuery);
+
+            // Check date filter match
+            const dateMatch = !dateFilter || dateCategory === dateFilter;
+
+            // Check tag filter match
+            const tagMatch = !tagFilter || subject === tagFilter;
+
+            // Show card if all filters match
+            if (searchMatch && dateMatch && tagMatch) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide empty state
+        const emptyState = document.getElementById('emptyState');
+        if (visibleCount === 0 && !emptyState) {
+            showEmptyState('No chats match your filters.');
+        } else if (visibleCount > 0 && emptyState) {
+            emptyState.remove();
+        }
+    }
+
+    function showEmptyState(message) {
+        const grid = document.getElementById('chatsGrid');
+        const existing = document.getElementById('emptyState');
+        if (existing) existing.remove();
+
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.id = 'emptyState';
+        empty.innerHTML = `
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <p>${message || 'No chats yet.<br>Click <strong>New chat</strong> to get started.'}</p>`;
+        grid.appendChild(empty);
+    }
 
     // ── CREATE MODAL ──────────────────────────────────────
     function openModal() {
@@ -579,16 +702,13 @@
             ctxChatId = null;
             closeDeleteModal();
 
+            // Reapply filters
+            applyFilters();
+
             // Show empty state if no cards left
             const remaining = document.querySelectorAll('.card-chat');
             if (remaining.length === 0) {
-                const grid  = document.getElementById('chatsGrid');
-                const empty = document.createElement('div');
-                empty.className = 'empty-state';
-                empty.innerHTML = `
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <p>No chats yet.<br>Click <strong>New chat</strong> to get started.</p>`;
-                grid.appendChild(empty);
+                showEmptyState();
             }
         } catch (err) { alert('Network error: ' + err.message); }
         finally { btn.disabled = false; btn.textContent = 'Delete'; }
@@ -621,15 +741,6 @@
     function ctxDelete() {
         hideContextMenu();
         openDeleteModal(ctxChatId, ctxChatName);
-    }
-
-    // ── SEARCH ────────────────────────────────────────────
-    function filterChats() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('.card-chat').forEach(card => {
-            const match = card.dataset.name.includes(q) || card.dataset.subject.includes(q);
-            card.style.display = match ? '' : 'none';
-        });
     }
 
     function escHtml(str) {
