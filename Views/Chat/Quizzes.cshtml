@@ -129,9 +129,6 @@
         }
         .project-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-        .btn-more { background: none; border: none; cursor: pointer; color: var(--text-dim); padding: 2px 4px; border-radius: 6px; display: flex; flex-direction: column; gap: 3px; align-items: center; transition: color 0.2s ease, background 0.2s ease; }
-        .btn-more:hover { color: var(--text-muted); background: var(--accent-soft); }
-        .btn-more span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
 
         .card-body { flex: 1; }
         .project-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; margin-bottom: 8px; }
@@ -253,21 +250,7 @@
     </div>
 </div>
 
-<!-- CONTEXT MENU -->
-<div class="ctx-menu" id="ctxMenu">
-    <div class="ctx-item" onclick="ctxOpen()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-        </svg>
-        View Quizzes
-    </div>
-    <div class="ctx-item" onclick="ctxGoToChat()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        Go to Chat
-    </div>
-</div>
+
 
 <!-- ── LOGOUT MODAL ── -->
 <div id="logoutModal" style="
@@ -317,7 +300,6 @@
             document.body.classList.add('light-mode');
     })();
 
-    let ctxProjectId = null;
 
     document.addEventListener('DOMContentLoaded', loadProjects);
 
@@ -354,9 +336,6 @@
                 <div class="project-icon">
                     <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                 </div>
-                <button class="btn-more" title="Options">
-                    <span></span><span></span><span></span>
-                </button>
             </div>
             <div class="card-body">
                 <div class="project-name">${escHtml(project.name.toUpperCase())}</div>
@@ -373,10 +352,6 @@
                 </div>
             </div>`;
 
-        card.querySelector('.btn-more').addEventListener('click', (e) => {
-            e.stopPropagation();
-            showContextMenu(e, project.id);
-        });
 
         return card;
     }
@@ -385,15 +360,6 @@
         window.location.href = `/Chat/QuizzesView?id=${id}`;
     }
 
-    function showContextMenu(e, projectId) {
-        ctxProjectId = projectId;
-        const menu = document.getElementById('ctxMenu');
-        menu.classList.add('visible');
-        const x = Math.min(e.clientX, window.innerWidth - 170);
-        const y = Math.min(e.clientY + 4, window.innerHeight - 100);
-        menu.style.left = x + 'px';
-        menu.style.top  = y + 'px';
-    }
 
     function hideContextMenu() { document.getElementById('ctxMenu').classList.remove('visible'); }
     document.addEventListener('click', hideContextMenu);
