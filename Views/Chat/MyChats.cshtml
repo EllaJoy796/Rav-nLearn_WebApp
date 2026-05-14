@@ -422,24 +422,24 @@
     // ── LOAD CHATS ────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', loadChats);
 
-    async function loadChats() {
+   async function loadChats() {
         try {
             const res   = await fetch('/Chat/GetMyProjects');
             const chats = await res.json();
-            allChats    = chats;
+            const filtered = chats.filter(c => !c.isManual);  // filter manual projects
+            allChats = filtered;
             const grid  = document.getElementById('chatsGrid');
 
             grid.querySelectorAll('.card-chat, .empty-state').forEach(c => c.remove());
 
-            if (chats.length === 0) {
+            if (filtered.length === 0) {          // ← was: chats.length
                 showEmptyState();
                 return;
             }
 
-            // Populate tag filter dropdown
-            populateTagFilter(chats);
+            populateTagFilter(filtered);          // ← was: chats
 
-            chats.forEach((chat, i) => grid.appendChild(makeCard(chat, i)));
+            filtered.forEach((chat, i) => grid.appendChild(makeCard(chat, i)));  // ← was: chats
         } catch (err) { console.error('Failed to load chats:', err); }
     }
 

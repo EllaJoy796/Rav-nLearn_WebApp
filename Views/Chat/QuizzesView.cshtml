@@ -5,6 +5,8 @@
     var setName = ViewBag.SetName ?? "LINUX REVIEWER";
     var setDate  = ViewBag.SetDate  ?? "May 13, 2026";
     var quizzes  = ViewBag.Quizzes  as IEnumerable<dynamic>;
+    var isManual = (bool)(ViewBag.IsManual ?? false);
+
 }
 
 <!DOCTYPE html>
@@ -34,7 +36,6 @@
             --topbar-h:         64px;
         }
 
-        /* ── LIGHT MODE ── */
         body.light-mode {
             --bg:          #f4f3ff;
             --sidebar-bg:  #ede9fa;
@@ -55,10 +56,16 @@
         body.light-mode .ctx-menu     { background: #f4f3ff; }
         body.light-mode .chip-download,
         body.light-mode .chip-buddy {
-            background: rgba(94, 60, 180, 0.12);
-            border-color: rgba(94, 60, 180, 0.35);
+            background: rgba(94,60,180,.12);
+            border-color: rgba(94,60,180,.35);
             color: #4a2fa0;
         }
+        body.light-mode .mq-builder-modal { background: #f4f3ff; }
+        body.light-mode .mq-q-card  { background: #edeaf8; border-color: rgba(124,92,191,.25); }
+        body.light-mode .mq-input   { background: #fff; color: var(--text-white); border-color: rgba(124,92,191,.25); }
+        body.light-mode .mq-tab     { background: #edeaf8; color: var(--text-muted); }
+        body.light-mode .mq-tab.active { background: var(--accent); color: #fff; }
+        body.light-mode .mq-choice-row input { background: #fff; color: var(--text-white); border-color: rgba(124,92,191,.25); }
 
         html, body {
             height: 100%;
@@ -82,308 +89,292 @@
             transition: width .25s ease;
         }
         .sidebar:hover { width: var(--sidebar-expanded); }
-
-        .sidebar-logo {
-            width: 100%; display: flex; align-items: center;
-            gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden;
-        }
-        .logo-icon {
-            width: 42px; height: 42px; min-width: 42px;
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-        }
+        .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden; }
+        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text {
-            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
-            color: var(--text-white); white-space: nowrap;
-            opacity: 0; transition: opacity .2s ease .05s;
-        }
+        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
         .sidebar:hover .logo-text { opacity: 1; }
-
-        .nav-group {
-            display: flex; flex-direction: column;
-            align-items: flex-start; gap: 2px;
-            width: 100%; padding: 0 12px;
-        }
-        .nav-group + .nav-group {
-            margin-top: 8px; padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        .nav-group-label {
-            font-size: 10px; font-weight: 700;
-            color: var(--text-dim); letter-spacing: .8px; text-transform: uppercase;
-            padding: 0 4px; margin-bottom: 6px; white-space: nowrap;
-            opacity: 0; max-height: 0; overflow: hidden;
-            transition: opacity .2s ease, max-height .2s ease;
-        }
+        .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
+        .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .nav-group-label { font-size: 10px; font-weight: 700; color: var(--text-dim); letter-spacing: .8px; text-transform: uppercase; padding: 0 4px; margin-bottom: 6px; white-space: nowrap; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .2s ease, max-height .2s ease; }
         .sidebar:hover .nav-group-label { opacity: 1; max-height: 20px; }
-
-        .nav-item {
-            width: 100%; height: 44px; border-radius: 10px;
-            display: flex; align-items: center; gap: 12px;
-            padding: 0 11px; cursor: pointer;
-            transition: background .2s ease, color .2s ease;
-            color: white; text-decoration: none;
-            overflow: hidden; white-space: nowrap; position: relative;
-        }
+        .nav-item { width: 100%; height: 44px; border-radius: 10px; display: flex; align-items: center; gap: 12px; padding: 0 11px; cursor: pointer; transition: background .2s ease, color .2s ease; color: white; text-decoration: none; overflow: hidden; white-space: nowrap; position: relative; }
         .nav-item:hover { background: var(--accent-soft); color: var(--text-white); }
         .nav-item.active { background: var(--accent-soft); color: var(--accent); }
-        .nav-item svg {
-            width: 20px; height: 20px; min-width: 20px;
-            stroke: currentColor; fill: none;
-            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-        }
-        .nav-label {
-            font-size: 13px; font-weight: 600;
-            opacity: 0; transition: opacity .2s ease .05s; overflow: hidden;
-        }
+        .nav-item svg { width: 20px; height: 20px; min-width: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-label { font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .2s ease .05s; overflow: hidden; }
         .sidebar:hover .nav-label { opacity: 1; }
-        .nav-item::after {
-            content: attr(data-tip); position: absolute; left: 82px;
-            background: #1e1e2e; color: var(--text-white);
-            font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px;
-            white-space: nowrap; pointer-events: none; opacity: 0;
-            transition: opacity .15s ease; border: 1px solid var(--border); z-index: 200;
-        }
+        .nav-item::after { content: attr(data-tip); position: absolute; left: 82px; background: #1e1e2e; color: var(--text-white); font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s ease; border: 1px solid var(--border); z-index: 200; }
         .sidebar:not(:hover) .nav-item:hover::after { opacity: 1; }
-
-        .sidebar-bottom {
-            margin-top: auto; display: flex; flex-direction: column;
-            align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px;
-        }
+        .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
 
         /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-
-        .topbar {
-            height: var(--topbar-h); display: flex; align-items: center; gap: 16px;
-            padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-        }
-
-        .btn-back {
-            display: flex; align-items: center; gap: 8px;
-            background: transparent; border: 1px solid var(--border); border-radius: 10px;
-            color: var(--text-white); font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px;
-            cursor: pointer; text-decoration: none; flex-shrink: 0;
-            transition: background .2s ease, border-color .2s ease;
-        }
+        .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
         .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
-        .btn-back svg {
-            width: 14px; height: 14px; stroke: currentColor; fill: none;
-            stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
-        }
-
+        .btn-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-        .set-title {
-            font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900;
-            color: var(--text-white); letter-spacing: -.3px;
-        }
-        .set-meta {
-            font-size: 12px; color: var(--text-muted);
-            display: flex; align-items: center; gap: 6px;
-        }
+        .set-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
+        .set-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
-
-        .content {
-            flex: 1; overflow-y: auto; padding: 32px 28px;
-            scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-        }
+        .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         .content::-webkit-scrollbar { width: 4px; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        .section-label {
-            font-size: 13px; font-weight: 600;
-            color: var(--text-muted); letter-spacing: .5px; margin-bottom: 20px;
-        }
-
+        .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: .5px; margin-bottom: 20px; }
         .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
         /* ── QUIZ CARD ── */
-        .qz-item {
-            background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 16px; display: flex; flex-direction: column;
-            padding: 16px; gap: 12px; cursor: pointer;
-            transition: background .2s ease, border-color .2s ease, transform .15s ease;
-            animation: fadeUp .4s ease both; position: relative;
-        }
-        .qz-item:hover {
-            background: var(--card-hover);
-            border-color: rgba(124,92,191,.35);
-            transform: translateY(-2px);
-        }
-
-        .qz-toprow {
-            display: flex; align-items: center;
-            justify-content: space-between; gap: 8px;
-        }
+        .qz-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; padding: 16px; gap: 12px; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; position: relative; }
+        .qz-item:hover { background: var(--card-hover); border-color: rgba(124,92,191,.35); transform: translateY(-2px); }
+        .qz-toprow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .qz-chips { display: flex; align-items: center; gap: 6px; }
-
-        .chip {
-            display: flex; align-items: center; gap: 5px;
-            border-radius: 20px; padding: 4px 10px 4px 8px;
-            font-size: 11px; font-weight: 700; letter-spacing: .3px;
-        }
-        .chip svg {
-            width: 13px; height: 13px; stroke: currentColor; fill: none;
-            stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-        }
-        .chip-download {
-            background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0;
-        }
-        .chip-buddy {
-            background: var(--accent-soft); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0;
-        }
-
-        .btn-dots {
-            background: none; border: 1px solid var(--border); border-radius: 7px;
-            cursor: pointer; color: var(--text-dim);
-            width: 28px; height: 28px;
-            display: flex; align-items: center; justify-content: center;
-            gap: 2.5px; flex-direction: column;
-            transition: color .2s ease, background .2s ease; flex-shrink: 0;
-        }
+        .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+        .chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .chip-download { background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
+        .chip-buddy { background: var(--accent-soft); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
+        .btn-dots { background: none; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; color: var(--text-dim); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; gap: 2.5px; flex-direction: column; transition: color .2s ease, background .2s ease; flex-shrink: 0; }
         .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
-
-        .qz-name {
-            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
-            color: var(--text-white); letter-spacing: .3px;
-        }
+        .qz-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); letter-spacing: .3px; }
         .qz-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-        .qz-prog-row {
-            display: flex; align-items: center;
-            justify-content: space-between; font-size: 11px; color: var(--text-muted);
-        }
-        .qz-prog-bar {
-            height: 4px; background: rgba(124,92,191,.15);
-            border-radius: 2px; overflow: hidden; margin-top: 6px;
-        }
-        .qz-prog-fill {
-            height: 100%; background: var(--accent);
-            border-radius: 2px; transition: width .4s ease;
-        }
-
-        .btn-take {
-            width: 100%; height: 38px; background: transparent;
-            border: 1px solid rgba(124,92,191,.35); border-radius: 10px;
-            color: var(--text-white); font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; cursor: pointer; margin-top: auto;
-            transition: background .2s ease, border-color .2s ease;
-        }
+        .qz-prog-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+        .qz-prog-bar { height: 4px; background: rgba(124,92,191,.15); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+        .qz-prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease; }
+        .btn-take { width: 100%; height: 38px; background: transparent; border: 1px solid rgba(124,92,191,.35); border-radius: 10px; color: var(--text-white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: auto; transition: background .2s ease, border-color .2s ease; }
         .btn-take:hover { background: var(--accent-soft); border-color: var(--accent); }
         .btn-take svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
 
+        /* ── NEW QUIZ CARD (dashed) ── */
+        .qz-new-card {
+            background: transparent;
+            border: 1.5px dashed rgba(124,92,191,.4);
+            border-radius: 16px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 10px; padding: 24px;
+            cursor: pointer; min-height: 200px;
+            transition: border-color .2s ease, background .2s ease;
+            animation: fadeUp .4s ease both;
+        }
+        .qz-new-card:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .qz-new-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); border: 1.5px dashed var(--accent); display: flex; align-items: center; justify-content: center; color: var(--accent); transition: background .2s; }
+        .qz-new-card:hover .qz-new-icon { background: rgba(124,92,191,.3); }
+        .qz-new-label { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
         /* ── CONTEXT MENU ── */
-        .ctx-menu {
-            position: fixed; background: #1e1a2e;
-            border: 1px solid rgba(124,92,191,.25); border-radius: 10px;
-            padding: 6px; min-width: 150px; z-index: 999;
-            box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none;
-        }
+        .ctx-menu { position: fixed; background: #1e1a2e; border: 1px solid rgba(124,92,191,.25); border-radius: 10px; padding: 6px; min-width: 150px; z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none; }
         .ctx-menu.visible { display: block; }
-        .ctx-item {
-            padding: 8px 12px; border-radius: 6px; font-size: 13px;
-            cursor: pointer; color: var(--text-muted);
-            transition: background .15s, color .15s;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .ctx-item { padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: background .15s, color .15s; display: flex; align-items: center; gap: 8px; }
         .ctx-item:hover { background: var(--accent-soft); color: var(--text-white); }
         .ctx-item.danger { color: #e07070; }
         .ctx-item.danger:hover { background: rgba(224,112,112,.12); }
 
         /* ── MODAL OVERLAY ── */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,.6);
-            backdrop-filter: blur(4px); z-index: 500;
-            display: none; align-items: center; justify-content: center;
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
-
-        .modal {
-            background: #1a1626; border: 1px solid rgba(124,92,191,.25);
-            border-radius: 20px; padding: 32px;
-            width: min(420px, 90vw);
-            box-shadow: 0 24px 60px rgba(0,0,0,.5);
-            animation: modalIn .2s ease;
-        }
-        @@keyframes modalIn {
-            from { opacity: 0; transform: scale(.95) translateY(10px); }
-            to   { opacity: 1; transform: none; }
-        }
-        .modal-title {
-            font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
-            color: var(--text-white); margin-bottom: 6px;
-        }
+        .modal { background: #1a1626; border: 1px solid rgba(124,92,191,.25); border-radius: 20px; padding: 32px; width: min(420px,90vw); box-shadow: 0 24px 60px rgba(0,0,0,.5); animation: modalIn .2s ease; }
+        @@keyframes modalIn { from { opacity:0; transform:scale(.95) translateY(10px); } to { opacity:1; transform:none; } }
+        .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-white); margin-bottom: 6px; }
         .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-        .field-label {
-            font-size: 11px; font-weight: 700; color: var(--text-muted);
-            letter-spacing: .6px; text-transform: uppercase;
-            margin-bottom: 7px; display: block;
-        }
-        .field-input {
-            width: 100%; height: 44px; background: #0f0d1a;
-            border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
-            padding: 0 14px; color: var(--text-white);
-            font-size: 14px; font-family: inherit; outline: none;
-            transition: border-color .2s; margin-bottom: 16px;
-        }
+        .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: .6px; text-transform: uppercase; margin-bottom: 7px; display: block; }
+        .field-input { width: 100%; height: 44px; background: #0f0d1a; border: 1px solid rgba(124,92,191,.2); border-radius: 10px; padding: 0 14px; color: var(--text-white); font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; margin-bottom: 16px; }
         .field-input:focus { border-color: var(--accent); }
         .field-input::placeholder { color: var(--text-dim); }
         .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
-        .btn-cancel {
-            flex: 1; height: 44px; background: none;
-            border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
-            color: var(--text-muted); font-size: 14px; font-weight: 600;
-            font-family: inherit; cursor: pointer;
-            transition: border-color .2s, color .2s;
-        }
+        .btn-cancel { flex: 1; height: 44px; background: none; border: 1px solid rgba(124,92,191,.2); border-radius: 10px; color: var(--text-muted); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: border-color .2s, color .2s; }
         .btn-cancel:hover { border-color: var(--accent); color: var(--text-white); }
-        .btn-primary {
-            flex: 2; height: 44px; background: var(--accent); border: none;
-            border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700;
-            font-family: inherit; cursor: pointer; transition: background .2s;
-        }
+        .btn-primary { flex: 2; height: 44px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s; }
         .btn-primary:hover { background: #6b4daa; }
         .btn-primary:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
         .error-msg { font-size: 12px; color: #e07070; margin-top: -10px; margin-bottom: 12px; display: none; }
         .error-msg.visible { display: block; }
-
-        /* ── DELETE MODAL ── */
-        .delete-modal {
-            background: #1a1626; border: 1px solid rgba(224,112,112,.2);
-            border-radius: 20px; padding: 32px;
-            width: min(380px, 90vw);
-            box-shadow: 0 24px 60px rgba(0,0,0,.5);
-            animation: modalIn .2s ease;
-        }
+        .delete-modal { background: #1a1626; border: 1px solid rgba(224,112,112,.2); border-radius: 20px; padding: 32px; width: min(380px,90vw); box-shadow: 0 24px 60px rgba(0,0,0,.5); animation: modalIn .2s ease; }
         .delete-modal .modal-title { color: #e07070; }
-        .btn-delete-confirm {
-            flex: 2; height: 44px; background: #c0392b; border: none;
-            border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700;
-            font-family: inherit; cursor: pointer; transition: background .2s;
-        }
+        .btn-delete-confirm { flex: 2; height: 44px; background: #c0392b; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s; }
         .btn-delete-confirm:hover { background: #a93226; }
         .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
-        @@keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* ══════════════════════════════════════════════
+           MANUAL QUIZ BUILDER MODAL
+        ══════════════════════════════════════════════ */
+        .mq-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
+            z-index: 600; display: none;
+            align-items: flex-start; justify-content: center;
+            padding: 24px 16px; overflow-y: auto;
         }
+        .mq-overlay.open { display: flex; }
+
+        .mq-builder-modal {
+            background: #16121f;
+            border: 1px solid rgba(124,92,191,.25);
+            border-radius: 24px;
+            width: min(700px, 96vw);
+            margin: auto;
+            box-shadow: 0 32px 80px rgba(0,0,0,.6);
+            animation: modalIn .2s ease;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* Header */
+        .mq-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .mq-header-left { display: flex; flex-direction: column; gap: 2px; }
+        .mq-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--text-white); }
+        .mq-subtitle { font-size: 12px; color: var(--text-muted); }
+        .mq-close { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: color .2s, background .2s; }
+        .mq-close:hover { background: var(--accent-soft); color: var(--text-white); }
+
+        /* Quiz name field */
+        .mq-name-row {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .mq-name-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; display: block; }
+        .mq-name-input {
+            width: 100%; height: 42px;
+            background: var(--bg);
+            border: 1px solid rgba(124,92,191,.2);
+            border-radius: 10px; padding: 0 14px;
+            color: var(--text-white); font-size: 14px; font-family: inherit; outline: none;
+            transition: border-color .2s;
+        }
+        .mq-name-input:focus { border-color: var(--accent); }
+        .mq-name-input::placeholder { color: var(--text-dim); }
+
+        /* Questions list */
+        .mq-questions-area {
+            padding: 16px 24px;
+            flex: 1; overflow-y: auto;
+            scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+            display: flex; flex-direction: column; gap: 12px;
+            max-height: 55vh;
+        }
+        .mq-questions-area::-webkit-scrollbar { width: 4px; }
+        .mq-questions-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* Individual question card */
+        .mq-q-card {
+            background: rgba(124,92,191,.06);
+            border: 1px solid rgba(124,92,191,.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            animation: fadeUp .25s ease both;
+        }
+
+        .mq-q-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .mq-q-num { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
+        .mq-q-delete { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; transition: color .2s, background .2s; }
+        .mq-q-delete:hover { color: #e07070; background: rgba(224,112,112,.1); }
+
+        /* Type tabs */
+        .mq-tabs { display: flex; gap: 4px; background: rgba(0,0,0,.2); border-radius: 8px; padding: 3px; }
+        .mq-tab { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: background .15s, color .15s; border: none; background: none; font-family: inherit; }
+        .mq-tab.active { background: var(--accent); color: #fff; }
+
+        /* Question text */
+        .mq-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid rgba(124,92,191,.2);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text-white);
+            font-size: 13px; font-family: inherit; outline: none;
+            transition: border-color .2s;
+            resize: vertical; min-height: 60px;
+        }
+        .mq-input:focus { border-color: var(--accent); }
+        .mq-input::placeholder { color: var(--text-dim); }
+
+        /* MCQ choices */
+        .mq-choices { display: flex; flex-direction: column; gap: 6px; }
+        .mq-choice-row { display: flex; align-items: center; gap: 8px; }
+        .mq-choice-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(124,92,191,.3); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
+        .mq-choice-row input {
+            flex: 1; height: 36px; background: var(--bg);
+            border: 1px solid rgba(124,92,191,.15); border-radius: 7px;
+            padding: 0 10px; color: var(--text-white);
+            font-size: 12px; font-family: inherit; outline: none;
+            transition: border-color .2s;
+        }
+        .mq-choice-row input:focus { border-color: var(--accent); }
+        .mq-choice-row input::placeholder { color: var(--text-dim); }
+
+        /* Correct answer selector for MCQ */
+        .mq-correct-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .mq-correct-label { font-size: 11px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+        .mq-correct-select {
+            flex: 1; height: 34px;
+            background: var(--bg);
+            border: 1px solid rgba(124,92,191,.2); border-radius: 7px;
+            padding: 0 10px; color: var(--text-white);
+            font-size: 12px; font-family: inherit; outline: none;
+            transition: border-color .2s;
+        }
+        .mq-correct-select:focus { border-color: var(--accent); }
+
+        /* T/F buttons */
+        .mq-tf-row { display: flex; gap: 8px; }
+        .mq-tf-btn { flex: 1; height: 38px; border-radius: 9px; border: 1px solid rgba(124,92,191,.2); background: none; color: var(--text-muted); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .15s; }
+        .mq-tf-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        /* Fill blank answer */
+        .mq-fill-row { display: flex; flex-direction: column; gap: 4px; }
+        .mq-fill-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+        /* Add question button */
+        .mq-add-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: 1.5px dashed rgba(124,92,191,.35); border-radius: 12px;
+            padding: 12px; cursor: pointer; color: var(--accent);
+            font-size: 13px; font-weight: 600; font-family: inherit;
+            background: none; width: 100%;
+            transition: border-color .2s, background .2s;
+        }
+        .mq-add-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+        /* Footer */
+        .mq-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; flex-shrink: 0;
+        }
+        .mq-q-count { font-size: 12px; color: var(--text-muted); }
+        .mq-footer-actions { display: flex; gap: 10px; }
+        .mq-save-btn {
+            height: 40px; padding: 0 24px;
+            background: var(--accent); border: none; border-radius: 10px;
+            color: #fff; font-size: 13px; font-weight: 700; font-family: inherit;
+            cursor: pointer; transition: background .2s;
+        }
+        .mq-save-btn:hover { background: #6b4daa; }
+        .mq-save-btn:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
+        .mq-cancel-btn {
+            height: 40px; padding: 0 18px;
+            background: none; border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
+            color: var(--text-muted); font-size: 13px; font-weight: 600; font-family: inherit;
+            cursor: pointer; transition: all .2s;
+        }
+        .mq-cancel-btn:hover { border-color: var(--accent); color: var(--text-white); }
+
+        @@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
         @@media (max-width: 640px) {
             html, body { overflow: auto; }
             .shell { flex-direction: column; height: auto; min-height: 100vh; }
-            .sidebar {
-                width: 100% !important; flex-direction: row;
-                height: 56px; padding: 0 16px; gap: 8px;
-                border-right: none; border-bottom: 1px solid var(--border);
-            }
+            .sidebar { width: 100% !important; flex-direction: row; height: 56px; padding: 0 16px; gap: 8px; border-right: none; border-bottom: 1px solid var(--border); }
             .sidebar-logo { margin-bottom: 0; margin-right: 8px; }
-            .logo-icon { width: 34px; height: 34px; min-width: 34px; }
-            .logo-text { opacity: 1; }
             .nav-group { flex-direction: row; padding: 0 4px; }
             .nav-group + .nav-group { margin-top: 0; padding-top: 0; border-top: none; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
             .nav-group-label { display: none; }
@@ -445,12 +436,10 @@
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
                 <span class="nav-label" style="display:flex; flex-direction:column; gap:1px; overflow:hidden;">
-                    <span style="font-size:13px; font-weight:700; color:var(--text-white);
-                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <span style="font-size:13px; font-weight:700; color:var(--text-white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         @(ViewBag.Username ?? "Profile")
                     </span>
-                    <span style="font-size:11px; font-weight:400; color:var(--text-muted);
-                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <span style="font-size:11px; font-weight:400; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         @(ViewBag.Email ?? "")
                     </span>
                 </span>
@@ -464,7 +453,6 @@
     </aside>
 
     <div class="main">
-
         <header class="topbar">
             <a class="btn-back" href="/Chat/Quizzes">
                 <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -473,7 +461,7 @@
             <div class="set-header">
                 <div class="set-title">@setName</div>
                 <div class="set-meta" id="setMeta">
-                    @(ViewBag.QuizCount ?? 6) Quizzes
+                    @(ViewBag.QuizCount ?? 0) Quizzes
                     <span class="dot"></span>
                     @setDate
                 </div>
@@ -482,29 +470,19 @@
 
         <div class="content">
             <div class="section-label">Quizzes</div>
-            <div class="cards-grid" id="cardsGrid">
-                <!-- populated by JS -->
-            </div>
+            <div class="cards-grid" id="cardsGrid"></div>
         </div>
-
     </div>
 </div>
 
 <!-- ── CONTEXT MENU ── -->
 <div class="ctx-menu" id="ctxMenu">
     <div class="ctx-item" onclick="ctxRename()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Rename
     </div>
     <div class="ctx-item danger" onclick="ctxDelete()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14H6L5 6"/>
-            <path d="M10 11v6M14 11v6"/>
-        </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         Delete
     </div>
 </div>
@@ -514,13 +492,10 @@
     <div class="modal">
         <div class="modal-title">Rename Quiz</div>
         <div class="modal-sub">Enter a new name for this quiz.</div>
-
         <label class="field-label" for="renameInput">New name</label>
-        <input class="field-input" id="renameInput" type="text"
-               placeholder="e.g. Final Exam Prep" maxlength="100"
+        <input class="field-input" id="renameInput" type="text" placeholder="e.g. Final Exam Prep" maxlength="100"
                oninput="validateRenameForm()" onkeydown="handleRenameKey(event)" />
         <div class="error-msg" id="renameError">Please enter a name.</div>
-
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeRenameModal()">Cancel</button>
             <button class="btn-primary" id="btnRename" onclick="submitRename()" disabled>Save</button>
@@ -532,9 +507,7 @@
 <div class="modal-overlay" id="deleteOverlay" onclick="handleDeleteOverlayClick(event)">
     <div class="delete-modal">
         <div class="modal-title">Delete Quiz?</div>
-        <div class="modal-sub" id="deleteModalSub">
-            This will permanently delete this quiz and all its questions. This cannot be undone.
-        </div>
+        <div class="modal-sub" id="deleteModalSub">This will permanently delete this quiz and all its questions. This cannot be undone.</div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
             <button class="btn-delete-confirm" id="btnDeleteConfirm" onclick="submitDelete()">Delete</button>
@@ -549,11 +522,11 @@
         <div class="modal-sub" id="downloadModalSub">Choose a format to download your quiz.</div>
         <div style="display:flex;gap:12px;margin-bottom:8px;">
             <button onclick="submitDownload('pdf')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 PDF
             </button>
             <button onclick="submitDownload('docx')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="12" y1="9" x2="8" y2="9"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 Word (DOCX)
             </button>
         </div>
@@ -580,8 +553,8 @@
         <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
             <div id="modalScore" style="font-size:13px;color:var(--text-muted);"></div>
             <div style="display:flex;gap:10px;">
-                <button onclick="retryQuiz()" style="background:none;border:1px solid var(--border);border-radius:10px;color:var(--accent);font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .2s;">↺ Retry</button>
-                <button onclick="closeQuizModal()" style="background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .2s;">Done</button>
+                <button onclick="retryQuiz()" style="background:none;border:1px solid var(--border);border-radius:10px;color:var(--accent);font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;">↺ Retry</button>
+                <button onclick="closeQuizModal()" style="background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;">Done</button>
             </div>
         </div>
     </div>
@@ -591,27 +564,60 @@
 <div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
     <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px 28px 24px;width:340px;text-align:center;font-family:'DM Sans',sans-serif;">
         <div style="width:48px;height:48px;border-radius:14px;background:rgba(220,60,60,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </div>
         <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);margin-bottom:8px;">Log Out?</div>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Are you sure you want to log out of Rev'nLearn?</div>
         <div style="display:flex;gap:10px;justify-content:center;">
-            <button onclick="document.getElementById('logoutModal').style.display='none'"
-                style="flex:1;height:38px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
-                Cancel
-            </button>
-            <a href="/Account/Logout"
-                style="flex:1;height:38px;border-radius:9px;border:none;background:#c0392b;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-                Yes, Log Out
-            </a>
+            <button onclick="document.getElementById('logoutModal').style.display='none'" style="flex:1;height:38px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
+            <a href="/Account/Logout" style="flex:1;height:38px;border-radius:9px;border:none;background:#c0392b;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;">Yes, Log Out</a>
         </div>
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════
+     MANUAL QUIZ BUILDER MODAL
+════════════════════════════════════════════════════════════ -->
+<div class="mq-overlay" id="mqOverlay" onclick="handleMqOverlayClick(event)">
+    <div class="mq-builder-modal">
+        <!-- Header -->
+        <div class="mq-header">
+            <div class="mq-header-left">
+                <div class="mq-title">Create Quiz Manually</div>
+                <div class="mq-subtitle">Add questions one by one, then save.</div>
+            </div>
+            <button class="mq-close" onclick="closeMqModal()">✕</button>
+        </div>
+
+        <!-- Quiz name -->
+        <div class="mq-name-row">
+            <span class="mq-name-label">Quiz Title *</span>
+            <input class="mq-name-input" id="mqQuizTitle" type="text"
+                   placeholder="e.g. Chapter 3 Review, Midterm Practice…"
+                   oninput="mqUpdateFooter()" />
+        </div>
+
+        <!-- Questions list -->
+        <div class="mq-questions-area" id="mqQuestionsArea"></div>
+
+        <!-- Add question button -->
+        <div style="padding: 0 24px 12px;">
+            <button class="mq-add-btn" onclick="mqAddQuestion()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Question
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="mq-footer">
+            <span class="mq-q-count" id="mqQCount">0 questions</span>
+            <div class="mq-footer-actions">
+                <button class="mq-cancel-btn" onclick="closeMqModal()">Cancel</button>
+                <button class="mq-save-btn" id="mqSaveBtn" onclick="mqSaveQuiz()">Save Quiz</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     /* ── THEME ── */
@@ -622,38 +628,18 @@
 
     const projectId = new URLSearchParams(window.location.search).get('id');
 
-    /* ── CONTEXT MENU STATE ── */
-    let ctxSessionId   = null;
-    let ctxCardEl      = null;
-    let ctxCurrentName = '';
-
-    /* ──────────────────────────────────────────────────
-       PROGRESS PERSISTENCE  (keyed per session)
-    ────────────────────────────────────────────────── */
+    /* ────────────────────────────────────────────────
+       PROGRESS PERSISTENCE
+    ──────────────────────────────────────────────── */
     function progressKey(sid) { return `quiz_progress_${sid}`; }
+    function loadProgress(sid) { try { const r = localStorage.getItem(progressKey(sid)); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveProgress(sid, data) { try { localStorage.setItem(progressKey(sid), JSON.stringify(data)); } catch {} }
+    function clearProgress(sid) { localStorage.removeItem(progressKey(sid)); }
 
-    function loadProgress(sid) {
-        try {
-            const raw = localStorage.getItem(progressKey(sid));
-            return raw ? JSON.parse(raw) : null;
-        } catch { return null; }
-    }
-
-    // data = { score, answered, answers: { [qIndex]: { picked, correct } } }
-    function saveProgress(sid, data) {
-        try { localStorage.setItem(progressKey(sid), JSON.stringify(data)); }
-        catch { /* storage full — ignore */ }
-    }
-
-    function clearProgress(sid) {
-        localStorage.removeItem(progressKey(sid));
-    }
-
-    /* ──────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────
        LOAD & RENDER
-    ────────────────────────────────────────────────── */
+    ──────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', loadQuizzes);
-
     let allSessions = [];
 
     async function loadQuizzes() {
@@ -668,22 +654,57 @@
         const grid = document.getElementById('cardsGrid');
         grid.innerHTML = '';
 
+        /* ── Always-first: New Quiz card ── */
+        const isManual = @(isManual ? "true" : "false");
+        if (isManual) {
+    const newCard = document.createElement('div');
+    newCard.className = 'qz-new-card';
+    newCard.style.animationDelay = '0s';
+    newCard.onclick = openMqModal;
+    newCard.style.cssText = `
+        background: transparent;
+        border: 1.5px dashed rgba(124,92,191,.4);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 24px;
+        cursor: pointer;
+        min-height: 200px;
+        transition: border-color .2s ease, background .2s ease;
+    `;
+    newCard.innerHTML = `
+        <div style="
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(124,92,191,.15);
+            border: 1.5px dashed rgba(124,92,191,.6);
+            display: flex; align-items: center; justify-content: center;
+            color: #7c5cbf; font-size: 24px; font-weight: 300; line-height: 1;
+        ">+</div>
+        <span style="
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600;
+            color: var(--text-muted);
+        ">New Quiz</span>
+    `;
+    newCard.onmouseenter = () => {
+        newCard.style.borderColor = 'rgba(124,92,191,.9)';
+        newCard.style.background = 'rgba(124,92,191,.07)';
+    };
+    newCard.onmouseleave = () => {
+        newCard.style.borderColor = 'rgba(124,92,191,.4)';
+        newCard.style.background = 'transparent';
+    };
+    grid.appendChild(newCard);
+}
+
         if (!data.length) {
-            grid.innerHTML = `
-                <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
-                    gap:12px;padding:60px 20px;color:var(--text-dim);text-align:center;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none"
-                        stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
-                        <path d="M9 11l3 3L22 4"/>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                    </svg>
-                    <p style="font-size:14px">No quizzes yet.<br>Go to a chat and ask to create a quiz.</p>
-                </div>`;
             updateMeta(0);
             return;
         }
 
-        /* Group by sessionId */
         const sessions = new Map();
         data.forEach(q => {
             const sid = q.sessionId || q.quizId;
@@ -692,7 +713,6 @@
         });
 
         allSessions = [...sessions.entries()];
-
         let cardNum = 1;
         allSessions.forEach(([sid, questions]) => {
             grid.appendChild(makeQuizCard(cardNum++, sid, questions));
@@ -704,19 +724,15 @@
     function updateMeta(count) {
         const el = document.getElementById('setMeta');
         if (!el) return;
-        const dot = '<span class="dot"></span>';
-        el.innerHTML = `${count} Quiz${count !== 1 ? 'zes' : ''} ${dot} @setDate`;
+        el.innerHTML = `${count} Quiz${count !== 1 ? 'zes' : ''} <span class="dot"></span> @setDate`;
     }
 
     function makeQuizCard(num, sid, questions) {
-        const total = questions.length;
-        const date  = questions[0]?.createdAt ?? '';
-
-        const rawTitle  = questions[0]?.sessionTitle ?? '';
+        const total    = questions.length;
+        const date     = questions[0]?.createdAt ?? '';
+        const rawTitle = questions[0]?.sessionTitle ?? '';
         const autoLabel = `QUIZ ${String(num).padStart(2, '0')}`;
-        const label     = (rawTitle && !rawTitle.toLowerCase().startsWith('session'))
-                        ? rawTitle.toUpperCase()
-                        : autoLabel;
+        const label    = (rawTitle && !rawTitle.toLowerCase().startsWith('session')) ? rawTitle.toUpperCase() : autoLabel;
 
         const div = document.createElement('div');
         div.className = 'qz-item';
@@ -724,7 +740,6 @@
         div.dataset.label     = label;
         div.style.animationDelay = `${(num - 1) * 0.05}s`;
 
-        // ── Load saved progress for this session ──
         const saved    = loadProgress(sid);
         const answered = saved ? saved.answered : 0;
         const score    = saved ? saved.score    : 0;
@@ -734,20 +749,15 @@
             <div class="qz-toprow">
                 <div class="qz-chips">
                     <div class="chip chip-download">
-                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Download
                     </div>
                     <div class="chip chip-buddy">
-                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
-                        <line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                         Study Buddy
                     </div>
                 </div>
-                <button class="btn-dots" title="Options">
-                    <span></span><span></span><span></span>
-                </button>
+                <button class="btn-dots" title="Options"><span></span><span></span><span></span></button>
             </div>
             <div>
                 <div class="qz-name">${escHtml(label)}</div>
@@ -758,418 +768,184 @@
                     <span>Progress</span>
                     <span class="prog-label">${answered}/${total}${answered > 0 ? ` · ${score} correct` : ''}</span>
                 </div>
-                <div class="qz-prog-bar">
-                    <div class="qz-prog-fill" style="width:${pct}%"></div>
-                </div>
+                <div class="qz-prog-bar"><div class="qz-prog-fill" style="width:${pct}%"></div></div>
             </div>
             <button class="btn-take">
                 <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
                 ${answered === total && total > 0 ? 'Review Quiz' : answered > 0 ? 'Continue Quiz' : 'Take the Quiz'}
             </button>`;
 
-        /* Download chip click */
-        div.querySelector('.chip-download').addEventListener('click', (e) => {
-            e.stopPropagation();
-            openDownloadModal(sid, label);
-        });
-
-        div.querySelector('.chip-buddy').addEventListener('click', (e) => {
-            e.stopPropagation();
-            SB.open(label, questions);
-        });
-
-        /* Three-dots → context menu */
-        div.querySelector('.btn-dots').addEventListener('click', (e) => {
-            e.stopPropagation();
-            showContextMenu(e, sid, label, div);
-        });
-
-        /* Take button → quiz modal */
-        div.querySelector('.btn-take').addEventListener('click', (e) => {
-            e.stopPropagation();
-            openQuizModal(label, questions, sid, div);
-        });
-
-        /* Card click → quiz modal */
+        div.querySelector('.chip-download').addEventListener('click', e => { e.stopPropagation(); openDownloadModal(sid, label); });
+        div.querySelector('.chip-buddy').addEventListener('click', e => { e.stopPropagation(); SB.open(label, questions); });
+        div.querySelector('.btn-dots').addEventListener('click', e => { e.stopPropagation(); showContextMenu(e, sid, label, div); });
+        div.querySelector('.btn-take').addEventListener('click', e => { e.stopPropagation(); openQuizModal(label, questions, sid, div); });
         div.addEventListener('click', () => openQuizModal(label, questions, sid, div));
 
         return div;
     }
 
-    /* Update a card's progress bar + label in-place */
     function refreshCardProgress(cardEl, sid, score, answered, total) {
         if (!cardEl) return;
-        const pct      = total > 0 ? Math.round((answered / total) * 100) : 0;
-        const fill     = cardEl.querySelector('.qz-prog-fill');
-        const label    = cardEl.querySelector('.prog-label');
-        const btn      = cardEl.querySelector('.btn-take');
-        if (fill)  fill.style.width  = `${pct}%`;
-        if (label) label.textContent = `${answered}/${total}${answered > 0 ? ` · ${score} correct` : ''}`;
+        const pct   = total > 0 ? Math.round((answered / total) * 100) : 0;
+        const fill  = cardEl.querySelector('.qz-prog-fill');
+        const lbl   = cardEl.querySelector('.prog-label');
+        const btn   = cardEl.querySelector('.btn-take');
+        if (fill) fill.style.width = `${pct}%`;
+        if (lbl)  lbl.textContent  = `${answered}/${total}${answered > 0 ? ` · ${score} correct` : ''}`;
         if (btn) {
             const svg = btn.querySelector('svg');
             btn.innerHTML = '';
             if (svg) btn.appendChild(svg);
             btn.insertAdjacentText('beforeend',
-                answered === total && total > 0 ? ' Review Quiz'
-                : answered > 0                  ? ' Continue Quiz'
-                :                                 ' Take the Quiz');
+                answered === total && total > 0 ? ' Review Quiz' : answered > 0 ? ' Continue Quiz' : ' Take the Quiz');
         }
     }
 
-    /* ──────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────
        DOWNLOAD MODAL
-    ────────────────────────────────────────────────── */
-    let _downloadSid   = null;
-    let _downloadLabel = '';
+    ──────────────────────────────────────────────── */
+    let _downloadSid = null, _downloadLabel = '';
+    function openDownloadModal(sid, label) { _downloadSid = sid; _downloadLabel = label; document.getElementById('downloadModalSub').textContent = `Choose a format to download "${label}".`; document.getElementById('downloadOverlay').classList.add('open'); }
+    function closeDownloadModal() { document.getElementById('downloadOverlay').classList.remove('open'); }
+    function handleDownloadOverlayClick(e) { if (e.target === document.getElementById('downloadOverlay')) closeDownloadModal(); }
+    function submitDownload(format) { if (!_downloadSid) return; window.location.href = `/Chat/DownloadQuizSession?sessionId=${_downloadSid}&format=${format}`; closeDownloadModal(); }
 
-    function openDownloadModal(sid, label) {
-        _downloadSid   = sid;
-        _downloadLabel = label;
-        document.getElementById('downloadModalSub').textContent =
-            `Choose a format to download "${label}".`;
-        document.getElementById('downloadOverlay').classList.add('open');
-    }
-
-    function closeDownloadModal() {
-        document.getElementById('downloadOverlay').classList.remove('open');
-    }
-
-    function handleDownloadOverlayClick(e) {
-        if (e.target === document.getElementById('downloadOverlay')) closeDownloadModal();
-    }
-
-    function submitDownload(format) {
-        if (!_downloadSid) return;
-        window.location.href = `/Chat/DownloadQuizSession?sessionId=${_downloadSid}&format=${format}`;
-        closeDownloadModal();
-    }
-
-    /* ──────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────
        CONTEXT MENU
-    ────────────────────────────────────────────────── */
+    ──────────────────────────────────────────────── */
+    let ctxSessionId = null, ctxCardEl = null, ctxCurrentName = '';
     function showContextMenu(e, sid, label, cardEl) {
-        ctxSessionId   = sid;
-        ctxCurrentName = label;
-        ctxCardEl      = cardEl;
-
+        ctxSessionId = sid; ctxCurrentName = label; ctxCardEl = cardEl;
         const menu = document.getElementById('ctxMenu');
         menu.classList.add('visible');
-        const x = Math.min(e.clientX, window.innerWidth  - 170);
-        const y = Math.min(e.clientY + 4, window.innerHeight - 100);
-        menu.style.left = x + 'px';
-        menu.style.top  = y + 'px';
+        menu.style.left = Math.min(e.clientX, window.innerWidth - 170) + 'px';
+        menu.style.top  = Math.min(e.clientY + 4, window.innerHeight - 100) + 'px';
     }
-
-    function hideContextMenu() {
-        document.getElementById('ctxMenu').classList.remove('visible');
-    }
-
+    function hideContextMenu() { document.getElementById('ctxMenu').classList.remove('visible'); }
     document.addEventListener('click', hideContextMenu);
+    function ctxRename() { hideContextMenu(); openRenameModal(ctxSessionId, ctxCurrentName, ctxCardEl); }
+    function ctxDelete() { hideContextMenu(); openDeleteModal(ctxSessionId, ctxCurrentName, ctxCardEl); }
 
-    function ctxRename() {
-        hideContextMenu();
-        openRenameModal(ctxSessionId, ctxCurrentName, ctxCardEl);
-    }
-
-    function ctxDelete() {
-        hideContextMenu();
-        openDeleteModal(ctxSessionId, ctxCurrentName, ctxCardEl);
-    }
-
-    /* ──────────────────────────────────────────────────
-       RENAME MODAL
-    ────────────────────────────────────────────────── */
-    let _renameSid  = null;
-    let _renameCard = null;
-
-    function openRenameModal(sid, currentName, cardEl) {
-        _renameSid  = sid;
-        _renameCard = cardEl;
-
-        const input = document.getElementById('renameInput');
-        input.value = currentName;
-        document.getElementById('renameError').classList.remove('visible');
-        document.getElementById('btnRename').disabled = false;
-        document.getElementById('renameOverlay').classList.add('open');
-        setTimeout(() => { input.focus(); input.select(); }, 100);
-    }
-
-    function closeRenameModal() {
-        document.getElementById('renameOverlay').classList.remove('open');
-    }
-
-    function handleRenameOverlayClick(e) {
-        if (e.target === document.getElementById('renameOverlay')) closeRenameModal();
-    }
-
-    function handleRenameKey(e) {
-        if (e.key === 'Escape') closeRenameModal();
-        if (e.key === 'Enter' && !document.getElementById('btnRename').disabled) submitRename();
-    }
-
-    function validateRenameForm() {
-        const val = document.getElementById('renameInput').value.trim();
-        document.getElementById('btnRename').disabled = val.length === 0;
-        document.getElementById('renameError').classList.remove('visible');
-    }
-
+    /* ── RENAME MODAL ── */
+    let _renameSid = null, _renameCard = null;
+    function openRenameModal(sid, currentName, cardEl) { _renameSid = sid; _renameCard = cardEl; const inp = document.getElementById('renameInput'); inp.value = currentName; document.getElementById('renameError').classList.remove('visible'); document.getElementById('btnRename').disabled = false; document.getElementById('renameOverlay').classList.add('open'); setTimeout(() => { inp.focus(); inp.select(); }, 100); }
+    function closeRenameModal() { document.getElementById('renameOverlay').classList.remove('open'); }
+    function handleRenameOverlayClick(e) { if (e.target === document.getElementById('renameOverlay')) closeRenameModal(); }
+    function handleRenameKey(e) { if (e.key === 'Escape') closeRenameModal(); if (e.key === 'Enter' && !document.getElementById('btnRename').disabled) submitRename(); }
+    function validateRenameForm() { const v = document.getElementById('renameInput').value.trim(); document.getElementById('btnRename').disabled = !v; document.getElementById('renameError').classList.remove('visible'); }
     async function submitRename() {
         const newName = document.getElementById('renameInput').value.trim();
         if (!newName) { document.getElementById('renameError').classList.add('visible'); return; }
-
-        const btn = document.getElementById('btnRename');
-        btn.disabled = true; btn.textContent = 'Saving…';
-
+        const btn = document.getElementById('btnRename'); btn.disabled = true; btn.textContent = 'Saving…';
         try {
-            const res  = await fetch('/Chat/RenameQuizSession', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionId: _renameSid, name: newName })
-            });
+            const res = await fetch('/Chat/RenameQuizSession', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: _renameSid, name: newName }) });
             const data = await res.json();
             if (data.error) { alert('Error: ' + data.error); return; }
-
-            if (_renameCard) {
-                const nameEl = _renameCard.querySelector('.qz-name');
-                if (nameEl) nameEl.textContent = newName.toUpperCase();
-                _renameCard.dataset.label = newName.toUpperCase();
-            }
+            if (_renameCard) { const el = _renameCard.querySelector('.qz-name'); if (el) el.textContent = newName.toUpperCase(); _renameCard.dataset.label = newName.toUpperCase(); }
             closeRenameModal();
         } catch (err) { alert('Network error: ' + err.message); }
         finally { btn.disabled = false; btn.textContent = 'Save'; }
     }
 
-    /* ──────────────────────────────────────────────────
-       DELETE MODAL
-    ────────────────────────────────────────────────── */
-    let _deleteSid  = null;
-    let _deleteCard = null;
-
-    function openDeleteModal(sid, name, cardEl) {
-        _deleteSid  = sid;
-        _deleteCard = cardEl;
-        document.getElementById('deleteModalSub').textContent =
-            `"${name}" and all its questions will be permanently deleted. This cannot be undone.`;
-        document.getElementById('deleteOverlay').classList.add('open');
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('deleteOverlay').classList.remove('open');
-    }
-
-    function handleDeleteOverlayClick(e) {
-        if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal();
-    }
-
+    /* ── DELETE MODAL ── */
+    let _deleteSid = null, _deleteCard = null;
+    function openDeleteModal(sid, name, cardEl) { _deleteSid = sid; _deleteCard = cardEl; document.getElementById('deleteModalSub').textContent = `"${name}" and all its questions will be permanently deleted. This cannot be undone.`; document.getElementById('deleteOverlay').classList.add('open'); }
+    function closeDeleteModal() { document.getElementById('deleteOverlay').classList.remove('open'); }
+    function handleDeleteOverlayClick(e) { if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal(); }
     async function submitDelete() {
         if (!_deleteSid) return;
-        const btn = document.getElementById('btnDeleteConfirm');
-        btn.disabled = true; btn.textContent = 'Deleting…';
-
+        const btn = document.getElementById('btnDeleteConfirm'); btn.disabled = true; btn.textContent = 'Deleting…';
         try {
-            const res  = await fetch(`/Chat/DeleteQuizSession/${_deleteSid}`, { method: 'DELETE' });
+            const res = await fetch(`/Chat/DeleteQuizSession/${_deleteSid}`, { method: 'DELETE' });
             const data = await res.json();
             if (data.error) { alert('Error: ' + data.error); return; }
-
-            // Also wipe saved progress for this session
             clearProgress(_deleteSid);
-
             _deleteCard?.remove();
-
             const remaining = document.querySelectorAll('.qz-item');
-            if (remaining.length === 0) {
-                document.getElementById('cardsGrid').innerHTML = `
-                    <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
-                        gap:12px;padding:60px 20px;color:var(--text-dim);text-align:center;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none"
-                            stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
-                            <path d="M9 11l3 3L22 4"/>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                        </svg>
-                        <p style="font-size:14px">No quizzes yet.<br>Go to a chat and ask to create a quiz.</p>
-                    </div>`;
-                updateMeta(0);
-            } else {
-                updateMeta(remaining.length);
-            }
-
-            _deleteSid  = null;
-            _deleteCard = null;
+            updateMeta(remaining.length);
+            _deleteSid = null; _deleteCard = null;
             closeDeleteModal();
         } catch (err) { alert('Network error: ' + err.message); }
         finally { btn.disabled = false; btn.textContent = 'Delete'; }
     }
 
-    /* ──────────────────────────────────────────────────
-       GLOBAL ESC
-    ────────────────────────────────────────────────── */
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            hideContextMenu();
-            closeRenameModal();
-            closeDeleteModal();
-            closeDownloadModal();
-            closeQuizModal();
-        }
-    });
-
-    /* ──────────────────────────────────────────────────
+    /* ────────────────────────────────────────────────
        QUIZ TAKE MODAL
-    ────────────────────────────────────────────────── */
-    let currentSession  = [];
-    let currentSid      = null;
-    let currentCardEl   = null;
-    let score           = 0;
-    let answered        = 0;
-    // answers[qIndex] = { picked: optionIndex|'text', correct: bool }
-    let answers         = {};
+    ──────────────────────────────────────────────── */
+    let currentSession = [], currentSid = null, currentCardEl = null, score = 0, answered = 0, answers = {};
 
     function openQuizModal(label, questions, sid, cardEl) {
-        currentSession = questions;
-        currentSid     = sid;
-        currentCardEl  = cardEl;
-
-        // Restore saved state
+        currentSession = questions; currentSid = sid; currentCardEl = cardEl;
         const saved = loadProgress(sid);
-        score    = saved ? saved.score    : 0;
-        answered = saved ? saved.answered : 0;
-        answers  = saved ? (saved.answers || {}) : {};
-
+        score = saved ? saved.score : 0; answered = saved ? saved.answered : 0; answers = saved ? (saved.answers || {}) : {};
         document.getElementById('modalQuizTitle').textContent = label;
         document.getElementById('modalQuizSub').textContent   = `${questions.length} Questions`;
-        document.getElementById('modalScore').textContent     =
-            answered > 0 ? `${score}/${answered} correct` : '';
-        document.getElementById('modalProgress').style.width  =
-            questions.length > 0 ? `${(answered / questions.length) * 100}%` : '0%';
-
+        document.getElementById('modalScore').textContent     = answered > 0 ? `${score}/${answered} correct` : '';
+        document.getElementById('modalProgress').style.width  = questions.length > 0 ? `${(answered / questions.length) * 100}%` : '0%';
         buildModalBody(questions);
         document.getElementById('quizModal').style.display = 'flex';
     }
 
-    function closeQuizModal() {
-        document.getElementById('quizModal').style.display = 'none';
-        document.getElementById('modalBody').innerHTML = '';
-    }
-
-    function retryQuiz() {
-        score    = 0;
-        answered = 0;
-        answers  = {};
-        clearProgress(currentSid);
-
-        document.getElementById('modalScore').textContent    = '';
-        document.getElementById('modalProgress').style.width = '0%';
-        buildModalBody(currentSession);
-
-        // Reset card on the grid too
-        refreshCardProgress(currentCardEl, currentSid, 0, 0, currentSession.length);
-    }
+    function closeQuizModal() { document.getElementById('quizModal').style.display = 'none'; document.getElementById('modalBody').innerHTML = ''; }
+    function retryQuiz() { score = 0; answered = 0; answers = {}; clearProgress(currentSid); document.getElementById('modalScore').textContent = ''; document.getElementById('modalProgress').style.width = '0%'; buildModalBody(currentSession); refreshCardProgress(currentCardEl, currentSid, 0, 0, currentSession.length); }
 
     function buildModalBody(questions) {
-        const body    = document.getElementById('modalBody');
+        const body = document.getElementById('modalBody');
         body.innerHTML = '';
         const letters = ['A','B','C','D'];
-
         questions.forEach((q, idx) => {
             const qwrap = document.createElement('div');
             qwrap.style.cssText = 'margin-bottom:24px;';
-
             const qtext = document.createElement('div');
             qtext.style.cssText = 'font-size:14px;color:var(--text-white);line-height:1.6;margin-bottom:10px;';
             qtext.innerHTML = `<span style="color:var(--accent);font-weight:700;">Q${idx+1}.</span> ${escHtml(q.question)}`;
             qwrap.appendChild(qtext);
-
-            const type       = q.questionType || 'mcq';
-            const savedAns   = answers[idx];   // restore if exists
+            const type = q.questionType || 'mcq';
+            const savedAns = answers[idx];
             const alreadyDone = !!savedAns;
 
             if (type === 'fillblank') {
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;gap:8px;';
-                const inp = document.createElement('input');
-                inp.type = 'text'; inp.placeholder = 'Type your answer…';
+                const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;';
+                const inp = document.createElement('input'); inp.type = 'text'; inp.placeholder = 'Type your answer…';
                 inp.style.cssText = 'flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-white);font-size:13px;font-family:inherit;outline:none;';
-                const btn = document.createElement('button');
-                btn.textContent = 'Check';
+                const btn = document.createElement('button'); btn.textContent = 'Check';
                 btn.style.cssText = 'background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;padding:8px 16px;cursor:pointer;font-family:inherit;';
-                const fb = document.createElement('div');
-                fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
-
+                const fb = document.createElement('div'); fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
                 let picked = false;
-
-                const applyFillResult = (correct, ansText, userVal) => {
-                    inp.value = userVal || '';
-                    inp.disabled = true;
-                    if (correct) {
-                        fb.style.cssText += 'display:block;background:rgba(46,139,87,.12);color:#2e8b57;';
-                        fb.textContent = '✓ Correct!';
-                        inp.style.borderColor = 'rgba(46,139,87,.4)';
-                    } else {
-                        fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;';
-                        fb.textContent = `✗ Answer: ${ansText}`;
-                        inp.style.borderColor = '#52302d';
-                    }
-                    btn.disabled = true;
-                    btn.style.opacity = '0.4';
+                const applyFill = (correct, ansText, userVal) => {
+                    inp.value = userVal || ''; inp.disabled = true;
+                    if (correct) { fb.style.cssText += 'display:block;background:rgba(46,139,87,.12);color:#2e8b57;'; fb.textContent = '✓ Correct!'; inp.style.borderColor = 'rgba(46,139,87,.4)'; }
+                    else { fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;'; fb.textContent = `✗ Answer: ${ansText}`; inp.style.borderColor = '#52302d'; }
+                    btn.disabled = true; btn.style.opacity = '0.4';
                 };
-
-                // Restore previous answer
-                if (alreadyDone) {
-                    applyFillResult(savedAns.correct, q.answerText || q.correctAnswer || '', savedAns.picked);
-                    picked = true;
-                }
-
+                if (alreadyDone) { applyFill(savedAns.correct, q.answerText || q.correctAnswer || '', savedAns.picked); picked = true; }
                 btn.onclick = () => {
-                    if (picked) return;
-                    picked = true; answered++;
-                    const ua = inp.value.trim().toLowerCase();
-                    const ca = (q.answerText || q.correctAnswer || '').toLowerCase();
+                    if (picked) return; picked = true; answered++;
+                    const ua = inp.value.trim().toLowerCase(), ca = (q.answerText || q.correctAnswer || '').toLowerCase();
                     const correct = ua && (ua === ca || (ca.length > 3 && ua.length > 3 && ca.includes(ua)));
                     if (correct) score++;
                     answers[idx] = { picked: inp.value.trim(), correct };
                     saveProgress(currentSid, { score, answered, answers });
                     refreshCardProgress(currentCardEl, currentSid, score, answered, currentSession.length);
-                    applyFillResult(correct, q.answerText || q.correctAnswer || 'N/A', inp.value.trim());
+                    applyFill(correct, q.answerText || q.correctAnswer || 'N/A', inp.value.trim());
                     updateModalScore();
                 };
                 inp.onkeydown = e => { if (e.key === 'Enter') btn.click(); };
-                row.appendChild(inp); row.appendChild(btn);
-                qwrap.appendChild(row); qwrap.appendChild(fb);
-
+                row.appendChild(inp); row.appendChild(btn); qwrap.appendChild(row); qwrap.appendChild(fb);
             } else {
-                const opts = type === 'truefalse'
-                    ? ['True', 'False']
-                    : [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean);
-
+                const opts = type === 'truefalse' ? ['True','False'] : [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean);
                 const correctLetter = (q.correctAnswer || '').toUpperCase();
-                const correctIndex  = type === 'truefalse'
-                    ? (correctLetter === 'A' ? 0 : 1)
-                    : letters.indexOf(correctLetter);
-
+                const correctIndex  = type === 'truefalse' ? (correctLetter === 'A' ? 0 : 1) : letters.indexOf(correctLetter);
                 let picked = false;
-                const fb = document.createElement('div');
-                fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
-
+                const fb = document.createElement('div'); fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
                 const optEls = [];
-
-                const applyChoiceResult = (chosenIdx) => {
+                const applyChoice = (chosenIdx) => {
                     const correct = chosenIdx === correctIndex;
-                    const chosenEl  = optEls[chosenIdx];
-                    const correctEl = optEls[correctIndex];
-
-                    if (correct) {
-                        chosenEl.style.cssText  += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);cursor:default;';
-                        fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;';
-                        fb.textContent = '✓ Correct!';
-                    } else {
-                        chosenEl.style.cssText  += 'background:rgba(192,57,43,.15)!important;border-color:rgba(192,57,43,.4);cursor:default;';
-                        if (correctEl) correctEl.style.cssText += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);';
-                        fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;';
-                        fb.textContent = `✗ Correct: ${type === 'truefalse' ? (correctIndex === 0 ? 'True' : 'False') : letters[correctIndex]}`;
-                    }
+                    const chosenEl = optEls[chosenIdx], correctEl = optEls[correctIndex];
+                    if (correct) { chosenEl.style.cssText += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);cursor:default;'; fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;'; fb.textContent = '✓ Correct!'; }
+                    else { chosenEl.style.cssText += 'background:rgba(192,57,43,.15)!important;border-color:rgba(192,57,43,.4);cursor:default;'; if (correctEl) correctEl.style.cssText += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);'; fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;'; fb.textContent = `✗ Correct: ${type === 'truefalse' ? (correctIndex === 0 ? 'True' : 'False') : letters[correctIndex]}`; }
                     optEls.forEach(el => { el.style.cursor = 'default'; el.onclick = null; });
                 };
-
                 opts.forEach((opt, oi) => {
                     const ob = document.createElement('div');
                     ob.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);transition:background .15s,border-color .15s;';
@@ -1177,55 +953,257 @@
                     ob.innerHTML = `<span style="font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;width:16px;">${letter}</span><span style="font-size:13px;color:var(--text-muted);line-height:1.5;">${escHtml(opt)}</span>`;
                     ob.onmouseenter = () => { if (!picked) ob.style.background = 'var(--accent-soft)'; };
                     ob.onmouseleave = () => { if (!picked) ob.style.background = ''; };
-                    ob.onclick = () => {
-                        if (picked) return;
-                        picked = true; answered++;
-                        const correct = oi === correctIndex;
-                        if (correct) score++;
-                        answers[idx] = { picked: oi, correct };
-                        saveProgress(currentSid, { score, answered, answers });
-                        refreshCardProgress(currentCardEl, currentSid, score, answered, currentSession.length);
-                        applyChoiceResult(oi);
-                        updateModalScore();
-                    };
-                    optEls.push(ob);
-                    qwrap.appendChild(ob);
+                    ob.onclick = () => { if (picked) return; picked = true; answered++; const correct = oi === correctIndex; if (correct) score++; answers[idx] = { picked: oi, correct }; saveProgress(currentSid, { score, answered, answers }); refreshCardProgress(currentCardEl, currentSid, score, answered, currentSession.length); applyChoice(oi); updateModalScore(); };
+                    optEls.push(ob); qwrap.appendChild(ob);
                 });
-
-                // Restore previous answer visually
-                if (alreadyDone) {
-                    picked = true;
-                    // defer so optEls is fully populated
-                    setTimeout(() => applyChoiceResult(savedAns.picked), 0);
-                }
-
+                if (alreadyDone) { picked = true; setTimeout(() => applyChoice(savedAns.picked), 0); }
                 qwrap.appendChild(fb);
             }
 
-            if (idx < questions.length - 1) {
-                const hr = document.createElement('hr');
-                hr.style.cssText = 'border:none;border-top:1px solid var(--border);margin-top:20px;';
-                qwrap.appendChild(hr);
-            }
+            if (idx < questions.length - 1) { const hr = document.createElement('hr'); hr.style.cssText = 'border:none;border-top:1px solid var(--border);margin-top:20px;'; qwrap.appendChild(hr); }
             body.appendChild(qwrap);
         });
     }
 
     function updateModalScore() {
         const total = currentSession.length;
-        document.getElementById('modalScore').textContent    = `${score}/${answered} correct`;
+        document.getElementById('modalScore').textContent   = `${score}/${answered} correct`;
         document.getElementById('modalProgress').style.width = `${(answered / total) * 100}%`;
     }
 
-    document.getElementById('quizModal').addEventListener('click', function(e) {
-        if (e.target === this) closeQuizModal();
+    document.getElementById('quizModal').addEventListener('click', function(e) { if (e.target === this) closeQuizModal(); });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { hideContextMenu(); closeRenameModal(); closeDeleteModal(); closeDownloadModal(); closeQuizModal(); closeMqModal(); }
     });
 
-    function escHtml(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    /* ════════════════════════════════════════════════
+       MANUAL QUIZ BUILDER
+    ════════════════════════════════════════════════ */
+    let mqQuestions = []; // array of question state objects
+
+    function openMqModal() {
+        mqQuestions = [];
+        document.getElementById('mqQuizTitle').value = '';
+        document.getElementById('mqQuestionsArea').innerHTML = '';
+        mqUpdateFooter();
+        document.getElementById('mqOverlay').classList.add('open');
+        setTimeout(() => document.getElementById('mqQuizTitle').focus(), 100);
     }
 
-    
+    function closeMqModal() {
+        document.getElementById('mqOverlay').classList.remove('open');
+    }
+
+    function handleMqOverlayClick(e) {
+        if (e.target === document.getElementById('mqOverlay')) closeMqModal();
+    }
+
+    function mqUpdateFooter() {
+        const count = mqQuestions.length;
+        document.getElementById('mqQCount').textContent = `${count} question${count !== 1 ? 's' : ''}`;
+        const titleVal = document.getElementById('mqQuizTitle').value.trim();
+        document.getElementById('mqSaveBtn').disabled = count === 0 || !titleVal;
+    }
+
+    function mqAddQuestion() {
+        const idx = mqQuestions.length;
+        const qState = { type: 'mcq', question: '', choiceA: '', choiceB: '', choiceC: '', choiceD: '', correctAnswer: 'A', answerText: '', tfAnswer: 'A' };
+        mqQuestions.push(qState);
+        renderMqQuestion(idx);
+        mqUpdateFooter();
+
+        // Scroll to the new card
+        setTimeout(() => {
+            const area = document.getElementById('mqQuestionsArea');
+            area.scrollTop = area.scrollHeight;
+        }, 50);
+    }
+
+    function mqDeleteQuestion(idx) {
+        mqQuestions.splice(idx, 1);
+        rebuildMqQuestions();
+        mqUpdateFooter();
+    }
+
+    function rebuildMqQuestions() {
+        const area = document.getElementById('mqQuestionsArea');
+        area.innerHTML = '';
+        mqQuestions.forEach((_, i) => renderMqQuestion(i));
+    }
+
+    function renderMqQuestion(idx) {
+        const area = document.getElementById('mqQuestionsArea');
+        const q    = mqQuestions[idx];
+
+        const card = document.createElement('div');
+        card.className = 'mq-q-card';
+        card.id = `mqCard_${idx}`;
+
+        // Top row: number + type tabs + delete
+        const topRow = document.createElement('div');
+        topRow.className = 'mq-q-top';
+        topRow.innerHTML = `
+            <span class="mq-q-num">Question ${idx + 1}</span>
+            <div class="mq-tabs" id="mqTabs_${idx}">
+                <button class="mq-tab ${q.type==='mcq'?'active':''}" onclick="mqSetType(${idx},'mcq')">MCQ</button>
+                <button class="mq-tab ${q.type==='truefalse'?'active':''}" onclick="mqSetType(${idx},'truefalse')">True/False</button>
+                <button class="mq-tab ${q.type==='fillblank'?'active':''}" onclick="mqSetType(${idx},'fillblank')">Fill Blank</button>
+            </div>
+            <button class="mq-q-delete" title="Remove question" onclick="mqDeleteQuestion(${idx})">✕</button>`;
+        card.appendChild(topRow);
+
+        // Question text
+        const qtextLabel = document.createElement('div');
+        qtextLabel.style.cssText = 'font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;';
+        qtextLabel.textContent = 'Question';
+        card.appendChild(qtextLabel);
+
+        const qtextArea = document.createElement('textarea');
+        qtextArea.className = 'mq-input';
+        qtextArea.placeholder = 'Enter your question here…';
+        qtextArea.value = q.question;
+        qtextArea.oninput = () => { mqQuestions[idx].question = qtextArea.value; };
+        card.appendChild(qtextArea);
+
+        // Type-specific controls
+        const controlsDiv = document.createElement('div');
+        controlsDiv.id = `mqControls_${idx}`;
+        card.appendChild(controlsDiv);
+        renderMqControls(idx, controlsDiv);
+
+        area.appendChild(card);
+    }
+
+    function renderMqControls(idx, container) {
+        const q = mqQuestions[idx];
+        container.innerHTML = '';
+
+        if (q.type === 'mcq') {
+            // 4 choices
+            const choicesDiv = document.createElement('div'); choicesDiv.className = 'mq-choices';
+            const choiceKeys = ['A','B','C','D'];
+            const fieldKeys  = ['choiceA','choiceB','choiceC','choiceD'];
+            choiceKeys.forEach((letter, ci) => {
+                const row = document.createElement('div'); row.className = 'mq-choice-row';
+                const ltr = document.createElement('div'); ltr.className = 'mq-choice-letter'; ltr.textContent = letter;
+                const inp = document.createElement('input'); inp.type = 'text'; inp.placeholder = `Choice ${letter}`;
+                inp.value = q[fieldKeys[ci]];
+                inp.oninput = () => { mqQuestions[idx][fieldKeys[ci]] = inp.value; };
+                row.appendChild(ltr); row.appendChild(inp); choicesDiv.appendChild(row);
+            });
+            container.appendChild(choicesDiv);
+
+            // Correct answer dropdown
+            const corrRow = document.createElement('div'); corrRow.className = 'mq-correct-row';
+            const corrLabel = document.createElement('span'); corrLabel.className = 'mq-correct-label'; corrLabel.textContent = 'Correct answer:';
+            const corrSel = document.createElement('select'); corrSel.className = 'mq-correct-select';
+            ['A','B','C','D'].forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = `Choice ${l}`; corrSel.appendChild(opt); });
+            corrSel.value = q.correctAnswer || 'A';
+            corrSel.onchange = () => { mqQuestions[idx].correctAnswer = corrSel.value; };
+            corrRow.appendChild(corrLabel); corrRow.appendChild(corrSel); container.appendChild(corrRow);
+
+        } else if (q.type === 'truefalse') {
+            const tfRow = document.createElement('div'); tfRow.className = 'mq-tf-row';
+            ['True','False'].forEach((label, ti) => {
+                const btn = document.createElement('button'); btn.className = 'mq-tf-btn'; btn.textContent = label;
+                const val = ti === 0 ? 'A' : 'B';
+                if (q.tfAnswer === val) btn.classList.add('selected');
+                btn.onclick = () => {
+                    mqQuestions[idx].tfAnswer = val;
+                    mqQuestions[idx].correctAnswer = val;
+                    tfRow.querySelectorAll('.mq-tf-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                tfRow.appendChild(btn);
+            });
+            container.appendChild(tfRow);
+
+        } else if (q.type === 'fillblank') {
+            const fillDiv = document.createElement('div'); fillDiv.className = 'mq-fill-row';
+            const fillLabel = document.createElement('span'); fillLabel.className = 'mq-fill-label'; fillLabel.textContent = 'Correct answer';
+            const fillInp = document.createElement('textarea'); fillInp.className = 'mq-input'; fillInp.style.minHeight = '44px';
+            fillInp.placeholder = 'Type the correct answer…';
+            fillInp.value = q.answerText;
+            fillInp.oninput = () => { mqQuestions[idx].answerText = fillInp.value; };
+            fillDiv.appendChild(fillLabel); fillDiv.appendChild(fillInp); container.appendChild(fillDiv);
+        }
+    }
+
+    function mqSetType(idx, type) {
+        mqQuestions[idx].type = type;
+        // Update tab highlight
+        const tabs = document.querySelectorAll(`#mqTabs_${idx} .mq-tab`);
+        tabs.forEach(t => { t.classList.remove('active'); if (t.textContent.toLowerCase().replace('/','').replace(' ','') === type.replace('fillblank','fillblank').replace('truefalse','truefalse').toLowerCase()) t.classList.add('active'); });
+        // Map tab text → type value correctly
+        tabs.forEach(t => {
+            const map = { 'MCQ': 'mcq', 'True/False': 'truefalse', 'Fill Blank': 'fillblank' };
+            if (map[t.textContent] === type) t.classList.add('active'); else t.classList.remove('active');
+        });
+        const controlsDiv = document.getElementById(`mqControls_${idx}`);
+        if (controlsDiv) renderMqControls(idx, controlsDiv);
+    }
+
+    async function mqSaveQuiz() {
+        const title = document.getElementById('mqQuizTitle').value.trim();
+        if (!title) { alert('Please enter a quiz title.'); document.getElementById('mqQuizTitle').focus(); return; }
+        if (mqQuestions.length === 0) { alert('Please add at least one question.'); return; }
+
+        // Validate questions
+        for (let i = 0; i < mqQuestions.length; i++) {
+            const q = mqQuestions[i];
+            if (!q.question.trim()) { alert(`Question ${i + 1} has no text.`); return; }
+            if (q.type === 'mcq') {
+                if (!q.choiceA.trim() || !q.choiceB.trim()) { alert(`Question ${i + 1} needs at least choices A and B.`); return; }
+            }
+            if (q.type === 'fillblank' && !q.answerText.trim()) { alert(`Question ${i + 1} needs a correct answer.`); return; }
+        }
+
+        const btn = document.getElementById('mqSaveBtn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+
+        // Build request payload
+        const payload = {
+            projectId: parseInt(projectId),
+            title,
+            questions: mqQuestions.map(q => ({
+                question:      q.question.trim(),
+                questionType:  q.type,
+                choiceA:       q.choiceA.trim(),
+                choiceB:       q.choiceB.trim(),
+                choiceC:       q.choiceC.trim(),
+                choiceD:       q.choiceD.trim(),
+                correctAnswer: q.type === 'fillblank' ? '' : (q.type === 'truefalse' ? q.tfAnswer : q.correctAnswer),
+                answerText:    q.type === 'fillblank' ? q.answerText.trim() : ''
+            }))
+        };
+
+        try {
+            const res  = await fetch('/Chat/CreateManualQuizSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert(`Server error ${res.status}: ${text.substring(0, 500)}`);
+                return;
+            }
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+
+            // Close modal & reload grid
+            closeMqModal();
+            await loadQuizzes();
+        } catch (err) {
+            alert('Network error: ' + err.message);
+        } finally {
+            btn.disabled = false; btn.textContent = 'Save Quiz';
+        }
+    }
 </script>
 <script src="~/js/StudyBuddy.js"></script>
 </body>
