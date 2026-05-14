@@ -173,11 +173,25 @@
             </a>
         </div>
         <div class="sidebar-bottom">
-            <a class="nav-item" href="/Account/Profile" data-tip="User">
-                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span class="nav-label">Profile</span>
+            <a class="nav-item" href="/Account/Profile" data-tip="Profile"
+               style="height:auto; padding:8px 11px; align-items:flex-start;">
+                <svg viewBox="0 0 24 24" style="margin-top:2px; flex-shrink:0;">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span class="nav-label" style="display:flex; flex-direction:column; gap:1px; overflow:hidden;">
+                    <span style="font-size:13px; font-weight:700; color:var(--text-white);
+                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @(ViewBag.Username ?? "Profile")
+                    </span>
+                    <span style="font-size:11px; font-weight:400; color:var(--text-muted);
+                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @(ViewBag.Email ?? "")
+                    </span>
+                </span>
             </a>
-            <a class="nav-item" href="/Account/Logout" data-tip="Log Out">
+            <a class="nav-item" href="#" data-tip="Log Out"
+               onclick="event.preventDefault(); document.getElementById('logoutModal').style.display='flex';">
                 <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 <span class="nav-label">Log Out</span>
             </a>
@@ -239,6 +253,48 @@
                     }
                 }
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── LOGOUT MODAL ── -->
+<div id="logoutModal" style="
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:var(--card-bg); border:1px solid var(--border);
+        border-radius:16px; padding:28px 28px 24px;
+        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+        <div style="width:48px; height:48px; border-radius:14px;
+            background:rgba(220,60,60,.12); display:flex; align-items:center;
+            justify-content:center; margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+                    color:var(--text-white); margin-bottom:8px;">Log Out?</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
+            Are you sure you want to log out of Rev'nLearn?
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'"
+                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
+                       background:transparent; color:var(--text-white);
+                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+                Cancel
+            </button>
+            <a href="/Account/Logout"
+                style="flex:1; height:38px; border-radius:9px; border:none;
+                       background:#c0392b; color:#fff; text-decoration:none;
+                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                       cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                Yes, Log Out
+            </a>
         </div>
     </div>
 </div>

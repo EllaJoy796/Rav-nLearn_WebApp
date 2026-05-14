@@ -22,7 +22,8 @@ namespace RavnLearnWeb.Controllers
         public IActionResult MyChats()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-            ViewBag.Username = Username;
+            ViewBag.Username    = Username;
+            ViewBag.Email       = HttpContext.Session.GetString("Email") ?? "";
             ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
             return View();
         }
@@ -69,13 +70,12 @@ namespace RavnLearnWeb.Controllers
     ViewBag.Flashcards = projects;
     return View();
 }  
-        
-
 
         public IActionResult Quizzes()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-            ViewBag.Username = Username;
+            ViewBag.Username    = Username;
+            ViewBag.Email       = HttpContext.Session.GetString("Email") ?? "";
             ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
             return View();
         }
@@ -911,6 +911,8 @@ namespace RavnLearnWeb.Controllers
         public IActionResult QuizzesView(int id)
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+            ViewBag.Username = Username;
+            ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
             return View();
         }
 
@@ -1009,11 +1011,13 @@ namespace RavnLearnWeb.Controllers
             }
             catch { }
 
-            ViewBag.SetName    = projectName.ToUpper();
-            ViewBag.SetDate    = projectDate.ToString("MMM dd, yyyy");
+            ViewBag.SetName      = projectName.ToUpper();
+            ViewBag.SetDate      = projectDate.ToString("MMM dd, yyyy");
             ViewBag.SessionCount = sessions.Count;
-            ViewBag.Sessions   = sessions;
-            ViewBag.ProjectId  = id;
+            ViewBag.Sessions     = sessions;
+            ViewBag.ProjectId    = id;
+            ViewBag.Username     = Username;
+            ViewBag.Email        = HttpContext.Session.GetString("Email") ?? "";
             return View();
         }
         
