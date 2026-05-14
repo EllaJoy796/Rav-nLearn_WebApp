@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "RavnLearn";
+    ViewData["Title"] = "Rev'nLearn";
     Layout = null;
 }
 
@@ -146,6 +146,12 @@ body.dark-mode #modalQuizBody button[style*="background:rgba(124"] { background:
 
 /* Flashcard counter + progress bar track */
 body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] { background: #2d2045 !important; }
+body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
+.flashcard-progress-track { background: #ebe1f8; }
+body.dark-mode .flashcard-progress-track { background: #2d2045 !important; }
+body.dark-mode .flashcard-progress-bar { background: var(--accent) !important; }
+body.dark-mode .quiz-card-body { background: #1e1830; }
+body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
 body.dark-mode #modalQuizBody span[style*="color:#555"],
 body.dark-mode #modalQuizBody div[style*="color:#555"]         { color: #a090c0 !important; }
 
@@ -163,6 +169,41 @@ body.dark-mode .flashcard-face,
 body.dark-mode .flashcard-face * { color: #e8e0f8 !important; }
 /* Retry button */
 body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { background: #1e1830 !important; border-color: #352a50 !important; color: #9070d4 !important; }
+/* ── Know it / Still learning flashcard buttons ── */
+.btn-know-it {
+    flex: 1;
+    background: #edf8ee;
+    border: 1px solid #8cc68d;
+    border-radius: 6px;
+    color: #317d34;
+    font-size: 11px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn-still-learning {
+    flex: 1;
+    background: #fdeeee;
+    border: 1px solid #e0a0a0;
+    border-radius: 6px;
+    color: #b54c4c;
+    font-size: 11px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+body.dark-mode .btn-know-it {
+    background: #1a2d1a !important;
+    border-color: #4a8c4a !important;
+    color: #6dbf6d !important;
+}
+body.dark-mode .btn-still-learning {
+    background: #2d1a1a !important;
+    border-color: #8c4a4a !important;
+    color: #e07070 !important;
+}
 
         html, body { height: 100%; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); overflow: hidden; }
 
@@ -179,7 +220,7 @@ body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { backgr
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            transition: width 0.22s ease, min-width 0.22s ease;
+            transition: none;
         }
         .panel-left.collapsed {
             width: 62px !important;
@@ -413,7 +454,7 @@ body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { backgr
             transition: background 0.15s, border-color 0.15s, color 0.15s;
             flex-shrink: 0;
         }
-        .btn-add-doc:hover { background: #f5effc; border-color: var(--accent); color: var(--text); }
+        .btn-add-doc:hover { background: var(--btn-flat); border-color: var(--accent); color: var(--text); }
         .doc-list {
             flex: 1;
             overflow-y: auto;
@@ -448,8 +489,7 @@ body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { backgr
             flex-shrink: 0;
             color: var(--icon-color);
         }
-        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; }
-        .doc-item-spinner {
+        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; text-align: left; min-width: 0; }        .doc-item-spinner {
             width: 11px; height: 11px;
             border: 2px solid #d2c5e6;
             border-top-color: var(--accent);
@@ -467,7 +507,7 @@ body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { backgr
         }
         .doc-item:hover .btn-del-doc { opacity: 1; }
         .btn-del-doc:hover { color: #e74c3c; background: #2a2a2a; }
-        .btn-del-doc svg { width: 14px; height: 14px; fill: currentColor; }
+        .btn-del-doc svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         .doc-drag-handle {
             color: var(--text-dim); font-size: 10px; cursor: grab;
             flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
@@ -544,20 +584,20 @@ body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { backgr
 
         /* ── HORIZONTAL RESIZE HANDLES ── */
         .resize-handle {
-            width: 10px; min-width: 10px;
+            width: 6px; min-width: 6px;
             cursor: col-resize;
-            background: rgba(124,92,191,0.22);
+            background: rgba(124,92,191,0.15);
             flex-shrink: 0; position: relative; z-index: 10;
             transition: background 0.15s;
         }
         .resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
             content: ''; position: absolute;
-            top: 0; bottom: 0; left: -7px; right: -7px;
+            top: 0; bottom: 0; left: -12px; right: -12px;
             cursor: col-resize;
         }
         body.resizing { user-select: none; cursor: col-resize; }
-body.resizing-vertical { user-select: none; cursor: row-resize; }
+        body.resizing-vertical { user-select: none; cursor: row-resize; }
 
         /* ── CENTER ── */
         .panel-center { flex: 1; background: var(--center-bg); display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
@@ -578,6 +618,8 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
         .msg-wrapper:hover .msg-actions { opacity: 1; }
         .btn-action { background: none; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; padding: 3px 7px; border-radius: 4px; font-family: inherit; transition: background 0.15s, color 0.15s; }
         .btn-action:hover { background: #f5effc; color: var(--text-muted); }
+            body.dark-mode .btn-action { color: #6a5890; }
+            body.dark-mode .btn-action:hover { background: #241d38; color: #a090c0; }
         .typing-indicator { display: none; align-self: flex-start; background: var(--bubble-ai); padding: 12px 16px; border-radius: 14px; border-bottom-left-radius: 4px; gap: 5px; border: 1px solid #ddd1ef; }
         .typing-indicator.visible { display: flex; }
         .typing-indicator span { width: 7px; height: 7px; background: #8c63d2; border-radius: 50%; animation: bounce 1.2s infinite; }
@@ -606,7 +648,7 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            transition: width 0.22s ease, min-width 0.22s ease;
+            transition: none;
         }
         .panel-right.collapsed {
             width: 62px !important;
@@ -969,7 +1011,7 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
             <span class="user-name">@ViewBag.Username</span>
         </div>
         <div class="left-rail">
-            <div class="rail-stack">
+            <div class="rail-stack" style="flex:1;overflow-y:auto;overflow-x:hidden;width:100%;align-items:center;">
                 <button class="rail-icon-btn" id="btnRailBack" title="Back">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 18l-6-6 6-6"></path>
@@ -981,13 +1023,15 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
                         <path d="M5 12h14"></path>
                     </svg>
                 </button>
-                <button class="rail-icon-btn" id="btnRailAddDoc" title="Add Document">
+                <div class="rail-stack" id="collapsedChatRail"></div>
+                <div style="width:36px;height:1px;background:var(--panel-border);margin:4px 0;flex-shrink:0;"></div>
+                <button class="rail-icon-btn" id="btnRailAddDoc" title="Add Document" style="position:relative;">
                     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M7 3h7l5 5v13H7z"></path>
                         <path d="M14 3v5h5"></path>
                     </svg>
+                    <span style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;line-height:1;">+</span>
                 </button>
-                <div class="rail-stack" id="collapsedChatRail"></div>
                 <div class="rail-stack" id="collapsedDocRail"></div>
             </div>
             <div class="rail-stack">
@@ -1099,6 +1143,22 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
     let actionModalHandler = null;
     let lastReviewerPayload = null;
 
+    let _voicesLoaded = false;
+        function ensureVoicesReady(callback) {
+            if (_voicesLoaded || speechSynthesis.getVoices().length > 0) {
+                _voicesLoaded = true;
+                callback();
+                return;
+            }
+            speechSynthesis.addEventListener('voiceschanged', function onReady() {
+                _voicesLoaded = true;
+                speechSynthesis.removeEventListener('voiceschanged', onReady);
+                callback();
+            });
+            // Trigger load
+            speechSynthesis.getVoices();
+        }
+
     function parseBold(text) {
         const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         const bolded = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -1125,15 +1185,17 @@ body.resizing-vertical { user-select: none; cursor: row-resize; }
     function setSpeakActive(btn) { btn.innerHTML = stopSVG() + 'Stop'; btn.style.color = '#e74c3c'; }
     function setSpeakIdle(btn)   { btn.innerHTML = speakerSVG() + 'Speak'; btn.style.color = ''; if (speakingBtn === btn) speakingBtn = null; }
     function applyPreferredFemaleVoice(utter) {
-        const voices = speechSynthesis.getVoices();
-        const preferred = voices.find(v => /female|zira|aria|samantha|victoria|jenny|ana/i.test(`${v.name} ${v.voiceURI}`))
-            || voices.find(v => /en(-|_)?(US|GB)|english/i.test(`${v.lang} ${v.name}`))
-            || voices[0];
-        if (preferred) utter.voice = preferred;
-        utter.lang = preferred?.lang || 'en-US';
-        utter.pitch = 1.15;
-        utter.rate = 0.96;
-    }
+    const voices = speechSynthesis.getVoices();
+    const preferred =
+        voices.find(v => /google uk english female|zira|aria|samantha|victoria|jenny|ana/i.test(`${v.name} ${v.voiceURI}`))
+        || voices.find(v => /female/i.test(v.name) && /en/i.test(v.lang))
+        || voices.find(v => /en(-|_)?(US|GB)/i.test(v.lang))
+        || voices[0];
+    if (preferred) utter.voice = preferred;
+    utter.lang = preferred?.lang || 'en-US';
+    utter.pitch = 1.15;
+    utter.rate = 0.96;
+}
     function dotsSVG() { return `<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>`; }
     function chatIconSVG() { return `<svg class="chat-item-icon" viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7A2.5 2.5 0 0 1 17.5 16H9l-5 4v-3.5A2.5 2.5 0 0 1 4 14z"></path></svg>`; }
     function fileIconSVG() { return `<svg class="doc-item-icon-svg" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v5h5"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>`; }
@@ -1205,12 +1267,12 @@ if (_lm === 'true') {
 
     function makeResizable(handle, onDrag) {
         let startX = 0, dragging = false;
-        handle.addEventListener('mousedown', (e) => { e.preventDefault(); dragging = true; startX = e.clientX; handle.classList.add('dragging');document.body.classList.add('resizing-vertical'); });
-        document.addEventListener('mousemove', (e) => { if (!dragging) return; const dx = e.clientX - startX; startX = e.clientX; onDrag(dx); });
-        document.addEventListener('mouseup', () => { if (!dragging) return; dragging = false; handle.classList.remove('dragging');document.body.classList.remove('resizing-vertical'); syncPanelToggles(); });
+        handle.addEventListener('mousedown', (e) => { e.preventDefault(); dragging = true; startX = e.clientX; handle.classList.add('dragging'); document.body.classList.add('resizing'); });
+        document.addEventListener('mousemove', (e) => { if (!dragging) return; const dx = e.clientX - startX; startX = e.clientX; onDrag(dx); syncPanelToggles(); });
+        document.addEventListener('mouseup', () => { if (!dragging) return; dragging = false; handle.classList.remove('dragging'); document.body.classList.remove('resizing'); syncPanelToggles(); });
         handle.addEventListener('touchstart', (e) => { dragging = true; startX = e.touches[0].clientX; handle.classList.add('dragging'); }, { passive: true });
-        document.addEventListener('touchmove', (e) => { if (!dragging) return; const dx = e.touches[0].clientX - startX; startX = e.touches[0].clientX; onDrag(dx); }, { passive: true });
-        document.addEventListener('touchend', () => { dragging = false; handle.classList.remove('dragging');document.body.classList.remove('resizing-vertical'); syncPanelToggles(); });
+        document.addEventListener('touchmove', (e) => { if (!dragging) return; const dx = e.touches[0].clientX - startX; startX = e.touches[0].clientX; onDrag(dx); syncPanelToggles(); }, { passive: true });
+        document.addEventListener('touchend', () => { dragging = false; handle.classList.remove('dragging'); syncPanelToggles(); });
     }
 
     function syncPanelToggles() {
@@ -1238,19 +1300,11 @@ if (_lm === 'true') {
     }
 
     function togglePanel(side, forceState = null) {
-    const panel = document.getElementById(side === 'left' ? 'panelLeft' : 'panelRight');
-    const collapsed = forceState === null ? !panel.classList.contains('collapsed') : forceState;
-    panel.classList.toggle('collapsed', collapsed);
-    syncPanelToggles();
-
-    // Re-sync AFTER the CSS width transition finishes so button lands on the border
-    const onEnd = (e) => {
-        if (e.propertyName !== 'width') return;
+        const panel = document.getElementById(side === 'left' ? 'panelLeft' : 'panelRight');
+        const collapsed = forceState === null ? !panel.classList.contains('collapsed') : forceState;
+        panel.classList.toggle('collapsed', collapsed);
         syncPanelToggles();
-        panel.removeEventListener('transitionend', onEnd);
-    };
-    panel.addEventListener('transitionend', onEnd);
-}
+    }
 
     // ══ CHAT LIST ════════════════════════════════════════
     async function loadChatList() {
@@ -1600,13 +1654,15 @@ if (_lm === 'true') {
                 speechSynthesis.cancel(); setSpeakIdle(btnSpeak);
             } else {
                 if (speechSynthesis.speaking) { speechSynthesis.cancel(); if (speakingBtn) setSpeakIdle(speakingBtn); }
-                const utter = new SpeechSynthesisUtterance(text);
-                applyPreferredFemaleVoice(utter);
-                utter.onend = () => setSpeakIdle(btnSpeak);
-                utter.onerror = () => setSpeakIdle(btnSpeak);
                 speakingBtn = btnSpeak;
                 setSpeakActive(btnSpeak);
-                speechSynthesis.speak(utter);
+                ensureVoicesReady(() => {
+                    const utter = new SpeechSynthesisUtterance(text);
+                    applyPreferredFemaleVoice(utter);
+                    utter.onend = () => setSpeakIdle(btnSpeak);
+                    utter.onerror = () => setSpeakIdle(btnSpeak);
+                    speechSynthesis.speak(utter);
+                });
             }
         };
         actions.appendChild(btnCopy);
@@ -1714,9 +1770,9 @@ if (_lm === 'true') {
             item.appendChild(spinner);
         } else {
             const speakBtn = document.createElement('button');
-            speakBtn.className = 'btn-doc-speak';
+            speakBtn.className = 'btn-doc-speak doc-speak-icon';
             speakBtn.title = 'Read document';
-            speakBtn.innerHTML = speakerSVG();
+            speakBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`;
             speakBtn.onclick = () => speakModuleContent(item.dataset.content || name, speakBtn);
 
             const delBtn = document.createElement('button');
@@ -1773,29 +1829,30 @@ function speakModuleContent(content, btn) {
     const text = (content || '').trim();
     if (!text) return;
 
-    // If this button is already speaking — stop it
+    const isIconOnly = btn && btn.classList.contains('doc-speak-icon');
+    const speakerIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`;
+    const stopIcon    = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
+
+    function setActive(b) { if (!b) return; if (isIconOnly) { b.innerHTML = stopIcon; b.style.color = '#e74c3c'; } else setSpeakActive(b); }
+    function setIdle(b)   { if (!b) return; if (isIconOnly) { b.innerHTML = speakerIcon; b.style.color = ''; } else setSpeakIdle(b); if (speakingDocBtn === b) speakingDocBtn = null; }
+
     if (speechSynthesis.speaking && speakingDocBtn === btn) {
         speechSynthesis.cancel();
-        if (btn) setSpeakIdle(btn);
-        speakingDocBtn = null;
+        setIdle(btn);
         return;
     }
+    if (speechSynthesis.speaking) { speechSynthesis.cancel(); if (speakingDocBtn) setIdle(speakingDocBtn); }
 
-    // Cancel any other speech
-    if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-        if (speakingDocBtn) setSpeakIdle(speakingDocBtn);
-        speakingDocBtn = null;
-    }
-
-    const utter = new SpeechSynthesisUtterance(text.slice(0, 4000));
-    applyPreferredFemaleVoice(utter);
     speakingDocBtn = btn;
-    if (btn) setSpeakActive(btn);
-    utter.onend  = () => { if (speakingDocBtn === btn) { setSpeakIdle(btn); speakingDocBtn = null; } };
-    utter.onerror = () => { if (speakingDocBtn === btn) { setSpeakIdle(btn); speakingDocBtn = null; } };
-    speechSynthesis.speak(utter);
-}
+    if (btn) setActive(btn);
+    ensureVoicesReady(() => {
+        const utter = new SpeechSynthesisUtterance(text.slice(0, 4000));
+                applyPreferredFemaleVoice(utter);
+                utter.onend  = () => setIdle(btn);
+                utter.onerror = () => setIdle(btn);
+                speechSynthesis.speak(utter);
+            });
+        }
     function renderCollapsedDocRail(docs) {
         const rail = document.getElementById('collapsedDocRail');
         if (!rail) return;
@@ -2246,8 +2303,10 @@ function speakModuleContent(content, btn) {
         const counter = document.createElement('div');
         counter.style.cssText = 'font-size:10px;color:#555;text-align:center;margin-bottom:6px;';
         const progressWrap = document.createElement('div');
-        progressWrap.style.cssText = 'height:3px;background:#ebe1f8;border-radius:2px;margin-bottom:10px;overflow:hidden;';
+        progressWrap.className = 'flashcard-progress-track';
+        progressWrap.style.cssText = 'height:3px;border-radius:2px;margin-bottom:10px;overflow:hidden;';
         const progressBar = document.createElement('div');
+        progressBar.className = 'flashcard-progress-bar';
         progressBar.style.cssText = 'height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;';
         progressWrap.appendChild(progressBar);
         const navRow = document.createElement('div'); navRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
@@ -2255,8 +2314,8 @@ function speakModuleContent(content, btn) {
         const btnFlip = document.createElement('button'); btnFlip.textContent = '↺ Flip'; btnFlip.style.cssText = 'flex:1;background:rgba(124,92,191,0.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
         const btnNext = document.createElement('button'); btnNext.textContent = 'Next →'; btnNext.style.cssText = 'flex:1;background:none;border:1px solid #d7caeb;border-radius:6px;color:#555;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
         const knowRow = document.createElement('div'); knowRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
-        const btnKnow = document.createElement('button'); btnKnow.textContent = '✓ Know it'; btnKnow.style.cssText = 'flex:1;background:#edf8ee;border:1px solid #8cc68d;border-radius:6px;color:#317d34;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
-        const btnDontKnow = document.createElement('button'); btnDontKnow.textContent = '✗ Still learning'; btnDontKnow.style.cssText = 'flex:1;background:#fdeeee;border:1px solid #e0a0a0;border-radius:6px;color:#b54c4c;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const btnKnow = document.createElement('button'); btnKnow.textContent = '✓ Know it'; btnKnow.className = 'btn-know-it';
+        const btnDontKnow = document.createElement('button'); btnDontKnow.textContent = '✗ Still learning'; btnDontKnow.className = 'btn-still-learning';
         const scoreRow = document.createElement('div'); scoreRow.style.cssText = 'display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
         const knownEl = document.createElement('span'); const unknownEl = document.createElement('span');
         knownEl.style.color = '#6dbf6d'; unknownEl.style.color = '#e07070';
@@ -2361,12 +2420,16 @@ function speakModuleContent(content, btn) {
         let finalTranscript = '';
 
         r.onstart = () => {
-            finalTranscript = txtInput.value.trim();
-            statusBar.classList.add('visible');
-            inputHint.style.display = 'none';
-            setListeningState();
+            // Only initialize on the very first start, not on auto-restarts
+            if (!statusBar.classList.contains('visible')) {
+                finalTranscript = txtInput.value.trim();
+                statusBar.classList.add('visible');
+                inputHint.style.display = 'none';
+            }
+            // Don't wipe the countdown if it's already ticking
+            if (!countdownInterval) setListeningState();
         };
-        r.onresult = (e) => {
+                r.onresult = (e) => {
             let interim = '';
             for (let i = e.resultIndex; i < e.results.length; i++) {
                 const t = e.results[i][0].transcript;
@@ -2389,20 +2452,26 @@ function speakModuleContent(content, btn) {
     }
 
     function setListeningState() {
-        statusText.textContent = 'Listening…';
+        statusText.innerHTML = '<span class="mic-dot"></span> Listening…';
         countdownEl.textContent = '';
         countdownEl.classList.remove('urgent');
     }
     function startSilenceTimer() {
         clearSilenceTimer();
         silenceSeconds = SILENCE_LIMIT;
-        statusText.textContent = 'Auto-sending in…';
+        updateInlineCountdown(silenceSeconds);
         countdownInterval = setInterval(() => {
             silenceSeconds--;
-            countdownEl.textContent = silenceSeconds + 's';
-            countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
+            updateInlineCountdown(silenceSeconds);
             if (silenceSeconds <= 0) { clearSilenceTimer(); stopRecording(true); }
         }, 1000);
+    }
+    function updateInlineCountdown(secs) {
+        const urgent = secs <= 2;
+        const dotColor = urgent ? '#e0a040' : '#e74c3c';
+        const textColor = urgent ? '#e0a040' : '#e74c3c';
+        statusText.innerHTML = `<span class="mic-dot" style="background:${dotColor};"></span> <span style="color:${textColor};font-weight:${urgent?'700':'500'};">Sending in ${secs}s…</span>`;
+        countdownEl.textContent = '';
     }
     function resetSilenceTimer() { clearSilenceTimer(); setListeningState(); }
     function clearSilenceTimer() { clearInterval(countdownInterval); countdownInterval = null; }

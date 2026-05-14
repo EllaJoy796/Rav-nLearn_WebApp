@@ -16,7 +16,7 @@ public static class GeminiService
 
     // Gemini uses systemInstruction (not a system role message)
     private const string SYSTEM_INSTRUCTION =
-        "You are RavnLearn, an intelligent study assistant. " +
+        "You are Rev'nLearn, an intelligent study assistant. " +
         "You help students understand documents, summarize content, and create quizzes. " +
         "When formatting ANY type of quiz (multiple choice, true/false, fill-in-the-blank, or mixed), " +
         "always follow these rules strictly:\n" +
