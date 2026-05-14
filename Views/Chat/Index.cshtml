@@ -39,8 +39,8 @@
 
         /* ── LEFT ── */
         .panel-left {
-            width: 220px;
-            min-width: 140px;
+            width: 240px;
+            min-width: 160px;
             max-width: 420px;
             flex-shrink: 0;
             background: var(--left-bg);
@@ -48,68 +48,240 @@
             flex-direction: column;
             overflow: visible;
         }
-        .left-logo { padding: 16px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--panel-border); display: flex; align-items: center; gap: 8px; }
-        .btn-new-chat { margin: 14px 12px 8px; padding: 10px 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.18s; }
+        .left-logo {
+            padding: 14px 16px;
+            font-size: 17px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ── BACK + NEW CHAT BUTTONS ── */
+        .left-actions {
+            padding: 10px 10px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .btn-back {
+            padding: 9px 14px;
+            background: none;
+            color: var(--text-muted);
+            border: 1px solid #2e2e2e;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .btn-back:hover { background: #222; color: var(--text); border-color: #3a3a3a; }
+        .btn-new-chat {
+            padding: 9px 14px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.18s;
+        }
         .btn-new-chat:hover { background: var(--accent-hover); }
-        .section-label { padding: 10px 16px 6px; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
-        .chat-list { flex: 1; overflow-y: auto; padding: 4px 8px; }
+
+        /* ── CHAT LIST SECTION ── */
+        .left-section-label {
+            padding: 10px 16px 4px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .chat-list {
+            overflow-y: auto;
+            padding: 2px 8px 4px;
+            flex: 1;
+            min-height: 80px;
+            max-height: 40vh;
+        }
         .chat-list::-webkit-scrollbar { width: 4px; }
         .chat-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .chat-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px; transition: background 0.15s, color 0.15s; gap: 6px; }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 12.5px;
+            transition: background 0.15s, color 0.15s;
+            gap: 6px;
+        }
         .chat-item:hover { background: #242424; color: var(--text); }
         .chat-item.active { background: rgba(124,92,191,0.18); color: var(--text); }
         .chat-item-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-del-chat { opacity: 0; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 4px; transition: opacity 0.15s, color 0.15s; flex-shrink: 0; }
+        .btn-del-chat {
+            opacity: 0;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: opacity 0.15s, color 0.15s;
+            flex-shrink: 0;
+        }
         .chat-item:hover .btn-del-chat { opacity: 1; }
         .btn-del-chat:hover { color: #e74c3c; }
-        .user-area { border-top: 1px solid var(--panel-border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
-        .user-name { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-logout { background: none; border: 1px solid #3a3a3a; color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: 500; font-family: inherit; padding: 4px 10px; border-radius: 6px; transition: all 0.15s; flex-shrink: 0; }
-        .btn-logout:hover { border-color: #e74c3c; color: #e74c3c; background: rgba(231,76,60,0.08); }
 
-        /* ── HORIZONTAL RESIZE HANDLES (left/right panels) ── */
-        .resize-handle {
-            width: 8px;
-            min-width: 8px;
-            cursor: col-resize;
+        /* ── DIVIDER ── */
+        .left-divider {
+            height: 5px;
             background: var(--panel-border);
+            margin: 0;
             flex-shrink: 0;
-            position: relative;
-            z-index: 10;
+            cursor: row-resize;
             transition: background 0.15s;
+        }
+.left-divider:hover, .left-divider.dragging { background: var(--accent); }
+
+        /* ── DOCUMENTS SECTION (in left panel) ── */
+        .docs-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
+            min-height: 120px;
+        }
+        .btn-add-doc {
+            margin: 4px 10px 6px;
+            padding: 8px 12px;
+            background: var(--btn-flat);
+            border: 1px dashed #3a3a3a;
+            border-radius: var(--radius);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 7px;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            flex-shrink: 0;
         }
-        .resize-handle::before {
-            content: '⋮';
+        .btn-add-doc:hover { background: #2e2e2e; border-color: var(--accent); color: var(--text); }
+        .doc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 8px;
+        }
+        .doc-list::-webkit-scrollbar { width: 3px; }
+        .doc-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .doc-item {
+            background: #1e1e1e;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 7px 10px;
             font-size: 12px;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            pointer-events: none;
-            line-height: 1;
-            transition: color 0.15s;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            margin-bottom: 5px;
+            transition: border-color 0.15s, background 0.15s;
         }
-        .resize-handle:hover::before,
-        .resize-handle.dragging::before { color: #fff; }
+        .doc-item:hover { background: #222; border-color: #333; }
+        .doc-item-icon { font-size: 13px; flex-shrink: 0; }
+        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; }
+        .doc-item-spinner {
+            width: 11px; height: 11px;
+            border: 2px solid #444;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+        .btn-del-doc {
+            background: none; border: none; color: var(--text-dim);
+            cursor: pointer; font-size: 12px; padding: 1px 3px;
+            border-radius: 3px; flex-shrink: 0; opacity: 0;
+            transition: opacity 0.15s, color 0.15s; line-height: 1;
+        }
+        .doc-item:hover .btn-del-doc { opacity: 1; }
+        .btn-del-doc:hover { color: #e74c3c; }
+        .doc-drag-handle {
+            color: var(--text-dim); font-size: 10px; cursor: grab;
+            flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
+            padding: 0 2px; user-select: none; line-height: 1;
+        }
+        .doc-item:hover .doc-drag-handle { opacity: 1; }
+        .doc-drag-handle:active { cursor: grabbing; }
+        .doc-item.dragging-source { opacity: 0.4; border: 1px dashed var(--accent); }
+        .doc-item.drag-over-source { border-color: var(--accent); background: #2a2040; }
 
-        .resize-handle:hover,
-        .resize-handle.dragging { background: var(--accent); }
+        /* ── USER AREA ── */
+        .user-area {
+            border-top: 1px solid var(--panel-border);
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            background: var(--left-bg);
+            z-index: 2;
+        }
+        .user-avatar {
+            width: 30px; height: 30px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+        .user-name { font-size: 12.5px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-logout { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; transition: color 0.15s; }
+        .btn-logout:hover { color: #e74c3c; }
+
+        /* ── HORIZONTAL RESIZE HANDLES ── */
+        .resize-handle {
+            width: 5px; min-width: 5px;
+            cursor: col-resize;
+            background: var(--panel-border);
+            flex-shrink: 0; position: relative; z-index: 10;
+            transition: background 0.15s;
+        }
+        .resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0;
-            left: -8px; right: -8px;
+            content: ''; position: absolute;
+            top: 0; bottom: 0; left: -2px; right: -2px;
             cursor: col-resize;
         }
         body.resizing { user-select: none; cursor: col-resize; }
+body.resizing-vertical { user-select: none; cursor: row-resize; }
 
         /* ── CENTER ── */
         .panel-center { flex: 1; background: var(--center-bg); display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
         .welcome-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
-        .welcome-screen h1 { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 10px; }
-        .welcome-screen p { font-size: 15px; color: var(--text-muted); }
+        .welcome-screen h1 { font-size: 34px; font-weight: 700; letter-spacing: -1px; margin-bottom: 10px; }
+        .welcome-screen p { font-size: 14px; color: var(--text-muted); }
         .messages-area { flex: 1; overflow-y: auto; padding: 24px 32px; display: none; flex-direction: column; gap: 4px; }
         .messages-area.visible { display: flex; }
         .messages-area::-webkit-scrollbar { width: 5px; }
@@ -141,10 +313,10 @@
         .btn-send svg { width: 16px; height: 16px; fill: #fff; }
         .input-hint { text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
 
-        /* ── RIGHT PANEL ── */
+        /* ── RIGHT PANEL — STUDY GUIDE ── */
         .panel-right {
-            width: 220px;
-            min-width: 140px;
+            width: 260px;
+            min-width: 180px;
             max-width: 420px;
             flex-shrink: 0;
             background: var(--right-bg);
@@ -153,107 +325,121 @@
             overflow: hidden;
         }
         .right-header {
-            padding: 16px 14px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-dim);
+            padding: 14px 16px 10px;
             border-bottom: 1px solid var(--panel-border);
             flex-shrink: 0;
         }
-
-        /* ── SOURCES SECTION ── */
-        .sources-section {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        .right-header-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
         }
-        .right-section { padding: 12px 14px 8px; flex-shrink: 0; }
-        .right-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
-        .btn-add-source { width: 100%; padding: 9px 12px; background: var(--btn-flat); border: 1px dashed #3a3a3a; border-radius: var(--radius); color: var(--text-muted); font-size: 12.5px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
-        .btn-add-source:hover { background: #2e2e2e; border-color: var(--accent); color: var(--text); }
-        .source-list { flex: 1; overflow-y: auto; padding: 0 10px 8px; }
-        .source-list::-webkit-scrollbar { width: 3px; }
-        .source-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .source-item { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; min-width: 0; margin-bottom: 6px; }
-        .source-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .source-item-spinner { width: 12px; height: 12px; border: 2px solid #444; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-        @@keyframes spin { to { transform: rotate(360deg); } }
-        .btn-del-source { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; padding: 1px 4px; border-radius: 3px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s, color 0.15s; line-height: 1; }
-        .source-item:hover .btn-del-source { opacity: 1; }
-        .btn-del-source:hover { color: #e74c3c; }
-        .source-drag-handle { color: var(--text-dim); font-size: 11px; cursor: grab; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; padding: 0 2px; user-select: none; line-height: 1; }
-        .source-item:hover .source-drag-handle { opacity: 1; }
-        .source-drag-handle:active { cursor: grabbing; }
-        .source-item.dragging-source { opacity: 0.4; border: 1px dashed var(--accent); }
-        .source-item.drag-over-source { border-color: var(--accent); background: #2a2040; }
-
-        /* ── VERTICAL RESIZE HANDLE (between Sources and Quizzes) ── */
-        .resize-handle-vertical {
-            height: 6px;
-            min-height: 6px;
-            cursor: row-resize;
-            background: var(--panel-border);
-            flex-shrink: 0;
-            position: relative;
-            z-index: 10;
-            transition: background 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .resize-handle-vertical:hover,
-        .resize-handle-vertical.dragging { background: var(--accent); }
-        .resize-handle-vertical::before {
-            content: '';
-            position: absolute;
-            left: 0; right: 0;
-            top: -5px; bottom: -5px;
-            cursor: row-resize;
-        }
-        .resize-handle-vertical::after {
-            content: '· · ·';
-            font-size: 10px;
-            letter-spacing: 2px;
+        .right-header-sub {
+            font-size: 11px;
             color: var(--text-dim);
-            pointer-events: none;
-            line-height: 1;
-            transition: color 0.15s;
         }
-        .resize-handle-vertical:hover::after,
-        .resize-handle-vertical.dragging::after { color: #fff; }
-        body.resizing-vertical { user-select: none; cursor: row-resize; }
 
-        /* ── QUIZZES SECTION ── */
-        .quizzes-section {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        /* ── QUIZ CARDS (Study Guide style) ── */
+        .quiz-list {
             flex: 1;
+            overflow-y: auto;
+            padding: 10px 10px 16px;
         }
-        .quiz-section-header {
-            padding: 10px 14px 6px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            flex-shrink: 0;
-        }
-        .quiz-list { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
         .quiz-list::-webkit-scrollbar { width: 3px; }
         .quiz-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
-        /* ── QUIZ CARDS (new) ── */
-        .quiz-card { background: #222; border: 1px solid #2e2e2e; border-radius: 8px; margin-bottom: 6px; overflow: hidden; }
-        .quiz-card-header { padding: 9px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; transition: background .15s; }
-        .quiz-card-header:hover { background: #282828; }
-        .quiz-card-num { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--accent); flex-shrink: 0; }
-        .quiz-card-title { font-size: 12px; color: #ccc; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .quiz-card-arrow { font-size: 10px; color: #555; flex-shrink: 0; transition: transform .2s; }
-        .quiz-card-arrow.open { transform: rotate(90deg); }
-        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #2a2a2a; }
+        .quiz-card {
+            background: #1e1e1e;
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+        .quiz-card:hover { border-color: #333; }
+
+        /* ── REVIEWER CARD HEADER ── */
+        .quiz-card-header {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+            transition: background .15s;
+        }
+        .quiz-card-header:hover { background: #242424; }
+
+        .reviewer-icon {
+            width: 34px; height: 34px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .reviewer-meta { flex: 1; min-width: 0; }
+        .reviewer-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .reviewer-info {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 1px;
+        }
+
+        .reviewer-type-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .badge-quiz { background: rgba(124,92,191,0.18); color: var(--accent); border: 1px solid rgba(124,92,191,0.3); }
+        .badge-flashcard { background: rgba(109,191,109,0.12); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.25); }
+
+        /* ── REVIEWER ACTION BUTTONS ── */
+        .reviewer-actions {
+            display: flex;
+            gap: 6px;
+            padding: 0 12px 10px;
+        }
+        .btn-reviewer-action {
+            flex: 1;
+            padding: 7px 4px;
+            background: #252525;
+            border: 1px solid #2e2e2e;
+            border-radius: 7px;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            font-weight: 500;
+        }
+        .btn-reviewer-action:hover {
+            background: rgba(124,92,191,0.12);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .btn-reviewer-action svg { width: 11px; height: 11px; fill: currentColor; }
+
+        /* ── EXPANDABLE QUIZ BODY ── */
+        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #252525; }
         .quiz-card-body.open { display: block; }
         .quiz-q-text { font-size: 12px; color: #ccc; line-height: 1.5; margin: 8px 0 6px; }
         .quiz-opt { display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; transition: background .15s; border: 1px solid transparent; }
@@ -269,277 +455,51 @@
         .quiz-score { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
 
         #fileInput { display: none; }
+        #quizModal.open { display: flex !important; }
 
-        /* ── COLLAPSIBLE PANELS ── */
-        .panel-left,
-        .panel-right {
-            transition: width 0.25s cubic-bezier(.4,0,.2,1),
-                        min-width 0.25s cubic-bezier(.4,0,.2,1);
-        }
-        .panel-left.resizing,
-        .panel-right.resizing {
-            transition: none !important;
-        }
-        .panel-left.collapsed {
-            width: 52px !important;
-            min-width: 52px !important;
-            overflow: hidden;
-        }
-        .panel-right.collapsed {
-            width: 52px !important;
-            min-width: 52px !important;
-            overflow: hidden;
-        }
-
-        /* Also ensure uncollapsed panels clip properly */
-        .panel-left, .panel-right { overflow: hidden; }
-        .panel-left .chat-list { overflow-y: auto; overflow-x: visible; }
-        .panel-left .left-content { overflow: visible; }
-
-        /* Collapse toggle buttons */
-        .btn-collapse {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px 6px;
-            border-radius: 6px;
-            line-height: 1;
-            flex-shrink: 0;
-            transition: color 0.15s, background 0.15s;
-        }
-        .btn-collapse:hover { color: var(--text); background: #2a2a2a; }
-
-        /* Hide panel content when collapsed, show icon strip */
-        .panel-left .left-content,
-        .panel-right .right-content { 
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: hidden;
-            min-height: 0;
-        }
-        .panel-left.collapsed .left-content,
-        .panel-right.collapsed .right-content { display: none; }
-
-        /* Keep header row visible when collapsed, just hide the logo text */
-        .panel-left.collapsed .left-header-row { 
-            justify-content: center; 
-            padding: 10px 0;
-            border-bottom: 1px solid var(--panel-border);
-            min-width: 0;
-        }
-        .panel-left.collapsed .left-logo-inner { display: none; }
-        .panel-left.collapsed .btn-collapse { margin: 0 auto; }
-
-        /* Keep right header row visible when collapsed, hide the label text */
-        .panel-right.collapsed .right-header-row {
-            justify-content: center;
-            padding: 10px 0;
-            min-width: 0;
-        }
-        .panel-right.collapsed .right-header-row span { display: none; }
-        .panel-right.collapsed .btn-collapse { margin: 0 auto; }
-
-        /* Icon strips shown when collapsed */
-        .collapsed-icons {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            flex: 1;
-        }
-        .panel-left.collapsed .collapsed-icons,
-        .panel-right.collapsed .collapsed-icons { display: flex; }
-
-        .collapsed-icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 6px;
-            border-radius: 8px;
-            transition: color 0.15s, background 0.15s;
-            line-height: 1;
-            title: attr(title);
-        }
-        .collapsed-icon-btn:hover { color: var(--text); background: #2a2a2a; }
-
-        /* Left panel header row */
-        .left-header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 10px 12px 16px;
-            border-bottom: 1px solid var(--panel-border);
-            flex-shrink: 0;
-        }
-        .left-logo-inner {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        /* Right panel header row */
-        .right-header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 10px 10px 14px;
-            border-bottom: 1px solid var(--panel-border);
-            flex-shrink: 0;
-        }
-
-        /* VOICE INPUT */
-        .btn-mic {
-            background: none;
-            border: none;
-            border-radius: 8px;
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            color: var(--text-dim);
-            transition: color 0.18s, background 0.18s;
-        }
-        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
-        .btn-mic.recording {
-            color: #e74c3c;
-            animation: micPulse 1.2s ease-in-out infinite;
-        }
-        @@keyframes micPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .voice-status-bar {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 5px 14px 0;
-            font-size: 11px;
-            gap: 8px;
-        }
-        .voice-status-bar.visible { display: flex; }
-        .voice-status-text {
-            color: #e74c3c;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
-        }
-        .voice-status-text .mic-dot {
-            width: 7px;
-            height: 7px;
-            background: #e74c3c;
-            border-radius: 50%;
-            animation: micPulse 1.2s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-        .voice-countdown {
-            color: var(--text-dim);
-            font-size: 11px;
-            flex-shrink: 0;
-            transition: color 0.3s;
-        }
-        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
-        .voice-cancel-btn {
+        .btn-modal-open {
             background: none;
             border: 1px solid #3a3a3a;
             border-radius: 5px;
-            color: var(--text-dim);
+            color: var(--accent);
             font-size: 10px;
-            padding: 2px 8px;
+            padding: 2px 7px;
             cursor: pointer;
             font-family: inherit;
-            transition: all 0.15s;
+            transition: background .15s, border-color .15s;
             flex-shrink: 0;
+            line-height: 1.6;
+        }
+        .btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
+    
+        .btn-mic {
+        background: none; border: none; border-radius: 8px;
+        width: 34px; height: 34px; display: flex; align-items: center;
+        justify-content: center; cursor: pointer; flex-shrink: 0;
+        color: var(--text-dim); transition: color 0.18s, background 0.18s;
+        }
+        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
+        .btn-mic.recording { color: #e74c3c; animation: micPulse 1.2s ease-in-out infinite; }
+        @@keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .voice-status-bar {
+            display: none; align-items: center; justify-content: space-between;
+            padding: 5px 14px 0; font-size: 11px; gap: 8px;
+        }
+        .voice-status-bar.visible { display: flex; }
+        .voice-status-text { color: #e74c3c; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+        .voice-status-text .mic-dot {
+            width: 7px; height: 7px; background: #e74c3c; border-radius: 50%;
+            animation: micPulse 1.2s ease-in-out infinite; flex-shrink: 0;
+        }
+        .voice-countdown { color: var(--text-dim); font-size: 11px; flex-shrink: 0; transition: color 0.3s; }
+        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
+        .voice-cancel-btn {
+            background: none; border: 1px solid #3a3a3a; border-radius: 5px;
+            color: var(--text-dim); font-size: 10px; padding: 2px 8px;
+            cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0;
         }
         .voice-cancel-btn:hover { border-color: #e74c3c; color: #e74c3c; }
-
-        #quizModal.open { display: flex !important; }
-.btn-modal-open {
-    background: none;
-    border: 1px solid #3a3a3a;
-    border-radius: 5px;
-    color: var(--accent);
-    font-size: 10px;
-    padding: 2px 7px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background .15s, border-color .15s;
-    flex-shrink: 0;
-    line-height: 1.6;
-}
-.btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
-
-.btn-more-chat {
-    opacity: 0;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 18px;
-    padding: 0 4px;
-    border-radius: 4px;
-    transition: opacity 0.15s, color 0.15s;
-    flex-shrink: 0;
-    line-height: 1;
-}
-.chat-item:hover .btn-more-chat { opacity: 1; }
-.btn-more-chat:hover { color: var(--text); }
-
-.chat-context-menu {
-    position: absolute;
-    background: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    padding: 4px;
-    z-index: 100;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    right: 8px;
-    min-width: 130px;
-}
-.ctx-menu-item {
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 13px;
-    font-family: inherit;
-    padding: 7px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    transition: background 0.15s, color 0.15s;
-}
-.ctx-menu-item:hover { background: #333; color: var(--text); }
-.ctx-delete:hover { color: #e74c3c !important; }
-
-.rename-input {
-    flex: 1;
-    background: #1e1e1e;
-    border: 1px solid var(--accent);
-    border-radius: 5px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: inherit;
-    padding: 2px 6px;
-    outline: none;
-    width: 100%;
-}
-
-.chat-item { position: relative; }
-
-    </style>
+     </style>
 </head>
 <body>
 
@@ -547,52 +507,64 @@
 
 <div class="app-shell">
 
-    <!-- LEFT -->
+    <!-- ══ LEFT PANEL ══ -->
     <aside class="panel-left" id="panelLeft">
-        <!-- Header row: logo+chevron always visible, logo hidden when collapsed -->
-        <div class="left-header-row">
-            <div class="left-logo-inner" id="leftLogoInner">
-                <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
-                     alt="Logo" style="width:28px;height:28px;object-fit:contain;"
-                     onerror="this.style.display='none'" />
-                Rev'nLearn
-            </div>
-            <button class="btn-collapse" id="btnCollapseLeft" title="Collapse sidebar">‹</button>
+
+        <!-- Logo -->
+        <div class="left-logo">
+            <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
+                 alt="Logo" style="width:26px;height:26px;object-fit:contain;"
+                 onerror="this.style.display='none'" />
+            RavnLearn
         </div>
 
-        <!-- Main content (hidden when collapsed) -->
-        <div class="left-content">
+        <!-- Back + New Chat -->
+        <div class="left-actions">
+            <button class="btn-back" onclick="window.history.back()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                Back
+            </button>
             <button class="btn-new-chat" id="btnNewChat">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
                 New Chat
             </button>
-            <div class="section-label">Recents</div>
-            <div class="chat-list" id="chatList"></div>
-            <div class="user-area">
-                <div class="user-avatar">@ViewBag.UserInitial</div>
-                <span class="user-name">@ViewBag.Username</span>
-                <button class="btn-logout" id="btnLogout" title="Logout">Log out</button>
-            </div>
         </div>
 
-        <!-- Icon strip (shown when collapsed) -->
-        <div class="collapsed-icons">
-            <button class="collapsed-icon-btn" title="New Chat" id="btnNewChatCollapsed">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <!-- Chat List -->
+        <div class="left-section-label">Chats</div>
+        <div class="chat-list" id="chatList"></div>
+
+        <!-- Divider -->
+        <div class="left-divider" id="vertResizeLeft"></div>
+
+        <!-- Documents Section -->
+        <div class="docs-section">
+            <div class="left-section-label">Documents</div>
+            <button class="btn-add-doc" id="btnAddSource">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
+                Add a Document
             </button>
-            <button class="collapsed-icon-btn" title="Chat History">💬</button>
-            <button class="collapsed-icon-btn" title="Logout" id="btnLogoutCollapsed">⏻</button>
+            <div id="sourceList" class="doc-list"></div>
+        </div>
+
+        <!-- User Area -->
+        <div class="user-area">
+            <div class="user-avatar">@ViewBag.UserInitial</div>
+            <span class="user-name">@ViewBag.Username</span>
+            <button class="btn-logout" id="btnLogout" title="Logout">⏻</button>
         </div>
     </aside>
 
     <!-- LEFT RESIZE HANDLE -->
     <div class="resize-handle" id="resizeLeft"></div>
 
-    <!-- CENTER -->
+    <!-- ══ CENTER ══ -->
     <main class="panel-center">
         <div class="welcome-screen" id="welcomeScreen">
             <h1>Ready to Learn?</h1>
@@ -604,71 +576,44 @@
             </div>
         </div>
         <div class="input-bar">
-            <div class="input-row">
-                <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
-                <button class="btn-mic" id="btnMic" title="Voice input">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
-                    </svg>
-                </button>
-                <button class="btn-send" id="btnSend" title="Send">
-                    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-                </button>
+        <div class="input-row">
+            <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
+            <button class="btn-mic" id="btnMic" title="Voice input">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+                </svg>
+            </button>
+            <button class="btn-send" id="btnSend" title="Send">
+                <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+            </button>
+        </div>
+        <div class="voice-status-bar" id="voiceStatusBar">
+            <div class="voice-status-text">
+                <span class="mic-dot"></span>
+                <span id="voiceStatusText">Listening…</span>
             </div>
-            <div class="voice-status-bar" id="voiceStatusBar">
-                <div class="voice-status-text">
-                    <span class="mic-dot"></span>
-                    <span id="voiceStatusText">Listening…</span>
-                </div>
-                <span class="voice-countdown" id="voiceCountdown"></span>
-                <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
-            </div>
-            <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
+            <span class="voice-countdown" id="voiceCountdown"></span>
+            <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
+        </div>
+        <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
         </div>
     </main>
 
     <!-- RIGHT RESIZE HANDLE -->
     <div class="resize-handle" id="resizeRight"></div>
 
-    <!-- RIGHT -->
+    <!-- ══ RIGHT PANEL — STUDY GUIDE ══ -->
     <aside class="panel-right" id="panelRight">
-        <!-- Header row with title + collapse button -->
-        <div class="right-header-row">
-            <button class="btn-collapse" id="btnCollapseRight" title="Collapse panel">›</button>
-            <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);flex:1;text-align:right;">Study Tools</span>
+        <div class="right-header">
+            <div class="right-header-title">Study Guide</div>
+            <div class="right-header-sub">Generated from this chat</div>
         </div>
-
-        <!-- Main content (hidden when collapsed) -->
-        <div class="right-content">
-            <!-- SOURCES SECTION (resizable height) -->
-            <div class="sources-section" id="sourcesSection">
-                <div class="right-section">
-                    <div class="right-section-title">📎 Sources</div>
-                    <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
-                </div>
-                <div id="sourceList" class="source-list"></div>
-            </div>
-
-            <!-- VERTICAL DRAG HANDLE -->
-            <div class="resize-handle-vertical" id="resizeVertical"></div>
-
-            <!-- QUIZZES SECTION (takes remaining space) -->
-            <div class="quizzes-section" id="quizzesSection">
-                <div class="quiz-section-header">🧠 Quizzes</div>
-                <div class="quiz-list" id="quizList"></div>
-            </div>
-        </div>
-
-        <!-- Icon strip (shown when collapsed) -->
-        <div class="collapsed-icons">
-            <button class="collapsed-icon-btn" title="Add Document" id="btnAddSourceCollapsed">📎</button>
-            <button class="collapsed-icon-btn" title="Quizzes">🧠</button>
-        </div>
+        <div class="quiz-list" id="quizList"></div>
     </aside>
 </div>
 
-<!-- QUIZ MODAL -->
+<!-- ══ QUIZ MODAL ══ -->
 <div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
     <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(560px,90vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2a2a2a;flex-shrink:0;">
@@ -679,32 +624,9 @@
     </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
-<div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
-        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Delete Chat</div>
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">This chat and all its messages will be permanently deleted. This cannot be undone.</div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;">
-            <button id="deleteCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
-            <button id="deleteConfirmBtn" style="background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Delete</button>
-        </div>
-    </div>
-</div>
-
-<!-- LOGOUT CONFIRM MODAL -->
-<div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
-        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Log Out</div>
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Are you sure you want to log out of RavnLearn?</div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;">
-            <button id="logoutCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
-            <button id="logoutConfirmBtn" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Log Out</button>
-        </div>
-    </div>
-</div>
-
 <script>
-    let activeChatId = -1;
+    let activeFolderId = @(ViewBag.FolderId ?? -1); 
+    let activeChatId = @(ViewBag.ChatId ?? -1);
     let isSending = false;
     let speakingBtn = null;
     let quizCount = 0;
@@ -739,8 +661,9 @@
         await loadChatList();
         setupEventListeners();
         setupResizeHandles();
-        setupVerticalResize();
-        initSourcesSectionHeight();
+        if (activeChatId !== -1) {
+            await loadChat(activeChatId);
+        }
     });
 
     function setupEventListeners() {
@@ -754,128 +677,37 @@
         });
     }
 
-    // ══ HORIZONTAL DRAG RESIZE (left/right panels) ════════
+    // ══ HORIZONTAL DRAG RESIZE ════════════════════════════
     function setupResizeHandles() {
         const panelLeft   = document.getElementById('panelLeft');
         const panelRight  = document.getElementById('panelRight');
         const handleLeft  = document.getElementById('resizeLeft');
         const handleRight = document.getElementById('resizeRight');
-
-        makeResizable(handleLeft, (dx) => {
-            const newWidth = panelLeft.offsetWidth + dx;
-            panelLeft.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
-        });
-
-        makeResizable(handleRight, (dx) => {
-            const newWidth = panelRight.offsetWidth - dx;
-            panelRight.style.width = Math.min(Math.max(newWidth, 140), 420) + 'px';
-        });
+        makeResizable(handleLeft,  (dx) => { const w = panelLeft.offsetWidth + dx;  panelLeft.style.width  = Math.min(Math.max(w, 160), 420) + 'px'; });
+        makeResizable(handleRight, (dx) => { const w = panelRight.offsetWidth - dx; panelRight.style.width = Math.min(Math.max(w, 180), 420) + 'px'; });
+        makeVerticalResizable(document.getElementById('vertResizeLeft'));
     }
 
     function makeResizable(handle, onDrag) {
         let startX = 0, dragging = false;
-
-        handle.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            dragging = true;
-            startX = e.clientX;
-            handle.classList.add('dragging');
-            document.body.classList.add('resizing');
-            document.getElementById('panelLeft').classList.add('resizing');
-            document.getElementById('panelRight').classList.add('resizing');
-        });
-        document.addEventListener('mousemove', (e) => {
-            if (!dragging) return;
-            const dx = e.clientX - startX;
-            startX = e.clientX;
-            onDrag(dx);
-        });
-        document.addEventListener('mouseup', () => {
-            if (!dragging) return;
-            dragging = false;
-            handle.classList.remove('dragging');
-            document.body.classList.remove('resizing');
-            document.getElementById('panelLeft').classList.remove('resizing');
-            document.getElementById('panelRight').classList.remove('resizing');
-        });
-        handle.addEventListener('touchstart', (e) => {
-            dragging = true; startX = e.touches[0].clientX;
-            handle.classList.add('dragging');
-        }, { passive: true });
-        document.addEventListener('touchmove', (e) => {
-            if (!dragging) return;
-            const dx = e.touches[0].clientX - startX;
-            startX = e.touches[0].clientX;
-            onDrag(dx);
-        }, { passive: true });
-        document.addEventListener('touchend', () => {
-            dragging = false;
-            handle.classList.remove('dragging');
-            document.body.classList.remove('resizing');
-        });
-    }
-
-    // ══ VERTICAL DRAG RESIZE (sources ↕ quizzes) ══════════
-    function initSourcesSectionHeight() {
-        const panelRight = document.getElementById('panelRight');
-        const header = panelRight.querySelector('.right-header-row');
-        const handle = document.getElementById('resizeVertical');
-        const available = panelRight.offsetHeight - (header?.offsetHeight || 0) - handle.offsetHeight;
-        document.getElementById('sourcesSection').style.height = Math.round(available * 0.4) + 'px';
-    }
-
-    function setupVerticalResize() {
-        const handle          = document.getElementById('resizeVertical');
-        const sourcesSection  = document.getElementById('sourcesSection');
-        const panelRight      = document.getElementById('panelRight');
-
-        let startY = 0, startH = 0, dragging = false;
-
-        const getMinMax = () => {
-            const header  = panelRight.querySelector('.right-header-row');
-            const handleH = handle.offsetHeight;
-            const totalAvailable = panelRight.offsetHeight - (header?.offsetHeight || 0) - handleH;
-            return { min: 60, max: totalAvailable - 60 };
-        };
-
-        const startDrag = (y) => {
-            dragging = true;
-            startY = y;
-            startH = sourcesSection.offsetHeight;
-            handle.classList.add('dragging');
-            document.body.classList.add('resizing-vertical');
-        };
-        const doDrag = (y) => {
-            if (!dragging) return;
-            const dy = y - startY;
-            const { min, max } = getMinMax();
-            const newH = Math.min(Math.max(startH + dy, min), max);
-            sourcesSection.style.height = newH + 'px';
-        };
-        const endDrag = () => {
-            if (!dragging) return;
-            dragging = false;
-            handle.classList.remove('dragging');
-            document.body.classList.remove('resizing-vertical');
-        };
-
-        handle.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientY); });
-        document.addEventListener('mousemove', (e) => doDrag(e.clientY));
-        document.addEventListener('mouseup', endDrag);
-
-        handle.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientY); }, { passive: true });
-        document.addEventListener('touchmove', (e) => { doDrag(e.touches[0].clientY); }, { passive: true });
-        document.addEventListener('touchend', endDrag);
+        handle.addEventListener('mousedown', (e) => { e.preventDefault(); dragging = true; startX = e.clientX; handle.classList.add('dragging');document.body.classList.add('resizing-vertical'); });
+        document.addEventListener('mousemove', (e) => { if (!dragging) return; const dx = e.clientX - startX; startX = e.clientX; onDrag(dx); });
+        document.addEventListener('mouseup', () => { if (!dragging) return; dragging = false; handle.classList.remove('dragging');document.body.classList.remove('resizing-vertical');});
+        handle.addEventListener('touchstart', (e) => { dragging = true; startX = e.touches[0].clientX; handle.classList.add('dragging'); }, { passive: true });
+        document.addEventListener('touchmove', (e) => { if (!dragging) return; const dx = e.touches[0].clientX - startX; startX = e.touches[0].clientX; onDrag(dx); }, { passive: true });
+        document.addEventListener('touchend', () => { dragging = false; handle.classList.remove('dragging');document.body.classList.remove('resizing-vertical'); });
     }
 
     // ══ CHAT LIST ════════════════════════════════════════
     async function loadChatList() {
+        if (activeFolderId === -1) return;
         try {
-            const res = await fetch('/Chat/GetChats');
+            const res = await fetch(`/Chat/GetChatsInProject?projectId=${activeFolderId}`);
             const chats = await res.json();
             const list = document.getElementById('chatList');
             list.innerHTML = '';
             chats.forEach(c => list.appendChild(makeChatItem(c.id, c.title)));
+            if (activeChatId !== -1) setActiveChatItem(activeChatId);
         } catch (err) { console.error('loadChatList error:', err); }
     }
 
@@ -976,7 +808,11 @@
 
     async function newChat() {
         try {
-            const res = await fetch('/Chat/NewChat', { method: 'POST' });
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
             const data = await res.json();
             addChatItemToTop(data.id, data.title);
             await loadChat(data.id);
@@ -1009,46 +845,57 @@
     }
 
     // ══ LOAD CHAT ════════════════════════════════════════
-async function loadChat(chatId) {
-    activeChatId = parseInt(chatId);
-    setActiveChatItem(activeChatId);
-    showChatUI();
-    clearMessages();
-    clearQuizList();
-    clearSourceList();
+    async function loadChat(chatId) {
+        activeChatId = parseInt(chatId);
+        setActiveChatItem(activeChatId);
+        showChatUI();
+        clearMessages();
+        clearQuizList();
+        clearSourceList();
 
-    try {
-        const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-
-        if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
-            data.docFilenames.forEach(name => addSourceItem(name, false));
-        } else if (data.docFilename) {
-            addSourceItem(data.docFilename, false);
-        }
-
-        if (!data.messages || data.messages.length === 0) {
-            appendBubble('No messages yet. Start the conversation!', 'ai');
-        } else {
-            data.messages.forEach(m =>
-                appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
-        }
-
-        scrollToBottom();
-
-        // Load saved quizzes for this chat  ← ADD THIS BLOCK
         try {
-            const qres = await fetch(`/Chat/GetQuizzes?chatId=${activeChatId}`);
-            const quizzes = await qres.json();
-            quizzes.forEach(q => addQuizToPanel(q.text, false));
-        } catch (err) { console.error('Quiz load error:', err); }
+            const res = await fetch(`/Chat/GetMessages?chatId=${activeChatId}`);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            if (data.docFilenames && Array.isArray(data.docFilenames) && data.docFilenames.length > 0) {
+                data.docFilenames.forEach(name => addSourceItem(name, false));
+            } else if (data.docFilename) {
+                addSourceItem(data.docFilename, false);
+            }
+            if (!data.messages || data.messages.length === 0) {
+                appendBubble('No messages yet. Start the conversation!', 'ai');
+            } else {
+                data.messages.forEach(m => appendBubble(m.content, m.role === 'user' ? 'user' : 'ai'));
+            }
+            scrollToBottom();
+        } catch (err) {
+            appendBubble('Could not load messages: ' + err.message, 'ai');
+        }
 
-    } catch (err) {
-        appendBubble('Could not load messages: ' + err.message, 'ai');
+        try {
+            const qres = await fetch(`/Chat/GetQuizzesByChat?chatId=${activeChatId}`);
+            const quizzes = await qres.json();
+            if (quizzes.length > 0) {
+                const sessionMap = new Map();
+                quizzes.forEach(q => {
+                    const sid = q.sessionId;
+                    if (!sessionMap.has(sid)) sessionMap.set(sid, []);
+                    const type = q.questionType || 'mcq';
+                    let item;
+                    if (type === 'fillblank') {
+                        item = { question: q.question, type: 'fillblank', options: [], answerIndex: 0, answer: q.answerText || '' };
+                    } else if (type === 'truefalse') {
+                        item = { question: q.question, type: 'truefalse', options: ['True', 'False'], answerIndex: q.correctAnswer.toUpperCase() === 'A' ? 0 : 1, answer: '' };
+                    } else {
+                        item = { question: q.question, type: 'mcq', options: [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean), answerIndex: ['A','B','C','D'].indexOf(q.correctAnswer.toUpperCase()), answer: '' };
+                    }
+                    sessionMap.get(sid).push(item);
+                });
+                sessionMap.forEach(questions => { addQuizToPanel_structured(questions); });
+            }
+        } catch (err) { console.error('Quiz load error:', err); }
     }
-}
-   
+
     // ══ SEND MESSAGE ══════════════════════════════════════
     async function sendMessage() {
         if (isSending) return;
@@ -1057,13 +904,15 @@ async function loadChat(chatId) {
         if (!message) return;
 
         if (activeChatId === -1) {
-            try {
-                const res = await fetch('/Chat/NewChat', { method: 'POST' });
-                const data = await res.json();
-                activeChatId = parseInt(data.id);
-                addChatItemToTop(data.id, data.title);
-                setActiveChatItem(activeChatId);
-            } catch (err) { alert('Could not create chat: ' + err.message); return; }
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
+            const data = await res.json();
+            activeChatId = parseInt(data.id);
+            addChatItemToTop(data.id, data.title);
+            setActiveChatItem(activeChatId);
         }
 
         showChatUI();
@@ -1085,26 +934,14 @@ async function loadChat(chatId) {
             });
             const data = await res.json();
             hideTyping();
-
             if (data.error) {
                 appendBubble('Error: ' + data.error, 'ai');
             } else {
                 if (data.newTitle) updateChatItemTitle(sendingToChatId, data.newTitle);
                 appendBubble(data.reply, 'ai');
-
-                // Detect quiz in response and add to panel
-                const replyLower = data.reply?.toLowerCase() || '';
-                const hasQuizContent = replyLower.match(/\b(q1[).:\s]|question\s*1[).:\s]|\b1[).]\s)/i)
-                    && data.reply.includes('\n')
-                    && !replyLower.includes('i am sorry')
-                    && !replyLower.includes('i cannot')
-                    && !replyLower.includes('i\'m sorry')
-                    && !replyLower.includes('unable to')
-                    && !replyLower.includes('appears to be empty')
-                    && !replyLower.includes('no content');
-
-                if (hasQuizContent) {
-                    addQuizToPanel(data.reply);
+                const quizBlocks = splitIntoQuizBlocks(data.reply);
+                if (quizBlocks.length > 0) {
+                    quizBlocks.forEach(block => addQuizToPanel(block));
                 }
             }
         } catch (err) {
@@ -1117,21 +954,37 @@ async function loadChat(chatId) {
         scrollToBottom();
     }
 
+    function splitIntoQuizBlocks(text) {
+        const quizHeaderRegex = /(?:^|\n)\s*\*{0,2}Quiz\s*\d+[:\-–]?[^\n]*/gi;
+        const matches = [...text.matchAll(quizHeaderRegex)];
+        if (matches.length >= 2) {
+            const blocks = [];
+            for (let i = 0; i < matches.length; i++) {
+                const start = matches[i].index;
+                const end   = matches[i + 1]?.index ?? text.length;
+                const block = text.slice(start, end).trim();
+                if (block.length > 30) blocks.push(block);
+            }
+            return blocks;
+        }
+        const looksLikeQuiz = /(\b1[).]\s|\bQ1[).:\s]|question\s*1[).:\s])/i.test(text)
+            && text.includes('\n')
+            && !/i (am sorry|cannot|couldn't|unable to)/i.test(text)
+            && !/appears to be empty|no content/i.test(text);
+        return looksLikeQuiz ? [text] : [];
+    }
+
     // ══ MESSAGES ══════════════════════════════════════════
     function appendBubble(text, role) {
         const area = document.getElementById('messagesArea');
         const typing = document.getElementById('typingIndicator');
-
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${role}`;
-
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         bubble.innerHTML = (role === 'ai' ? '🤖  ' : '') + parseBold(text);
-
         const actions = document.createElement('div');
         actions.className = 'msg-actions';
-
         const btnCopy = document.createElement('button');
         btnCopy.className = 'btn-action';
         btnCopy.textContent = '⧉ Copy';
@@ -1141,14 +994,12 @@ async function loadChat(chatId) {
             btnCopy.style.color = '#6dbf6d';
             setTimeout(() => { btnCopy.textContent = '⧉ Copy'; btnCopy.style.color = ''; }, 2000);
         };
-
         const btnSpeak = document.createElement('button');
         btnSpeak.className = 'btn-action';
         setSpeakIdle(btnSpeak);
         btnSpeak.onclick = () => {
             if (speechSynthesis.speaking && speakingBtn === btnSpeak) {
-                speechSynthesis.cancel();
-                setSpeakIdle(btnSpeak);
+                speechSynthesis.cancel(); setSpeakIdle(btnSpeak);
             } else {
                 if (speechSynthesis.speaking) { speechSynthesis.cancel(); if (speakingBtn) setSpeakIdle(speakingBtn); }
                 const utter = new SpeechSynthesisUtterance(text);
@@ -1159,7 +1010,6 @@ async function loadChat(chatId) {
                 speechSynthesis.speak(utter);
             }
         };
-
         actions.appendChild(btnCopy);
         actions.appendChild(btnSpeak);
         wrapper.appendChild(bubble);
@@ -1181,61 +1031,52 @@ async function loadChat(chatId) {
     async function uploadDocument(e) {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-
         if (activeChatId === -1) {
-            const res = await fetch('/Chat/NewChat', { method: 'POST' });
+            const res = await fetch('/Chat/NewChatInProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folderId: activeFolderId })
+            });
             const data = await res.json();
             activeChatId = parseInt(data.id);
             addChatItemToTop(data.id, data.title);
             setActiveChatItem(activeChatId);
         }
-
         showChatUI();
-
         for (const file of files) {
             const itemEl = addSourceItem(file.name, true);
             const fd = new FormData();
             fd.append('file', file);
             fd.append('chatId', activeChatId);
-
             try {
                 const res = await fetch('/Chat/UploadDocument', { method: 'POST', body: fd });
                 const data = await res.json();
-                if (data.error) {
-                    removeSourceItem(itemEl);
-                    alert('Upload failed: ' + data.error);
-                } else {
-                    finalizeSourceItem(itemEl, data.fileName);
-                    appendBubble(data.welcome, 'ai');
-                    scrollToBottom();
-                }
-            } catch (err) {
-                removeSourceItem(itemEl);
-                alert('Upload error: ' + err.message);
-            }
+                if (data.error) { removeSourceItem(itemEl); alert('Upload failed: ' + data.error); }
+                else { finalizeSourceItem(itemEl, data.fileName); appendBubble(data.welcome, 'ai'); scrollToBottom(); }
+            } catch (err) { removeSourceItem(itemEl); alert('Upload error: ' + err.message); }
         }
-
         e.target.value = '';
     }
 
-    // ── Source list helpers ───────────────────────────────
+    // ── Source / Doc list helpers ─────────────────────────
     let dragSrcEl = null;
 
     function addSourceItem(name, uploading = false) {
         const list = document.getElementById('sourceList');
         const item = document.createElement('div');
-        item.className = 'source-item' + (uploading ? ' source-item-uploading' : '');
+        item.className = 'doc-item' + (uploading ? ' source-item-uploading' : '');
 
         const handle = document.createElement('span');
-        handle.className = 'source-drag-handle';
+        handle.className = 'doc-drag-handle';
         handle.textContent = '⠿';
         handle.title = 'Drag to reorder';
 
         const icon = document.createElement('span');
+        icon.className = 'doc-item-icon';
         icon.textContent = '📄';
 
         const nameEl = document.createElement('span');
-        nameEl.className = 'source-item-name';
+        nameEl.className = 'doc-item-name';
         nameEl.title = name;
         nameEl.textContent = name;
 
@@ -1245,144 +1086,270 @@ async function loadChat(chatId) {
 
         if (uploading) {
             const spinner = document.createElement('div');
-            spinner.className = 'source-item-spinner';
+            spinner.className = 'doc-item-spinner';
             item.appendChild(spinner);
         } else {
             const delBtn = document.createElement('button');
-            delBtn.className = 'btn-del-source';
+            delBtn.className = 'btn-del-doc';
             delBtn.title = 'Remove';
             delBtn.textContent = '✕';
             delBtn.onclick = () => item.remove();
             item.appendChild(delBtn);
             makeDraggable(item, handle);
         }
-
         list.appendChild(item);
         return item;
     }
 
     function makeDraggable(item, handle) {
         item.draggable = false;
-
         handle.addEventListener('mousedown', () => { item.draggable = true; });
         handle.addEventListener('mouseup',   () => { item.draggable = false; });
-
-        item.addEventListener('dragstart', (e) => {
-            dragSrcEl = item;
-            item.classList.add('dragging-source');
-            e.dataTransfer.effectAllowed = 'move';
-        });
-        item.addEventListener('dragend', () => {
-            item.draggable = false;
-            item.classList.remove('dragging-source');
-            document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
-            dragSrcEl = null;
-        });
-        item.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            if (dragSrcEl && dragSrcEl !== item) {
-                document.querySelectorAll('.source-item').forEach(el => el.classList.remove('drag-over-source'));
-                item.classList.add('drag-over-source');
-            }
-        });
+        item.addEventListener('dragstart', (e) => { dragSrcEl = item; item.classList.add('dragging-source'); e.dataTransfer.effectAllowed = 'move'; });
+        item.addEventListener('dragend', () => { item.draggable = false; item.classList.remove('dragging-source'); document.querySelectorAll('.doc-item').forEach(el => el.classList.remove('drag-over-source')); dragSrcEl = null; });
+        item.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (dragSrcEl && dragSrcEl !== item) { document.querySelectorAll('.doc-item').forEach(el => el.classList.remove('drag-over-source')); item.classList.add('drag-over-source'); } });
         item.addEventListener('dragleave', () => item.classList.remove('drag-over-source'));
-        item.addEventListener('drop', (e) => {
-            e.preventDefault();
-            item.classList.remove('drag-over-source');
-            if (!dragSrcEl || dragSrcEl === item) return;
-            const list = document.getElementById('sourceList');
-            const items = [...list.children];
-            const srcIdx = items.indexOf(dragSrcEl);
-            const dstIdx = items.indexOf(item);
-            if (srcIdx < dstIdx) list.insertBefore(dragSrcEl, item.nextSibling);
-            else list.insertBefore(dragSrcEl, item);
-        });
+        item.addEventListener('drop', (e) => { e.preventDefault(); item.classList.remove('drag-over-source'); if (!dragSrcEl || dragSrcEl === item) return; const list = document.getElementById('sourceList'); const items = [...list.children]; const srcIdx = items.indexOf(dragSrcEl); const dstIdx = items.indexOf(item); if (srcIdx < dstIdx) list.insertBefore(dragSrcEl, item.nextSibling); else list.insertBefore(dragSrcEl, item); });
     }
 
     function finalizeSourceItem(item, fileName) {
         item.classList.remove('source-item-uploading');
-        const spinner = item.querySelector('.source-item-spinner');
+        const spinner = item.querySelector('.doc-item-spinner');
         if (spinner) spinner.remove();
-        const nameEl = item.querySelector('.source-item-name');
+        const nameEl = item.querySelector('.doc-item-name');
         if (nameEl && fileName) { nameEl.textContent = fileName; nameEl.title = fileName; }
         const delBtn = document.createElement('button');
-        delBtn.className = 'btn-del-source';
+        delBtn.className = 'btn-del-doc';
         delBtn.title = 'Remove';
         delBtn.textContent = '✕';
         delBtn.onclick = () => item.remove();
         item.appendChild(delBtn);
-        const handle = item.querySelector('.source-drag-handle');
+        const handle = item.querySelector('.doc-drag-handle');
         if (handle) makeDraggable(item, handle);
     }
 
     function removeSourceItem(item) { item?.remove(); }
 
     // ══ QUIZ PANEL ════════════════════════════════════════
-function addQuizToPanel(text, save = true) {
-    quizCount++;
-    const parsed = parseQuizFromText(text);
-    const label = `Quiz ${String(quizCount).padStart(2, '0')}`;
-    const title = parsed.questions[0]?.question?.slice(0, 50) || parsed.title || label;
-    const list = document.getElementById('quizList');
+    function addQuizToPanel(text, save = true) {
+        quizCount++;
+        const parsed = parseQuizFromText(text);
+        const label = `Reviewer ${quizCount}`;
+        const qCount = parsed.questions.length;
+        const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-    const card = document.createElement('div');
-    card.className = 'quiz-card';
+        _appendReviewerCard(label, qCount, now, 'quiz', parsed, save);
+    }
 
-    const header = document.createElement('div');
-    header.className = 'quiz-card-header';
-    const arrow = document.createElement('span');
-    arrow.className = 'quiz-card-arrow';
-    arrow.textContent = '▶';
-    header.innerHTML = `<span class="quiz-card-num">${escHtml(label)}</span><span class="quiz-card-title">${escHtml(title)}</span>`;
-    const btnModal = document.createElement('button');
-    btnModal.className = 'btn-modal-open';
-    btnModal.textContent = '⛶ Full';
-    btnModal.title = 'Open in full view';
-    btnModal.addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        openQuizModal(label, parsed, card);
-    });
-    // After btnModal definition, add this:
-    const btnFlashcard = document.createElement('button');
-    btnFlashcard.className = 'btn-modal-open';
-    btnFlashcard.textContent = '🃏 Cards';
-    btnFlashcard.title = 'View as flashcards';
-    btnFlashcard.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openFlashcardModal(label, parsed.questions);
-    });
-    header.appendChild(btnModal);
-    header.appendChild(btnFlashcard);
-    header.appendChild(arrow);
+    function addQuizToPanel_structured(questions) {
+        quizCount++;
+        const parsed = { title: '', questions };
+        const label = `Reviewer ${quizCount}`;
+        const qCount = questions.length;
+        const now = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-    // ── buildBody is defined HERE, inside addQuizToPanel ──
-    // so it has access to: parsed, card, and the `body` variable below
-    function buildBody() {
-        const b = document.createElement('div');
-        b.className = 'quiz-card-body';
+        _appendReviewerCard(label, qCount, now, 'quiz', parsed, false);
+    }
 
+    function _appendReviewerCard(label, qCount, dateStr, type, parsed, save) {
+        const list = document.getElementById('quizList');
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+
+        // ── Header ──
+        const header = document.createElement('div');
+        header.className = 'quiz-card-header';
+
+        const icon = document.createElement('div');
+        icon.className = 'reviewer-icon';
+        icon.textContent = type === 'quiz' ? '📝' : '🃏';
+
+        const meta = document.createElement('div');
+        meta.className = 'reviewer-meta';
+        meta.innerHTML = `
+            <div class="reviewer-name">${escHtml(label)}</div>
+            <div class="reviewer-info">${qCount} Question${qCount !== 1 ? 's' : ''} · ${dateStr}</div>
+        `;
+
+        const badge = document.createElement('span');
+        badge.className = `reviewer-type-badge badge-${type}`;
+        badge.textContent = type.toUpperCase();
+
+        header.appendChild(icon);
+        header.appendChild(meta);
+        header.appendChild(badge);
+
+        // ── Action Buttons ──
+        const actions = document.createElement('div');
+        actions.className = 'reviewer-actions';
+
+        const btnStudy = document.createElement('button');
+        btnStudy.className = 'btn-reviewer-action';
+        btnStudy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg> Study Buddy`;
+        btnStudy.addEventListener('click', (e) => { e.stopPropagation(); openQuizModal(label, parsed, card); });
+
+        const btnSecondary = document.createElement('button');
+        btnSecondary.className = 'btn-reviewer-action';
+
+        if (type === 'quiz') {
+            btnSecondary.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> Flashcard`;
+            btnSecondary.addEventListener('click', (e) => { e.stopPropagation(); openFlashcardModal(label, parsed.questions); });
+        } else {
+            btnSecondary.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg> Take Quiz`;
+            btnSecondary.addEventListener('click', (e) => { e.stopPropagation(); openQuizModal(label, parsed, card); });
+        }
+
+        actions.appendChild(btnStudy);
+        actions.appendChild(btnSecondary);
+
+        // ── Expandable body (hidden by default) ──
+        let body = buildQuizBody(parsed, card);
+
+        header.addEventListener('click', () => {
+            body.classList.toggle('open');
+        });
+
+        card.appendChild(header);
+        card.appendChild(actions);
+        card.appendChild(body);
+        list.appendChild(card);
+
+        // ── Save to DB ──
+        if (save && activeChatId > 0) {
+            const questions = parsed.questions.map(q => {
+                if (q.type === 'fillblank') {
+                    return { question: q.question, questionType: 'fillblank', choiceA: '', choiceB: '', choiceC: '', choiceD: '', correctAnswer: '', answerText: q.answer };
+                } else if (q.type === 'truefalse') {
+                    return { question: q.question, questionType: 'truefalse', choiceA: 'True', choiceB: 'False', choiceC: '', choiceD: '', correctAnswer: q.answerIndex === 0 ? 'A' : 'B', answerText: '' };
+                } else {
+                    return { question: q.question, questionType: 'mcq', choiceA: q.options[0] || '', choiceB: q.options[1] || '', choiceC: q.options[2] || '', choiceD: q.options[3] || '', correctAnswer: ['A','B','C','D'][q.answerIndex] || 'A', answerText: '' };
+                }
+            });
+            if (questions.length > 0) {
+                fetch('/Chat/SaveQuizQuestions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId: activeChatId, questions })
+                }).catch(err => console.error('Quiz save error:', err));
+            }
+        }
+    }
+
+    function parseQuizFromText(text) {
+        const result = { title: '', questions: [] };
+        const keyMatch = text.search(/answer\s+key/i);
+        const mainText  = keyMatch > -1 ? text.slice(0, keyMatch) : text;
+        const keyText   = keyMatch > -1 ? text.slice(keyMatch)    : '';
+        const answerMap = {};
+        if (keyText) {
+            keyText.split('\n').forEach(line => {
+                const m = line.trim().match(/^(\d+)[).:\s]+(.+)/);
+                if (m) { const raw = m[2].trim().replace(/^[a-e][).:\s]/i, '').trim(); answerMap[parseInt(m[1])] = raw; }
+            });
+        }
+        const clean = mainText.replace(/\\_/g, '_').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/^---+$/gm, '').replace(/^#+\s*/gm, '');
+        const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+        let startIdx = 0;
+        for (let i = 0; i < Math.min(5, lines.length); i++) {
+            if (lines[i].match(/^(instructions?|answer the|directions?|section)/i)) continue;
+            if (!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)) { result.title = lines[i].slice(0, 60); startIdx = i + 1; break; }
+        }
+        let currentQ = null, currentNum = 0;
+        const pushQ = () => {
+            if (!currentQ || !currentQ.question) return;
+            if (answerMap[currentNum] !== undefined) {
+                const keyAns = answerMap[currentNum];
+                if (currentQ.options.length > 0) {
+                    const letterM = keyAns.match(/^([a-e])[).:\s]/i);
+                    if (letterM) { currentQ.answerIndex = letterM[1].toUpperCase().charCodeAt(0) - 65; }
+                    else { const lc = keyAns.toLowerCase(); const found = currentQ.options.findIndex(o => lc.includes(o.toLowerCase().slice(0,10))); if (found > -1) currentQ.answerIndex = found; }
+                } else { currentQ.answer = keyAns.replace(/\(.*?\)/g, '').split('/')[0].trim(); currentQ.type = 'fillblank'; }
+            }
+            if (currentQ.type !== 'fillblank') {
+                if (currentQ.options.length === 2 && currentQ.options.map(o => o.toLowerCase()).some(o => o === 'true' || o === 'false')) { currentQ.type = 'truefalse'; }
+                else if (currentQ.options.length > 0) { currentQ.type = 'mcq'; }
+                else { currentQ = null; return; }
+            }
+            result.questions.push(currentQ);
+            currentQ = null;
+        };
+        const fillRegex = /_{2,}|\.{3,}/;
+        const optRegex = /^([A-Ea-e])[).:\s]\s*(.+)/;
+        const qNumRegex = /^(\d+)[).:\s]\s*(.+)/;
+        const qLabelRegex = /^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i;
+        const sectionRegex = /^section\s*\d/i;
+        for (let i = startIdx; i < lines.length; i++) {
+            const line = lines[i];
+            if (sectionRegex.test(line)) continue;
+            const qLabelMatch = line.match(qLabelRegex);
+            if (qLabelMatch) { pushQ(); currentNum = parseInt(qLabelMatch[1]); currentQ = { question: qLabelMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' }; if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank'; continue; }
+            const qNumMatch = line.match(qNumRegex);
+            if (qNumMatch && !optRegex.test(line) && line.length > 8) { pushQ(); currentNum = parseInt(qNumMatch[1]); currentQ = { question: qNumMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' }; if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank'; continue; }
+            const optMatch = line.match(optRegex);
+            if (optMatch && currentQ) { currentQ.options.push(optMatch[2]); continue; }
+            if (currentQ && currentQ.options.length === 0 && line.toLowerCase().match(/^(true or false|true\/false)/)) { currentQ.options = ['True', 'False']; continue; }
+            if (currentQ && currentQ.options.length === 0 && line.length > 2) { currentQ.question += ' ' + line; if (fillRegex.test(line)) currentQ.type = 'fillblank'; }
+        }
+        pushQ();
+        return result;
+    }
+
+    function clearQuizList() { document.getElementById('quizList').innerHTML = ''; quizCount = 0; }
+
+    // ══ UI STATE ══════════════════════════════════════════
+    function showChatUI() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('messagesArea').classList.add('visible');
+    }
+    function resetUI() {
+        activeChatId = -1;
+        document.getElementById('welcomeScreen').style.display = '';
+        document.getElementById('messagesArea').classList.remove('visible');
+        clearMessages(); clearQuizList(); clearSourceList();
+        document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+    }
+    function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
+    function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    async function logout() { if (confirm('Are you sure you want to logout?')) window.location.href = '/Account/Logout'; }
+
+    // ══ MODAL ════════════════════════════════════════════
+    function openQuizModal(label, parsed, card) {
+        document.getElementById('modalQuizLabel').textContent = label;
+        const body = document.getElementById('modalQuizBody');
+        body.innerHTML = '';
+        const freshBody = buildQuizBody(parsed, document.createElement('div'));
+        freshBody.classList.add('open');
+        freshBody.style.cssText = 'display:block;padding:0;border:none;';
+        body.appendChild(freshBody);
+        document.getElementById('quizModal').classList.add('open');
+    }
+    function closeQuizModal() {
+        document.getElementById('quizModal').classList.remove('open');
+        document.getElementById('modalQuizBody').innerHTML = '';
+    }
+    document.getElementById('quizModal').addEventListener('click', function(e) { if (e.target === this) closeQuizModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuizModal(); });
+
+    function buildQuizBody(parsed, card) {
+        let body = document.createElement('div');
+        body.className = 'quiz-card-body';
         if (parsed.questions.length === 0) {
             const raw = document.createElement('div');
             raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
             raw.textContent = 'Could not parse quiz questions.';
-            b.appendChild(raw);
-            return b;
+            body.appendChild(raw); return body;
         }
-
         let score = 0, answered = 0;
         const scoreEl = document.createElement('div');
         scoreEl.className = 'quiz-score';
-
         parsed.questions.forEach((q, idx) => {
             const qwrap = document.createElement('div');
             qwrap.style.marginBottom = '12px';
-
             const qtext = document.createElement('div');
             qtext.className = 'quiz-q-text';
             qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
             qwrap.appendChild(qtext);
-
             if (q.type === 'mcq' || q.type === 'truefalse') {
                 const letters = ['A','B','C','D','E'];
                 let picked = false;
@@ -1395,69 +1362,41 @@ function addQuizToPanel(text, save = true) {
                         if (picked) return;
                         picked = true; answered++;
                         const fb = qwrap.querySelector('.quiz-feedback');
-                        if (oi === q.answerIndex) {
-                            score++;
-                            ob.classList.add('correct');
-                            fb.className = 'quiz-feedback show correct';
-                            fb.textContent = '✓ Correct!';
-                        } else {
-                            ob.classList.add('wrong');
-                            const allOpts = qwrap.querySelectorAll('.quiz-opt');
-                            if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
-                            fb.className = 'quiz-feedback show wrong';
-                            fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
-                        }
+                        if (oi === q.answerIndex) { score++; ob.classList.add('correct'); fb.className = 'quiz-feedback show correct'; fb.textContent = '✓ Correct!'; }
+                        else { ob.classList.add('wrong'); const allOpts = qwrap.querySelectorAll('.quiz-opt'); if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct'); fb.className = 'quiz-feedback show wrong'; fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`; }
                         scoreEl.textContent = `${score}/${answered} correct`;
                     });
                     qwrap.appendChild(ob);
                 });
-                const fb = document.createElement('div');
-                fb.className = 'quiz-feedback';
-                qwrap.appendChild(fb);
-
+                const fb = document.createElement('div'); fb.className = 'quiz-feedback'; qwrap.appendChild(fb);
             } else if (q.type === 'fillblank') {
                 const inputRow = document.createElement('div');
                 inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
                 const inp = document.createElement('input');
-                inp.type = 'text';
-                inp.placeholder = 'Type your answer…';
+                inp.type = 'text'; inp.placeholder = 'Type your answer…';
                 inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
                 const submitBtn = document.createElement('button');
                 submitBtn.textContent = 'Check';
                 submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
-                const fb = document.createElement('div');
-                fb.className = 'quiz-feedback';
+                const fb = document.createElement('div'); fb.className = 'quiz-feedback';
                 let picked = false;
                 submitBtn.addEventListener('click', () => {
                     if (picked) return;
                     const userAnswer = inp.value.trim().toLowerCase();
                     const correct = q.answer.toLowerCase();
-                    if (userAnswer === correct || correct.includes(userAnswer) && userAnswer.length > 2) {
-                        picked = true; answered++; score++;
-                        fb.className = 'quiz-feedback show correct';
-                        fb.textContent = '✓ Correct!';
-                        inp.style.borderColor = '#2d522d';
-                    } else {
-                        picked = true; answered++;
-                        fb.className = 'quiz-feedback show wrong';
-                        fb.textContent = `✗ Answer: ${q.answer}`;
-                        inp.style.borderColor = '#52302d';
-                    }
+                    if (userAnswer === correct || (correct.includes(userAnswer) && userAnswer.length > 2)) { picked = true; answered++; score++; fb.className = 'quiz-feedback show correct'; fb.textContent = '✓ Correct!'; inp.style.borderColor = '#2d522d'; }
+                    else { picked = true; answered++; fb.className = 'quiz-feedback show wrong'; fb.textContent = `✗ Answer: ${q.answer}`; inp.style.borderColor = '#52302d'; }
                     scoreEl.textContent = `${score}/${answered} correct`;
                 });
                 inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
-                inputRow.appendChild(inp);
-                inputRow.appendChild(submitBtn);
-                qwrap.appendChild(inputRow);
-                qwrap.appendChild(fb);
+                inputRow.appendChild(inp); inputRow.appendChild(submitBtn);
+                qwrap.appendChild(inputRow); qwrap.appendChild(fb);
             }
-            b.appendChild(qwrap);
+            body.appendChild(qwrap);
         });
-
         const retryRow = document.createElement('div');
         retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
         retryRow.appendChild(scoreEl);
-
         const btnRetry = document.createElement('button');
         btnRetry.textContent = '↺ Retry';
         btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
@@ -1465,397 +1404,25 @@ function addQuizToPanel(text, save = true) {
         btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
         btnRetry.addEventListener('click', () => {
             const wasOpen = body.classList.contains('open');
-            const fresh = buildBody();
+            const fresh = buildQuizBody(parsed, card);
             if (wasOpen) fresh.classList.add('open');
-            card.replaceChild(fresh, body);
-            body = fresh;
+            card.replaceChild(fresh, body); body = fresh;
         });
-
         retryRow.appendChild(btnRetry);
-        b.appendChild(retryRow);
-        return b;
-    }
-    // ── end buildBody ──
-
-    let body = buildBody(); // ← must be `let`, not `const`, so retry can reassign it
-
-    header.addEventListener('click', () => {
-        body.classList.toggle('open');
-        arrow.classList.toggle('open');
-        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
-    });
-
-    card.appendChild(header);
-    card.appendChild(body);
-    list.appendChild(card);
-
-    if (save && activeChatId > 0) {
-        fetch('/Chat/SaveQuiz', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId: activeChatId, quizText: text })
-        }).catch(err => console.error('Quiz save error:', err));
-    }
-}
-function parseQuizFromText(text) {
-    const result = { title: '', questions: [] };
-
-    // ── 1. Split off Answer Key before doing anything ──────────────
-    const keyMatch = text.search(/answer\s+key/i);
-    const mainText  = keyMatch > -1 ? text.slice(0, keyMatch) : text;
-    const keyText   = keyMatch > -1 ? text.slice(keyMatch)    : '';
-
-    // ── 2. Extract answers from key into a map { qNum → answerStr } ─
-    const answerMap = {};
-    if (keyText) {
-        keyText.split('\n').forEach(line => {
-            const m = line.trim().match(/^(\d+)[).:\s]+(.+)/);
-            if (m) {
-                // Strip leading "a) b) c)" letter labels from MCQ answers in key
-                const raw = m[2].trim().replace(/^[a-e][).:\s]/i, '').trim();
-                answerMap[parseInt(m[1])] = raw;
-            }
-        });
-    }
-
-    // ── 3. Clean markdown from main text ───────────────────────────
-    const clean = mainText
-        .replace(/\\_/g, '_')  
-        .replace(/\*\*(.*?)\*\*/g, '$1')
-        .replace(/\*(.*?)\*/g, '$1')
-        .replace(/^---+$/gm, '')
-        .replace(/^#+\s*/gm, '');
-
-    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
-
-    // ── 4. Extract title ───────────────────────────────────────────
-    let startIdx = 0;
-    for (let i = 0; i < Math.min(5, lines.length); i++) {
-        if (lines[i].match(/^(instructions?|answer the|directions?|section)/i)) continue;
-        if (!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)) {
-            result.title = lines[i].slice(0, 60);
-            startIdx = i + 1;
-            break;
-        }
-    }
-
-    let currentQ  = null;
-    let currentNum = 0;
-
-    const pushQ = () => {
-        if (!currentQ || !currentQ.question) return;
-        // Fill answer from key map if not already set
-        if (answerMap[currentNum] !== undefined) {
-            const keyAns = answerMap[currentNum];
-            if (currentQ.options.length > 0) {
-                // Match key answer letter (e.g. "b)") to option index
-                const letterM = keyAns.match(/^([a-e])[).:\s]/i);
-                if (letterM) {
-                    currentQ.answerIndex = letterM[1].toUpperCase().charCodeAt(0) - 65;
-                } else {
-                    // Try to match by answer text content
-                    const lc = keyAns.toLowerCase();
-                    const found = currentQ.options.findIndex(o => lc.includes(o.toLowerCase().slice(0,10)));
-                    if (found > -1) currentQ.answerIndex = found;
-                }
-            } else {
-                // Fill-in-the-blank — take just the first meaningful word/phrase
-                // Strip parenthetical notes like "(The document mentions...)"
-                currentQ.answer = keyAns.replace(/\(.*?\)/g, '').split('/')[0].trim();
-                currentQ.type   = 'fillblank';
-            }
-        }
-        // Determine type
-        if (currentQ.type !== 'fillblank') {
-            if (currentQ.options.length === 2 &&
-                currentQ.options.map(o => o.toLowerCase()).some(o => o === 'true' || o === 'false')) {
-                currentQ.type = 'truefalse';
-            } else if (currentQ.options.length > 0) {
-                currentQ.type = 'mcq';
-            } else {
-                // No options and no answer from key → short answer, skip
-                currentQ = null;
-                return;
-            }
-        }
-        result.questions.push(currentQ);
-        currentQ = null;
-    };
-
-    const fillRegex    = /_{2,}|\.{3,}/;
-    const optRegex     = /^([A-Ea-e])[).:\s]\s*(.+)/;
-    const qNumRegex    = /^(\d+)[).:\s]\s*(.+)/;
-    const qLabelRegex  = /^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i;
-    const sectionRegex = /^section\s*\d/i;
-
-    for (let i = startIdx; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Skip section headers like "Section 1: Multiple Choice"
-        if (sectionRegex.test(line)) continue;
-
-        // Q-label format "Q1. text" or "Question 1. text"
-        const qLabelMatch = line.match(qLabelRegex);
-        if (qLabelMatch) {
-            pushQ();
-            currentNum = parseInt(qLabelMatch[1]);
-            currentQ = { question: qLabelMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
-            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
-            continue;
-        }
-
-        // Numbered question "1. text" — only if not an option letter
-        const qNumMatch = line.match(qNumRegex);
-        if (qNumMatch && !optRegex.test(line) && line.length > 8) {
-            pushQ();
-            currentNum = parseInt(qNumMatch[1]);
-            currentQ = { question: qNumMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
-            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
-            continue;
-        }
-
-        // Option line "a) ..." / "A. ..."
-        const optMatch = line.match(optRegex);
-        if (optMatch && currentQ) {
-            currentQ.options.push(optMatch[2]);
-            continue;
-        }
-
-        // True/False inline
-        if (currentQ && currentQ.options.length === 0 &&
-            line.toLowerCase().match(/^(true or false|true\/false)/)) {
-            currentQ.options = ['True', 'False'];
-            continue;
-        }
-
-        // Continuation of question text (before any options)
-        if (currentQ && currentQ.options.length === 0 && line.length > 2) {
-            currentQ.question += ' ' + line;
-            if (fillRegex.test(line)) currentQ.type = 'fillblank';
-        }
-    }
-
-    pushQ();
-    return result;
-}
-    function clearQuizList() {
-        document.getElementById('quizList').innerHTML = '';
-        quizCount = 0;
-    }
-
-    // ══ UI STATE ══════════════════════════════════════════
-    function showChatUI() {
-        document.getElementById('welcomeScreen').style.display = 'none';
-        document.getElementById('messagesArea').classList.add('visible');
-    }
-
-    function resetUI() {
-        activeChatId = -1;
-        document.getElementById('welcomeScreen').style.display = '';
-        document.getElementById('messagesArea').classList.remove('visible');
-        clearMessages();
-        clearQuizList();
-        clearSourceList();
-        document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
-    }
-
-    function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
-    function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
-    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function logout() {
-    const modal = document.getElementById('logoutModal');
-    modal.style.display = 'flex';
-
-    const confirmBtn = document.getElementById('logoutConfirmBtn');
-    const cancelBtn  = document.getElementById('logoutCancelBtn');
-
-    const cleanup = () => {
-        modal.style.display = 'none';
-        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-    };
-
-    document.getElementById('logoutConfirmBtn').addEventListener('click', () => {
-        cleanup();
-        window.location.href = '/Account/Logout';
-    });
-
-    document.getElementById('logoutCancelBtn').addEventListener('click', cleanup);
-    modal.addEventListener('click', (ev) => { if (ev.target === modal) cleanup(); }, { once: true });
-}
-
-    function openQuizModal(label, parsed, card) {
-    document.getElementById('modalQuizLabel').textContent = label;
-    const body = document.getElementById('modalQuizBody');
-    body.innerHTML = '';
-
-    // Re-use buildBody logic but rendered fresh inside the modal
-    const tempCard = document.createElement('div');
-    // Clone a fresh quiz card body by calling a standalone builder
-    const freshBody = buildQuizBody(parsed, tempCard);
-    freshBody.classList.add('open');
-    freshBody.style.cssText = 'display:block;padding:0;border:none;';
-    body.appendChild(freshBody);
-    document.getElementById('quizModal').classList.add('open');
-}
-
-    function closeQuizModal() {
-        document.getElementById('quizModal').classList.remove('open');
-        document.getElementById('modalQuizBody').innerHTML = '';
-    }
-
-    // Close on backdrop click
-    document.getElementById('quizModal').addEventListener('click', function(e) {
-        if (e.target === this) closeQuizModal();
-    });
-
-    // Close on Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeQuizModal();
-    });
-
-    function buildQuizBody(parsed, card) {
-        let body = document.createElement('div');
-        body.className = 'quiz-card-body';
-
-        if (parsed.questions.length === 0) {
-            const raw = document.createElement('div');
-            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
-            raw.textContent = 'Could not parse quiz questions.';
-            body.appendChild(raw);
-            return body;
-        }
-
-        let score = 0, answered = 0;
-        const scoreEl = document.createElement('div');
-        scoreEl.className = 'quiz-score';
-
-    parsed.questions.forEach((q, idx) => {
-        const qwrap = document.createElement('div');
-        qwrap.style.marginBottom = '12px';
-
-        const qtext = document.createElement('div');
-        qtext.className = 'quiz-q-text';
-        qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
-        qwrap.appendChild(qtext);
-
-        if (q.type === 'mcq' || q.type === 'truefalse') {
-            const letters = ['A','B','C','D','E'];
-            let picked = false;
-
-            q.options.forEach((opt, oi) => {
-                const ob = document.createElement('div');
-                ob.className = 'quiz-opt';
-                const letter = q.type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
-                ob.innerHTML = `<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
-                ob.addEventListener('click', () => {
-                    if (picked) return;
-                    picked = true; answered++;
-                    const fb = qwrap.querySelector('.quiz-feedback');
-                    if (oi === q.answerIndex) {
-                        score++;
-                        ob.classList.add('correct');
-                        fb.className = 'quiz-feedback show correct';
-                        fb.textContent = '✓ Correct!';
-                    } else {
-                        ob.classList.add('wrong');
-                        const allOpts = qwrap.querySelectorAll('.quiz-opt');
-                        if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
-                        fb.className = 'quiz-feedback show wrong';
-                        fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
-                    }
-                    scoreEl.textContent = `${score}/${answered} correct`;
-                });
-                qwrap.appendChild(ob);
-            });
-
-            const fb = document.createElement('div');
-            fb.className = 'quiz-feedback';
-            qwrap.appendChild(fb);
-
-        } else if (q.type === 'fillblank') {
-            const inputRow = document.createElement('div');
-            inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
-
-            const inp = document.createElement('input');
-            inp.type = 'text';
-            inp.placeholder = 'Type your answer…';
-            inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
-
-            const submitBtn = document.createElement('button');
-            submitBtn.textContent = 'Check';
-            submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
-
-            const fb = document.createElement('div');
-            fb.className = 'quiz-feedback';
-            let picked = false;
-
-            submitBtn.addEventListener('click', () => {
-                if (picked) return;
-                const userAnswer = inp.value.trim().toLowerCase();
-                const correct = q.answer.toLowerCase();
-                if (userAnswer === correct || (correct.includes(userAnswer) && userAnswer.length > 2)) {
-                    picked = true; answered++; score++;
-                    fb.className = 'quiz-feedback show correct';
-                    fb.textContent = '✓ Correct!';
-                    inp.style.borderColor = '#2d522d';
-                } else {
-                    picked = true; answered++;
-                    fb.className = 'quiz-feedback show wrong';
-                    fb.textContent = `✗ Answer: ${q.answer}`;
-                    inp.style.borderColor = '#52302d';
-                }
-                scoreEl.textContent = `${score}/${answered} correct`;
-            });
-
-            inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
-            inputRow.appendChild(inp);
-            inputRow.appendChild(submitBtn);
-            qwrap.appendChild(inputRow);
-            qwrap.appendChild(fb);
-        }
-
-        body.appendChild(qwrap);
-    });
-
-    const retryRow = document.createElement('div');
-    retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
-    retryRow.appendChild(scoreEl);
-
-    const btnRetry = document.createElement('button');
-    btnRetry.textContent = '↺ Retry';
-    btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
-    btnRetry.onmouseenter = () => { btnRetry.style.background = 'rgba(124,92,191,0.12)'; btnRetry.style.borderColor = 'var(--accent)'; };
-    btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
-    btnRetry.addEventListener('click', () => {
-        const wasOpen = body.classList.contains('open');
-        const fresh = buildQuizBody(parsed, card);
-        if (wasOpen) fresh.classList.add('open');
-        card.replaceChild(fresh, body);
-        body = fresh;
-    });
-
-    retryRow.appendChild(btnRetry);
-    body.appendChild(retryRow);
-    return body;
+        body.appendChild(retryRow);
+        return body;
     }
 
     function openFlashcardModal(label, questions) {
-        // Convert quiz questions into flashcard format
         const flashcards = questions.map(q => {
             const letters = ['A','B','C','D','E'];
             let back = '';
             if (q.type === 'mcq' || q.type === 'truefalse') {
-                const letter = q.type === 'truefalse'
-                    ? (q.answerIndex === 0 ? 'True' : 'False')
-                    : letters[q.answerIndex];
+                const letter = q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex];
                 back = `${letter}) ${q.options[q.answerIndex] || ''}`;
-            } else {
-                back = q.answer;
-            }
+            } else { back = q.answer; }
             return { front: q.question, back };
         });
-
         document.getElementById('modalQuizLabel').textContent = label + ' — Flashcards';
         const body = document.getElementById('modalQuizBody');
         body.innerHTML = '';
@@ -1866,436 +1433,259 @@ function parseQuizFromText(text) {
         document.getElementById('quizModal').classList.add('open');
     }
 
-function parseFlashcardsFromText(text) {
-    const cards = [];
-
-    // Clean markdown
-    const clean = text
-        .replace(/\*\*(.*?)\*\*/g, '$1')
-        .replace(/\*(.*?)\*/g, '$1')
-        .replace(/^#+\s*/gm, '')
-        .replace(/^---+$/gm, '');
-
-    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
-
-    // Patterns to detect front/back pairs
-    // Supports: "Q: ... A: ...", "Term: ... Definition: ...", "Front: ... Back: ...", numbered "1. Q: A:"
-    let i = 0;
-    while (i < lines.length) {
-        const line = lines[i];
-
-        // Pattern: Q: ... / A: ... (on same or next line)
-        const qMatch = line.match(/^(?:\d+[).:\s]+)?(?:Q|Question|Front|Term)[).:]\s*(.+)/i);
-        if (qMatch) {
-            const front = qMatch[1].trim();
-            let back = '';
-            // Look ahead for answer line
-            for (let j = i + 1; j < Math.min(i + 4, lines.length); j++) {
-                const aMatch = lines[j].match(/^(?:A|Answer|Back|Definition)[).:]\s*(.+)/i);
-                if (aMatch) { back = aMatch[1].trim(); i = j; break; }
+    function parseFlashcardsFromText(text) {
+        const cards = [];
+        const clean = text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/^#+\s*/gm, '').replace(/^---+$/gm, '');
+        const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i];
+            const qMatch = line.match(/^(?:\d+[).:\s]+)?(?:Q|Question|Front|Term)[).:]\s*(.+)/i);
+            if (qMatch) {
+                const front = qMatch[1].trim(); let back = '';
+                for (let j = i + 1; j < Math.min(i + 4, lines.length); j++) {
+                    const aMatch = lines[j].match(/^(?:A|Answer|Back|Definition)[).:]\s*(.+)/i);
+                    if (aMatch) { back = aMatch[1].trim(); i = j; break; }
+                }
+                if (front && back) cards.push({ front, back });
+                i++; continue;
             }
-            if (front && back) cards.push({ front, back });
-            i++; continue;
+            const dashMatch = line.match(/^(?:\d+[).:\s]+)?(.+?)\s*[—–:]\s{1,4}(.{10,})/);
+            if (dashMatch && !line.match(/^(?:Q|A|Front|Back|Term|Definition|Answer|Question)[).:]/i)) {
+                cards.push({ front: dashMatch[1].trim(), back: dashMatch[2].trim() });
+                i++; continue;
+            }
+            i++;
         }
-
-        // Pattern: "Term — Definition" or "Term: Definition" (single line)
-        const dashMatch = line.match(/^(?:\d+[).:\s]+)?(.+?)\s*[—–:]\s{1,4}(.{10,})/);
-        if (dashMatch && !line.match(/^(?:Q|A|Front|Back|Term|Definition|Answer|Question)[).:]/i)) {
-            cards.push({ front: dashMatch[1].trim(), back: dashMatch[2].trim() });
-            i++; continue;
-        }
-
-        i++;
+        return cards;
     }
-
-    return cards;
-}
 
     function buildFlashcardBody(parsed, card) {
         const body = document.createElement('div');
         body.className = 'quiz-card-body';
-
-        const cards = typeof parsed === 'string'
-            ? parseFlashcardsFromText(parsed)
-            : (parsed.flashcards || []);
-
+        const cards = typeof parsed === 'string' ? parseFlashcardsFromText(parsed) : (parsed.flashcards || []);
         if (cards.length === 0) {
             const empty = document.createElement('div');
             empty.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
             empty.textContent = 'Could not parse flashcards.';
-            body.appendChild(empty);
-            return body;
+            body.appendChild(empty); return body;
         }
-
-        let current = 0;
-        let flipped = false;
-        let known = 0;
-        let unknown = 0;
-
-        // ── Card display ──
+        let current = 0, flipped = false, known = 0, unknown = 0;
         const cardWrap = document.createElement('div');
         cardWrap.style.cssText = 'perspective:800px;margin:8px 0 10px;cursor:pointer;';
-
         const cardInner = document.createElement('div');
-        cardInner.style.cssText = `
-            position:relative;width:100%;min-height:90px;
-            transform-style:preserve-3d;
-            transition:transform 0.45s cubic-bezier(.4,0,.2,1);
-            border-radius:10px;
-        `;
-
+        cardInner.style.cssText = 'position:relative;width:100%;min-height:90px;transform-style:preserve-3d;transition:transform 0.45s cubic-bezier(.4,0,.2,1);border-radius:10px;';
         const makeFace = (side) => {
             const face = document.createElement('div');
-            face.style.cssText = `
-                position:${side === 'back' ? 'absolute' : 'relative'};
-                inset:0;
-                background:${side === 'front' ? '#252535' : '#1e2d1e'};
-                border:1px solid ${side === 'front' ? '#3a3a52' : '#2d522d'};
-                border-radius:10px;
-                padding:12px;
-                backface-visibility:hidden;
-                -webkit-backface-visibility:hidden;
-                display:flex;flex-direction:column;gap:4px;
-                ${side === 'back' ? 'transform:rotateY(180deg);' : ''}
-            `;
+            face.style.cssText = `position:${side==='back'?'absolute':'relative'};inset:0;background:${side==='front'?'#252535':'#1e2d1e'};border:1px solid ${side==='front'?'#3a3a52':'#2d522d'};border-radius:10px;padding:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;gap:4px;${side==='back'?'transform:rotateY(180deg);':''}`;
             const label = document.createElement('div');
-            label.style.cssText = `font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${side === 'front' ? 'var(--accent)' : '#6dbf6d'};margin-bottom:4px;`;
+            label.style.cssText = `font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${side==='front'?'var(--accent)':'#6dbf6d'};margin-bottom:4px;`;
             label.textContent = side === 'front' ? '▸ FRONT' : '▸ BACK';
             const text = document.createElement('div');
             text.style.cssText = 'font-size:12.5px;color:#ddd;line-height:1.5;';
-            face.appendChild(label);
-            face.appendChild(text);
+            face.appendChild(label); face.appendChild(text);
             return { face, text };
         };
-
         const { face: frontFace, text: frontText } = makeFace('front');
         const { face: backFace,  text: backText  } = makeFace('back');
-        cardInner.appendChild(frontFace);
-        cardInner.appendChild(backFace);
+        cardInner.appendChild(frontFace); cardInner.appendChild(backFace);
         cardWrap.appendChild(cardInner);
-
-        // Flip on click
-        cardWrap.addEventListener('click', () => {
-            flipped = !flipped;
-            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
-        });
-
-        // ── Counter ──
+        cardWrap.addEventListener('click', () => { flipped = !flipped; cardInner.style.transform = flipped ? 'rotateY(180deg)' : ''; });
         const counter = document.createElement('div');
         counter.style.cssText = 'font-size:10px;color:#555;text-align:center;margin-bottom:6px;';
-
-        // ── Progress bar ──
         const progressWrap = document.createElement('div');
         progressWrap.style.cssText = 'height:3px;background:#2a2a2a;border-radius:2px;margin-bottom:10px;overflow:hidden;';
         const progressBar = document.createElement('div');
         progressBar.style.cssText = 'height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;';
         progressWrap.appendChild(progressBar);
-
-        // ── Navigation ──
-        const navRow = document.createElement('div');
-        navRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
-
-        const btnPrev = document.createElement('button');
-        btnPrev.textContent = '← Prev';
-        btnPrev.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
-
-        const btnFlip = document.createElement('button');
-        btnFlip.textContent = '↺ Flip';
-        btnFlip.style.cssText = 'flex:1;background:rgba(124,92,191,0.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
-
-        const btnNext = document.createElement('button');
-        btnNext.textContent = 'Next →';
-        btnNext.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
-
-        // ── Know / Don't Know ──
-        const knowRow = document.createElement('div');
-        knowRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
-
-        const btnKnow = document.createElement('button');
-        btnKnow.textContent = '✓ Know it';
-        btnKnow.style.cssText = 'flex:1;background:#1a2d1a;border:1px solid #2d522d;border-radius:6px;color:#6dbf6d;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
-
-        const btnDontKnow = document.createElement('button');
-        btnDontKnow.textContent = '✗ Still learning';
-        btnDontKnow.style.cssText = 'flex:1;background:#2d1a1a;border:1px solid #52302d;border-radius:6px;color:#e07070;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;transition:all .15s;';
-
-        // ── Score row ──
-        const scoreRow = document.createElement('div');
-        scoreRow.style.cssText = 'display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
-        const knownEl   = document.createElement('span');
-        const unknownEl = document.createElement('span');
-        knownEl.style.color   = '#6dbf6d';
-        unknownEl.style.color = '#e07070';
-        scoreRow.appendChild(knownEl);
-        scoreRow.appendChild(unknownEl);
-
-        // ── Render card ──
+        const navRow = document.createElement('div'); navRow.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
+        const btnPrev = document.createElement('button'); btnPrev.textContent = '← Prev'; btnPrev.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const btnFlip = document.createElement('button'); btnFlip.textContent = '↺ Flip'; btnFlip.style.cssText = 'flex:1;background:rgba(124,92,191,0.15);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const btnNext = document.createElement('button'); btnNext.textContent = 'Next →'; btnNext.style.cssText = 'flex:1;background:none;border:1px solid #3a3a3a;border-radius:6px;color:#888;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const knowRow = document.createElement('div'); knowRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;';
+        const btnKnow = document.createElement('button'); btnKnow.textContent = '✓ Know it'; btnKnow.style.cssText = 'flex:1;background:#1a2d1a;border:1px solid #2d522d;border-radius:6px;color:#6dbf6d;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const btnDontKnow = document.createElement('button'); btnDontKnow.textContent = '✗ Still learning'; btnDontKnow.style.cssText = 'flex:1;background:#2d1a1a;border:1px solid #52302d;border-radius:6px;color:#e07070;font-size:11px;padding:5px 0;cursor:pointer;font-family:inherit;';
+        const scoreRow = document.createElement('div'); scoreRow.style.cssText = 'display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:2px;';
+        const knownEl = document.createElement('span'); const unknownEl = document.createElement('span');
+        knownEl.style.color = '#6dbf6d'; unknownEl.style.color = '#e07070';
+        scoreRow.appendChild(knownEl); scoreRow.appendChild(unknownEl);
         function renderCard() {
-            const c = cards[current];
-            // Reset flip
-            flipped = false;
-            cardInner.style.transform = '';
-            frontText.textContent = c.front;
-            backText.textContent  = c.back;
-            counter.textContent   = `${current + 1} / ${cards.length}`;
+            const c = cards[current]; flipped = false; cardInner.style.transform = '';
+            frontText.textContent = c.front; backText.textContent = c.back;
+            counter.textContent = `${current + 1} / ${cards.length}`;
             progressBar.style.width = `${((current + 1) / cards.length) * 100}%`;
-            btnPrev.disabled = current === 0;
-            btnPrev.style.opacity = current === 0 ? '0.3' : '1';
-            btnNext.disabled = current === cards.length - 1;
-            btnNext.style.opacity = current === cards.length - 1 ? '0.3' : '1';
-            knownEl.textContent   = known   ? `✓ ${known} known`   : '';
+            btnPrev.disabled = current === 0; btnPrev.style.opacity = current === 0 ? '0.3' : '1';
+            btnNext.disabled = current === cards.length - 1; btnNext.style.opacity = current === cards.length - 1 ? '0.3' : '1';
+            knownEl.textContent = known ? `✓ ${known} known` : '';
             unknownEl.textContent = unknown ? `✗ ${unknown} learning` : '';
         }
-
-        btnFlip.addEventListener('click', () => {
-            flipped = !flipped;
-            cardInner.style.transform = flipped ? 'rotateY(180deg)' : '';
-        });
+        btnFlip.addEventListener('click', () => { flipped = !flipped; cardInner.style.transform = flipped ? 'rotateY(180deg)' : ''; });
         btnPrev.addEventListener('click', () => { if (current > 0) { current--; renderCard(); } });
         btnNext.addEventListener('click', () => { if (current < cards.length - 1) { current++; renderCard(); } });
-
-        btnKnow.addEventListener('click', () => {
-            known++;
-            if (current < cards.length - 1) { current++; renderCard(); }
-            else renderCard();
-        });
-        btnDontKnow.addEventListener('click', () => {
-            unknown++;
-            if (current < cards.length - 1) { current++; renderCard(); }
-            else renderCard();
-        });
-
-        // ── Keyboard nav ──
+        btnKnow.addEventListener('click', () => { known++; if (current < cards.length - 1) { current++; } renderCard(); });
+        btnDontKnow.addEventListener('click', () => { unknown++; if (current < cards.length - 1) { current++; } renderCard(); });
         const keyHandler = (e) => {
             if (!body.closest('body')) { document.removeEventListener('keydown', keyHandler); return; }
             if (e.key === 'ArrowRight' && current < cards.length - 1) { current++; renderCard(); }
-            if (e.key === 'ArrowLeft'  && current > 0)                { current--; renderCard(); }
+            if (e.key === 'ArrowLeft'  && current > 0) { current--; renderCard(); }
             if (e.key === ' ') { e.preventDefault(); btnFlip.click(); }
         };
         document.addEventListener('keydown', keyHandler);
-
-        navRow.appendChild(btnPrev);
-        navRow.appendChild(btnFlip);
-        navRow.appendChild(btnNext);
-        knowRow.appendChild(btnKnow);
-        knowRow.appendChild(btnDontKnow);
-
-        body.appendChild(counter);
-        body.appendChild(progressWrap);
-        body.appendChild(cardWrap);
-        body.appendChild(navRow);
-        body.appendChild(knowRow);
-        body.appendChild(scoreRow);
-
+        navRow.appendChild(btnPrev); navRow.appendChild(btnFlip); navRow.appendChild(btnNext);
+        knowRow.appendChild(btnKnow); knowRow.appendChild(btnDontKnow);
+        body.appendChild(counter); body.appendChild(progressWrap); body.appendChild(cardWrap);
+        body.appendChild(navRow); body.appendChild(knowRow); body.appendChild(scoreRow);
         renderCard();
         return body;
     }
 
-// COLLAPSIBLE PANELS 
-    (function () {
-        const panelLeft         = document.getElementById('panelLeft');
-        const panelRight        = document.getElementById('panelRight');
-        const btnCollapseLeft   = document.getElementById('btnCollapseLeft');
-        const btnCollapseRight  = document.getElementById('btnCollapseRight');
+    function makeVerticalResizable(handle) {
+    const chatList = document.getElementById('chatList');
+    const docsSection = document.querySelector('.docs-section');
+    let startY = 0, startChatH = 0, dragging = false;
 
-        // Restore saved state
-        const leftCollapsed  = localStorage.getItem('panelLeftCollapsed')  === 'true';
-        const rightCollapsed = localStorage.getItem('panelRightCollapsed') === 'true';
-        if (leftCollapsed)  setLeft(true,  false);
-        if (rightCollapsed) setRight(true, false);
+    handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dragging = true;
+        startY = e.clientY;
+        startChatH = chatList.offsetHeight;
+        handle.classList.add('dragging');
+        document.body.classList.add('resizing-vertical');
+    });
+    document.addEventListener('mousemove', (e) => {
+        if (!dragging) return;
+        const dy = e.clientY - startY;
+        const newH = Math.min(Math.max(startChatH + dy, 60), window.innerHeight * 0.6);
+        chatList.style.height = newH + 'px';
+        chatList.style.maxHeight = 'none';
+        chatList.style.flex = 'none';
+    });
+    document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+       document.body.classList.remove('resizing-vertical');
+    });
 
-        btnCollapseLeft.addEventListener('click',  () => setLeft(!panelLeft.classList.contains('collapsed')));
-        btnCollapseRight.addEventListener('click', () => setRight(!panelRight.classList.contains('collapsed')));
+    handle.addEventListener('touchstart', (e) => {
+        dragging = true;
+        startY = e.touches[0].clientY;
+        startChatH = chatList.offsetHeight;
+        handle.classList.add('dragging');
+    }, { passive: true });
+    document.addEventListener('touchmove', (e) => {
+        if (!dragging) return;
+        const dy = e.touches[0].clientY - startY;
+        const newH = Math.min(Math.max(startChatH + dy, 60), window.innerHeight * 0.6);
+        chatList.style.maxHeight = newH + 'px';
+        chatList.style.flex = 'none';
+    }, { passive: true });
+    document.addEventListener('touchend', () => {
+        dragging = false;
+        handle.classList.remove('dragging');
+    });
+}
 
-        // Collapsed icon buttons expand the panel when clicked
-        document.getElementById('btnNewChatCollapsed').addEventListener('click', () => {
-            setLeft(false);
-            setTimeout(() => document.getElementById('btnNewChat').click(), 260);
-        });
-        document.getElementById('btnLogoutCollapsed').addEventListener('click', () => {
-            document.getElementById('btnLogout').click();
-        });
-        document.getElementById('btnAddSourceCollapsed').addEventListener('click', () => {
-            setRight(false);
-            setTimeout(() => document.getElementById('btnAddSource').click(), 260);
-        });
 
-        function setLeft(collapse, save = true) {
-            panelLeft.classList.toggle('collapsed', collapse);
-            btnCollapseLeft.textContent = collapse ? '›' : '‹';
-            btnCollapseLeft.title = collapse ? 'Expand sidebar' : 'Collapse sidebar';
-            // Disable resize handle when collapsed
-            document.getElementById('resizeLeft').style.pointerEvents = collapse ? 'none' : '';
-            document.getElementById('resizeLeft').style.opacity = collapse ? '0' : '';
-            if (save) localStorage.setItem('panelLeftCollapsed', collapse);
-        }
+(function () {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const btnMic        = document.getElementById('btnMic');
+    const txtInput      = document.getElementById('txtInput');
+    const statusBar     = document.getElementById('voiceStatusBar');
+    const statusText    = document.getElementById('voiceStatusText');
+    const countdownEl   = document.getElementById('voiceCountdown');
+    const cancelBtn     = document.getElementById('voiceCancelBtn');
+    const inputHint     = document.getElementById('inputHint');
 
-        function setRight(collapse, save = true) {
-            panelRight.classList.toggle('collapsed', collapse);
-            btnCollapseRight.textContent = collapse ? '‹' : '›';
-            btnCollapseRight.title = collapse ? 'Expand panel' : 'Collapse panel';
-            // Disable resize handle when collapsed
-            document.getElementById('resizeRight').style.pointerEvents = collapse ? 'none' : '';
-            document.getElementById('resizeRight').style.opacity = collapse ? '0' : '';
-            if (save) localStorage.setItem('panelRightCollapsed', collapse);
-        }
-    })();
+    if (!SpeechRecognition) { if (btnMic) btnMic.style.display = 'none'; return; }
 
-    // VOICE INPUT
-    (function () {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const btnMic        = document.getElementById('btnMic');
-        const txtInput      = document.getElementById('txtInput');
-        const statusBar     = document.getElementById('voiceStatusBar');
-        const statusText    = document.getElementById('voiceStatusText');
-        const countdownEl   = document.getElementById('voiceCountdown');
-        const cancelBtn     = document.getElementById('voiceCancelBtn');
-        const inputHint     = document.getElementById('inputHint');
+    let recognition = null, isRecording = false;
+    let countdownInterval = null, silenceSeconds = 0;
+    const SILENCE_LIMIT = 5;
 
-        // Hide mic button if browser doesn't support it
-        if (!SpeechRecognition) {
-            if (btnMic) btnMic.style.display = 'none';
-            return;
-        }
+    function buildRecognition() {
+        const r = new SpeechRecognition();
+        r.continuous = true; r.interimResults = true; r.lang = 'en-US';
+        let finalTranscript = '';
 
-        let recognition     = null;
-        let isRecording     = false;
-        let silenceTimer    = null;
-        let countdownInterval = null;
-        let silenceSeconds  = 0;
-        const SILENCE_LIMIT = 5; // seconds before auto-send
-
-        function buildRecognition() {
-            const r = new SpeechRecognition();
-            r.continuous      = true;
-            r.interimResults  = true;
-            r.lang            = 'en-US';
-
-            let finalTranscript = '';
-
-            r.onstart = () => {
-                finalTranscript = txtInput.value.trim();
-                statusBar.classList.add('visible');
-                inputHint.style.display = 'none';
-                setListeningState();
-            };
-
-            r.onresult = (e) => {
-                let interim = '';
-                for (let i = e.resultIndex; i < e.results.length; i++) {
-                    const t = e.results[i][0].transcript;
-                    if (e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + t.trim();
-                    else interim = t;
-                }
-                txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
-                autoResize(txtInput);
-                resetSilenceTimer();
-            };
-
-            r.onspeechend = () => { startSilenceTimer(); };
-
-            r.onerror = (e) => {
-                if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
-                if (e.error === 'aborted') return;
-                stopRecording(false);
-            };
-
-            r.onsoundend = () => { startSilenceTimer(); };
-
-            r.onend = () => {
-                // Restart if still recording (handles browser auto-stop)
-                if (isRecording) {
-                    try { r.start(); } catch (_) {}
-                }
-            };
-
-            return r;
-        }
-
-        function setListeningState() {
-            statusText.textContent = 'Listening…';
-            countdownEl.textContent = '';
-            countdownEl.classList.remove('urgent');
-        }
-
-        function startSilenceTimer() {
-            clearSilenceTimer();
-            silenceSeconds = SILENCE_LIMIT;
-            statusText.textContent = 'Auto-sending in…';
-
-            countdownInterval = setInterval(() => {
-                silenceSeconds--;
-                countdownEl.textContent = silenceSeconds + 's';
-                countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
-
-                if (silenceSeconds <= 0) {
-                    clearSilenceTimer();
-                    stopRecording(true); // true = auto-send
-                }
-            }, 1000);
-        }
-
-        function resetSilenceTimer() {
-            clearSilenceTimer();
+        r.onstart = () => {
+            finalTranscript = txtInput.value.trim();
+            statusBar.classList.add('visible');
+            inputHint.style.display = 'none';
             setListeningState();
-        }
-
-        function clearSilenceTimer() {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-        }
-
-        function startRecording() {
-            if (isRecording) return;
-            isRecording = true;
-            btnMic.classList.add('recording');
-            btnMic.title = 'Stop recording';
-            recognition = buildRecognition();
-            try { recognition.start(); } catch (_) {}
-        }
-
-        function stopRecording(andSend = false) {
-            if (!isRecording) return;
-            isRecording = false;
-            clearSilenceTimer();
-            btnMic.classList.remove('recording');
-            btnMic.title = 'Voice input';
-            statusBar.classList.remove('visible');
-            inputHint.style.display = '';
-            countdownEl.classList.remove('urgent');
-
-            try { recognition.abort(); } catch (_) {}
-            recognition = null;
-
-            if (andSend) {
-                const msg = txtInput.value.trim();
-                if (msg) sendMessage();
+        };
+        r.onresult = (e) => {
+            let interim = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                const t = e.results[i][0].transcript;
+                if (e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + t.trim();
+                else interim = t;
             }
-        }
-
-        // Mic button toggle
-        btnMic.addEventListener('click', () => {
-            isRecording ? stopRecording(false) : startRecording();
-        });
-
-        // Cancel button
-        cancelBtn.addEventListener('click', () => {
+            txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
+            autoResize(txtInput);
+            resetSilenceTimer();
+        };
+        r.onspeechend = () => startSilenceTimer();
+        r.onsoundend  = () => startSilenceTimer();
+        r.onerror = (e) => {
+            if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
+            if (e.error === 'aborted') return;
             stopRecording(false);
-        });
+        };
+        r.onend = () => { if (isRecording) try { r.start(); } catch (_) {} };
+        return r;
+    }
 
-        // If user manually edits or sends during countdown, stop cleanly
-        txtInput.addEventListener('keydown', (e) => {
-            if (isRecording && e.key === 'Enter' && !e.shiftKey) {
-                stopRecording(false); // let the existing sendMessage handle it
-            }
-        });
+    function setListeningState() {
+        statusText.textContent = 'Listening…';
+        countdownEl.textContent = '';
+        countdownEl.classList.remove('urgent');
+    }
+    function startSilenceTimer() {
+        clearSilenceTimer();
+        silenceSeconds = SILENCE_LIMIT;
+        statusText.textContent = 'Auto-sending in…';
+        countdownInterval = setInterval(() => {
+            silenceSeconds--;
+            countdownEl.textContent = silenceSeconds + 's';
+            countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
+            if (silenceSeconds <= 0) { clearSilenceTimer(); stopRecording(true); }
+        }, 1000);
+    }
+    function resetSilenceTimer() { clearSilenceTimer(); setListeningState(); }
+    function clearSilenceTimer() { clearInterval(countdownInterval); countdownInterval = null; }
 
-        document.getElementById('btnSend').addEventListener('click', () => {
-            if (isRecording) stopRecording(false);
-        });
-    })();
+    function startRecording() {
+        if (isRecording) return;
+        isRecording = true;
+        btnMic.classList.add('recording');
+        btnMic.title = 'Stop recording';
+        recognition = buildRecognition();
+        try { recognition.start(); } catch (_) {}
+    }
+    function stopRecording(andSend = false) {
+        if (!isRecording) return;
+        isRecording = false;
+        clearSilenceTimer();
+        btnMic.classList.remove('recording');
+        btnMic.title = 'Voice input';
+        statusBar.classList.remove('visible');
+        inputHint.style.display = '';
+        countdownEl.classList.remove('urgent');
+        try { recognition.abort(); } catch (_) {}
+        recognition = null;
+        if (andSend && txtInput.value.trim()) sendMessage();
+    }
 
+    btnMic.addEventListener('click', () => isRecording ? stopRecording(false) : startRecording());
+    cancelBtn.addEventListener('click', () => stopRecording(false));
+    txtInput.addEventListener('keydown', (e) => {
+        if (isRecording && e.key === 'Enter' && !e.shiftKey) stopRecording(false);
+    });
+    document.getElementById('btnSend').addEventListener('click', () => {
+        if (isRecording) stopRecording(false);
+    });
+})();
 </script>
-
 </body>
 </html>

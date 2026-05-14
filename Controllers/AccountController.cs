@@ -8,13 +8,23 @@ namespace RavnLearnWeb.Controllers
 {
     public class AccountController : Controller
     {
-        // GET: /Account/Login
+        private bool IsLoggedIn() => HttpContext.Session.GetString("Username") != null;
+        private string Username => HttpContext.Session.GetString("Username") ?? "";
+
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
+        public IActionResult Profile()
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login");
+            ViewBag.Username    = Username;
+            ViewBag.Email       = HttpContext.Session.GetString("Email") ?? "";
+            ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
+            return View();
+        }
+
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
@@ -28,13 +38,20 @@ namespace RavnLearnWeb.Controllers
                     {
                         cmd.Parameters.AddWithValue("u", username);
                         cmd.Parameters.AddWithValue("p", HashPassword(password));
-
                         var result = cmd.ExecuteScalar();
                         if (result != null)
                         {
                             HttpContext.Session.SetString("Username", username);
                             HttpContext.Session.SetInt32("UserId", Convert.ToInt32(result));
-                            return RedirectToAction("Index", "Chat");
+
+                            // Fetch email so sidebar can display it
+                            using var emailCmd = new NpgsqlCommand(
+                                "SELECT email FROM users WHERE username = @u", conn);
+                            emailCmd.Parameters.AddWithValue("u", username);
+                            var email = emailCmd.ExecuteScalar()?.ToString() ?? "";
+                            HttpContext.Session.SetString("Email", email);
+
+                            return RedirectToAction("MyChats", "Chat");
                         }
                         else
                         {
@@ -51,13 +68,11 @@ namespace RavnLearnWeb.Controllers
             }
         }
 
-        // GET: /Account/Register
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         public IActionResult Register(string username, string email, string password, string confirmPassword)
         {
@@ -97,11 +112,34 @@ namespace RavnLearnWeb.Controllers
             }
         }
 
-        // GET: /Account/Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile([FromBody] UpdateProfileRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = Database.GetConnection();
+                conn.Open();
+                using var cmd = new NpgsqlCommand(
+                    "UPDATE users SET username=@u, email=@e WHERE username=@old", conn);
+                cmd.Parameters.AddWithValue("u",   req.Username);
+                cmd.Parameters.AddWithValue("e",   req.Email);
+                cmd.Parameters.AddWithValue("old", Username);
+                cmd.ExecuteNonQuery();
+                HttpContext.Session.SetString("Username", req.Username);
+                HttpContext.Session.SetString("Email",    req.Email);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
         }
 
         private string HashPassword(string password)
@@ -112,5 +150,11 @@ namespace RavnLearnWeb.Controllers
                 return BitConverter.ToString(bytes).Replace("-", "").ToLower();
             }
         }
+    }
+
+    public class UpdateProfileRequest
+    {
+        public string Username { get; set; } = "";
+        public string Email    { get; set; } = "";
     }
 }
