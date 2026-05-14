@@ -707,6 +707,31 @@ namespace RavnLearnWeb.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RenameSession([FromBody] RenameSessionRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Title))
+                return BadRequest(new { error = "Title is required" });
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"UPDATE chat_sessions s SET title = @title
+                      FROM chats c
+                      WHERE s.session_id = @sid AND s.chat_id = c.chat_id AND c.user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("title", req.Title);
+                cmd.Parameters.AddWithValue("sid", req.Id);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                int rows = await cmd.ExecuteNonQueryAsync();
+                if (rows == 0) return NotFound(new { error = "Session not found" });
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RenameProject([FromBody] RenameProjectRequest req)
         {
             if (!IsLoggedIn()) return Unauthorized();
@@ -1193,6 +1218,12 @@ public async Task<IActionResult> FlashcardStudy(int sessionId)
     public class NewSessionRequest
     {
         public int FolderId { get; set; }
+    }
+
+    public class RenameSessionRequest
+    {
+        public int Id       { get; set; }
+        public string Title { get; set; } = "";
     }
 
     public class RenameProjectRequest
