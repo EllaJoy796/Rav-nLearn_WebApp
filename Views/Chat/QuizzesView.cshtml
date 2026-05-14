@@ -49,6 +49,16 @@
         body.light-mode .nav-item     { color: #2d1f5e; }
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
+        body.light-mode .modal,
+        body.light-mode .delete-modal { background: #f4f3ff; }
+        body.light-mode .field-input  { background: #edeaf8; color: var(--text-white); }
+        body.light-mode .ctx-menu     { background: #f4f3ff; }
+        body.light-mode .chip-download,
+        body.light-mode .chip-buddy {
+            background: rgba(94, 60, 180, 0.12);
+            border-color: rgba(94, 60, 180, 0.35);
+            color: #4a2fa0;
+        }
 
         html, body {
             height: 100%;
@@ -60,40 +70,30 @@
 
         .shell { display: flex; height: 100vh; width: 100vw; }
 
+        /* ── SIDEBAR ── */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             align-items: flex-start;
-            padding: 16px 0;
-            flex-shrink: 0;
-            z-index: 100;
-            overflow: hidden;
+            padding: 16px 0; flex-shrink: 0;
+            z-index: 100; overflow: hidden;
             transition: width .25s ease;
         }
         .sidebar:hover { width: var(--sidebar-expanded); }
 
         .sidebar-logo {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 15px;
-            margin-bottom: 28px;
-            overflow: hidden;
+            width: 100%; display: flex; align-items: center;
+            gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden;
         }
         .logo-icon {
             width: 42px; height: 42px; min-width: 42px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
         }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
         .logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 15px; font-weight: 800;
+            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
             color: var(--text-white); white-space: nowrap;
             opacity: 0; transition: opacity .2s ease .05s;
         }
@@ -110,11 +110,9 @@
         }
         .nav-group-label {
             font-size: 10px; font-weight: 700;
-            color: var(--text-dim); letter-spacing: .8px;
-            text-transform: uppercase;
-            padding: 0 4px; margin-bottom: 6px;
-            white-space: nowrap; opacity: 0;
-            max-height: 0; overflow: hidden;
+            color: var(--text-dim); letter-spacing: .8px; text-transform: uppercase;
+            padding: 0 4px; margin-bottom: 6px; white-space: nowrap;
+            opacity: 0; max-height: 0; overflow: hidden;
             transition: opacity .2s ease, max-height .2s ease;
         }
         .sidebar:hover .nav-group-label { opacity: 1; max-height: 20px; }
@@ -125,8 +123,7 @@
             padding: 0 11px; cursor: pointer;
             transition: background .2s ease, color .2s ease;
             color: white; text-decoration: none;
-            overflow: hidden; white-space: nowrap;
-            position: relative;
+            overflow: hidden; white-space: nowrap; position: relative;
         }
         .nav-item:hover { background: var(--accent-soft); color: var(--text-white); }
         .nav-item.active { background: var(--accent-soft); color: var(--accent); }
@@ -140,60 +137,45 @@
             opacity: 0; transition: opacity .2s ease .05s; overflow: hidden;
         }
         .sidebar:hover .nav-label { opacity: 1; }
-
         .nav-item::after {
-            content: attr(data-tip);
-            position: absolute; left: 82px;
+            content: attr(data-tip); position: absolute; left: 82px;
             background: #1e1e2e; color: var(--text-white);
-            font-size: 12px; font-weight: 600;
-            padding: 5px 10px; border-radius: 6px;
-            white-space: nowrap; pointer-events: none;
-            opacity: 0; transition: opacity .15s ease;
-            border: 1px solid var(--border); z-index: 200;
+            font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px;
+            white-space: nowrap; pointer-events: none; opacity: 0;
+            transition: opacity .15s ease; border: 1px solid var(--border); z-index: 200;
         }
         .sidebar:not(:hover) .nav-item:hover::after { opacity: 1; }
 
         .sidebar-bottom {
-            margin-top: auto;
-            display: flex; flex-direction: column;
-            align-items: flex-start; gap: 2px;
-            width: 100%; padding: 0 12px;
+            margin-top: auto; display: flex; flex-direction: column;
+            align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px;
         }
 
+        /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
         .topbar {
-            height: var(--topbar-h);
-            display: flex; align-items: center; gap: 16px;
-            padding: 0 28px;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
+            height: var(--topbar-h); display: flex; align-items: center; gap: 16px;
+            padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0;
         }
 
         .btn-back {
             display: flex; align-items: center; gap: 8px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-white);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            padding: 0 14px; height: 36px;
-            cursor: pointer; text-decoration: none;
-            flex-shrink: 0;
+            background: transparent; border: 1px solid var(--border); border-radius: 10px;
+            color: var(--text-white); font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px;
+            cursor: pointer; text-decoration: none; flex-shrink: 0;
             transition: background .2s ease, border-color .2s ease;
         }
         .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
         .btn-back svg {
-            width: 14px; height: 14px;
-            stroke: currentColor; fill: none;
+            width: 14px; height: 14px; stroke: currentColor; fill: none;
             stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
         }
 
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
         .set-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 20px; font-weight: 900;
+            font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900;
             color: var(--text-white); letter-spacing: -.3px;
         }
         .set-meta {
@@ -203,112 +185,79 @@
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
 
         .content {
-            flex: 1; overflow-y: auto;
-            padding: 32px 28px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
+            flex: 1; overflow-y: auto; padding: 32px 28px;
+            scrollbar-width: thin; scrollbar-color: var(--border) transparent;
         }
         .content::-webkit-scrollbar { width: 4px; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .section-label {
             font-size: 13px; font-weight: 600;
-            color: var(--text-muted); letter-spacing: .5px;
-            margin-bottom: 20px;
+            color: var(--text-muted); letter-spacing: .5px; margin-bottom: 20px;
         }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-        /* QUIZ CARD */
+        /* ── QUIZ CARD ── */
         .qz-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex; flex-direction: column;
-            padding: 16px;
-            gap: 12px;
-            cursor: pointer;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; display: flex; flex-direction: column;
+            padding: 16px; gap: 12px; cursor: pointer;
             transition: background .2s ease, border-color .2s ease, transform .15s ease;
-            animation: fadeUp .4s ease both;
-            position: relative;
+            animation: fadeUp .4s ease both; position: relative;
         }
         .qz-item:hover {
             background: var(--card-hover);
             border-color: rgba(124,92,191,.35);
             transform: translateY(-2px);
         }
-        .qz-item:nth-child(2) { animation-delay: .05s; }
-        .qz-item:nth-child(3) { animation-delay: .10s; }
-        .qz-item:nth-child(4) { animation-delay: .15s; }
-        .qz-item:nth-child(5) { animation-delay: .20s; }
-        .qz-item:nth-child(6) { animation-delay: .25s; }
 
         .qz-toprow {
             display: flex; align-items: center;
             justify-content: space-between; gap: 8px;
         }
-
         .qz-chips { display: flex; align-items: center; gap: 6px; }
 
         .chip {
             display: flex; align-items: center; gap: 5px;
-            border-radius: 20px;
-            padding: 4px 10px 4px 8px;
-            font-size: 11px; font-weight: 700;
-            letter-spacing: .3px;
+            border-radius: 20px; padding: 4px 10px 4px 8px;
+            font-size: 11px; font-weight: 700; letter-spacing: .3px;
         }
         .chip svg {
-            width: 13px; height: 13px;
-            stroke: currentColor; fill: none;
+            width: 13px; height: 13px; stroke: currentColor; fill: none;
             stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
         }
         .chip-download {
-            background: rgba(124,92,191,.15);
-            border: 1px solid rgba(124,92,191,.25);
-            color: #c8b8f0;
+            background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0;
         }
         .chip-buddy {
-            background: var(--accent-soft);
-            border: 1px solid rgba(124,92,191,.25);
-            color: #c8b8f0;
+            background: var(--accent-soft); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0;
         }
 
         .btn-dots {
-            background: none; border: 1px solid var(--border);
-            border-radius: 7px; cursor: pointer;
-            color: var(--text-dim);
+            background: none; border: 1px solid var(--border); border-radius: 7px;
+            cursor: pointer; color: var(--text-dim);
             width: 28px; height: 28px;
             display: flex; align-items: center; justify-content: center;
             gap: 2.5px; flex-direction: column;
-            transition: color .2s ease, background .2s ease;
-            flex-shrink: 0;
+            transition: color .2s ease, background .2s ease; flex-shrink: 0;
         }
         .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
 
         .qz-name {
-            font-family: 'Syne', sans-serif;
-            font-size: 15px; font-weight: 800;
+            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
             color: var(--text-white); letter-spacing: .3px;
         }
-        .qz-sub {
-            font-size: 12px; color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .qz-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
         .qz-prog-row {
             display: flex; align-items: center;
-            justify-content: space-between;
-            font-size: 11px; color: var(--text-muted);
+            justify-content: space-between; font-size: 11px; color: var(--text-muted);
         }
         .qz-prog-bar {
             height: 4px; background: rgba(124,92,191,.15);
-            border-radius: 2px; overflow: hidden;
-            margin-top: 6px;
+            border-radius: 2px; overflow: hidden; margin-top: 6px;
         }
         .qz-prog-fill {
             height: 100%; background: var(--accent);
@@ -316,22 +265,108 @@
         }
 
         .btn-take {
-            width: 100%; height: 38px;
-            background: transparent;
-            border: 1px solid rgba(124,92,191,.35);
-            border-radius: 10px;
-            color: var(--text-white);
-            font-family: 'DM Sans', sans-serif;
+            width: 100%; height: 38px; background: transparent;
+            border: 1px solid rgba(124,92,191,.35); border-radius: 10px;
+            color: var(--text-white); font-family: 'DM Sans', sans-serif;
             font-size: 13px; font-weight: 600;
             display: flex; align-items: center; justify-content: center;
-            gap: 8px; cursor: pointer;
+            gap: 8px; cursor: pointer; margin-top: auto;
             transition: background .2s ease, border-color .2s ease;
-            margin-top: auto;
         }
         .btn-take:hover { background: var(--accent-soft); border-color: var(--accent); }
-        .btn-take svg {
-            width: 14px; height: 14px; fill: currentColor; stroke: none;
+        .btn-take svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
+
+        /* ── CONTEXT MENU ── */
+        .ctx-menu {
+            position: fixed; background: #1e1a2e;
+            border: 1px solid rgba(124,92,191,.25); border-radius: 10px;
+            padding: 6px; min-width: 150px; z-index: 999;
+            box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none;
         }
+        .ctx-menu.visible { display: block; }
+        .ctx-item {
+            padding: 8px 12px; border-radius: 6px; font-size: 13px;
+            cursor: pointer; color: var(--text-muted);
+            transition: background .15s, color .15s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ctx-item:hover { background: var(--accent-soft); color: var(--text-white); }
+        .ctx-item.danger { color: #e07070; }
+        .ctx-item.danger:hover { background: rgba(224,112,112,.12); }
+
+        /* ── MODAL OVERLAY ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.6);
+            backdrop-filter: blur(4px); z-index: 500;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: #1a1626; border: 1px solid rgba(124,92,191,.25);
+            border-radius: 20px; padding: 32px;
+            width: min(420px, 90vw);
+            box-shadow: 0 24px 60px rgba(0,0,0,.5);
+            animation: modalIn .2s ease;
+        }
+        @@keyframes modalIn {
+            from { opacity: 0; transform: scale(.95) translateY(10px); }
+            to   { opacity: 1; transform: none; }
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
+            color: var(--text-white); margin-bottom: 6px;
+        }
+        .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        .field-label {
+            font-size: 11px; font-weight: 700; color: var(--text-muted);
+            letter-spacing: .6px; text-transform: uppercase;
+            margin-bottom: 7px; display: block;
+        }
+        .field-input {
+            width: 100%; height: 44px; background: #0f0d1a;
+            border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
+            padding: 0 14px; color: var(--text-white);
+            font-size: 14px; font-family: inherit; outline: none;
+            transition: border-color .2s; margin-bottom: 16px;
+        }
+        .field-input:focus { border-color: var(--accent); }
+        .field-input::placeholder { color: var(--text-dim); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .btn-cancel {
+            flex: 1; height: 44px; background: none;
+            border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            font-family: inherit; cursor: pointer;
+            transition: border-color .2s, color .2s;
+        }
+        .btn-cancel:hover { border-color: var(--accent); color: var(--text-white); }
+        .btn-primary {
+            flex: 2; height: 44px; background: var(--accent); border: none;
+            border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700;
+            font-family: inherit; cursor: pointer; transition: background .2s;
+        }
+        .btn-primary:hover { background: #6b4daa; }
+        .btn-primary:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
+        .error-msg { font-size: 12px; color: #e07070; margin-top: -10px; margin-bottom: 12px; display: none; }
+        .error-msg.visible { display: block; }
+
+        /* ── DELETE MODAL ── */
+        .delete-modal {
+            background: #1a1626; border: 1px solid rgba(224,112,112,.2);
+            border-radius: 20px; padding: 32px;
+            width: min(380px, 90vw);
+            box-shadow: 0 24px 60px rgba(0,0,0,.5);
+            animation: modalIn .2s ease;
+        }
+        .delete-modal .modal-title { color: #e07070; }
+        .btn-delete-confirm {
+            flex: 2; height: 44px; background: #c0392b; border: none;
+            border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700;
+            font-family: inherit; cursor: pointer; transition: background .2s;
+        }
+        .btn-delete-confirm:hover { background: #a93226; }
+        .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
         @@keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
@@ -357,6 +392,11 @@
             .nav-label { display: none; }
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
+        }
+
+        #quizModal input[type="text"] {
+            color: var(--text-white) !important;
+            background: var(--bg) !important;
         }
     </style>
 </head>
@@ -432,7 +472,7 @@
             </a>
             <div class="set-header">
                 <div class="set-title">@setName</div>
-                <div class="set-meta">
+                <div class="set-meta" id="setMeta">
                     @(ViewBag.QuizCount ?? 6) Quizzes
                     <span class="dot"></span>
                     @setDate
@@ -442,189 +482,190 @@
 
         <div class="content">
             <div class="section-label">Quizzes</div>
-
-            <div class="cards-grid">
-
-                @if (quizzes != null)
-                {
-                    foreach (var quiz in quizzes)
-                    {
-                        int studied  = (int)(quiz.Studied ?? 0);
-                        int total    = (int)(quiz.Total   ?? 1);
-                        int progress = total > 0 ? (int)Math.Round((double)studied / total * 100) : 0;
-
-                        <div class="qz-item" onclick="window.location.href='/Chat/QuizView?id=@(quiz.Id)'">
-                            <div class="qz-toprow">
-                                <div class="qz-chips">
-                                    <div class="chip chip-download">
-                                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                        Download
-                                    </div>
-                                    <div class="chip chip-buddy">
-                                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                                        Study Buddy
-                                    </div>
-                                </div>
-                                <button class="btn-dots" onclick="event.stopPropagation(); showQuizMenu(@(quiz.Id))">
-                                    <span></span><span></span><span></span>
-                                </button>
-                            </div>
-                            <div>
-                                <div class="qz-name">@(quiz.Name?.ToUpper())</div>
-                                <div class="qz-sub">@(quiz.Total) Questions</div>
-                            </div>
-                            <div>
-                                <div class="qz-prog-row">
-                                    <span>Progress</span>
-                                    <span>@(quiz.Studied ?? 0)/@(quiz.Total ?? 0)</span>
-                                </div>
-                                <div class="qz-prog-bar">
-                                    <div class="qz-prog-fill" style="width: @(progress)%"></div>
-                                </div>
-                            </div>
-                            <button class="btn-take" onclick="event.stopPropagation(); window.location.href='/Chat/QuizView?id=@(quiz.Id)'">
-                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
-                                Take the Quiz
-                            </button>
-                        </div>
-                    }
-                }
-                else
-                {
-                    for (int i = 1; i <= 6; i++)
-                    {
-                        <div class="qz-item">
-                            <div class="qz-toprow">
-                                <div class="qz-chips">
-                                    <div class="chip chip-download">
-                                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                        Download
-                                    </div>
-                                    <div class="chip chip-buddy">
-                                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                                        Study Buddy
-                                    </div>
-                                </div>
-                                <button class="btn-dots" onclick="event.stopPropagation()">
-                                    <span></span><span></span><span></span>
-                                </button>
-                            </div>
-                            <div>
-                                <div class="qz-name">QUIZ 0@(i)</div>
-                                <div class="qz-sub">10 Questions</div>
-                            </div>
-                            <div>
-                                <div class="qz-prog-row">
-                                    <span>Progress</span>
-                                    <span>5/8</span>
-                                </div>
-                                <div class="qz-prog-bar">
-                                    <div class="qz-prog-fill" style="width: 62%"></div>
-                                </div>
-                            </div>
-                            <button class="btn-take">
-                                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
-                                Take the Quiz
-                            </button>
-                        </div>
-                    }
-                }
-
+            <div class="cards-grid" id="cardsGrid">
+                <!-- populated by JS -->
             </div>
         </div>
 
     </div>
+</div>
 
-    <!-- QUIZ MODAL -->
-<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:#1e1a2e;border:1px solid rgba(124,92,191,0.3);border-radius:20px;width:min(620px,92vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
-        <!-- Header -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid rgba(124,92,191,0.15);flex-shrink:0;">
-            <div>
-                <div id="modalQuizTitle" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#f0eeff;"></div>
-                <div id="modalQuizSub" style="font-size:12px;color:#7a7490;margin-top:2px;"></div>
-            </div>
-            <button onclick="closeQuizModal()" style="background:none;border:none;color:#555;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;">✕</button>
-        </div>
-        <!-- Progress bar -->
-        <div style="height:3px;background:rgba(124,92,191,0.15);flex-shrink:0;">
-            <div id="modalProgress" style="height:100%;background:#7c5cbf;border-radius:2px;transition:width 0.3s;width:0%;"></div>
-        </div>
-        <!-- Body -->
-        <div id="modalBody" style="flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:rgba(124,92,191,0.2) transparent;"></div>
-        <!-- Footer -->
-        <div style="padding:16px 24px;border-top:1px solid rgba(124,92,191,0.15);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-            <div id="modalScore" style="font-size:13px;color:#7a7490;"></div>
-            <div style="display:flex;gap:10px;">
-                <button onclick="retryQuiz()" style="background:none;border:1px solid rgba(124,92,191,0.3);border-radius:10px;color:#c8b8f0;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .2s;">↺ Retry</button>
-                <button onclick="closeQuizModal()" style="background:#7c5cbf;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .2s;">Done</button>
-            </div>
+<!-- ── CONTEXT MENU ── -->
+<div class="ctx-menu" id="ctxMenu">
+    <div class="ctx-item" onclick="ctxRename()">
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Rename
+    </div>
+    <div class="ctx-item danger" onclick="ctxDelete()">
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+        </svg>
+        Delete
+    </div>
+</div>
+
+<!-- ── RENAME MODAL ── -->
+<div class="modal-overlay" id="renameOverlay" onclick="handleRenameOverlayClick(event)">
+    <div class="modal">
+        <div class="modal-title">Rename Quiz</div>
+        <div class="modal-sub">Enter a new name for this quiz.</div>
+
+        <label class="field-label" for="renameInput">New name</label>
+        <input class="field-input" id="renameInput" type="text"
+               placeholder="e.g. Final Exam Prep" maxlength="100"
+               oninput="validateRenameForm()" onkeydown="handleRenameKey(event)" />
+        <div class="error-msg" id="renameError">Please enter a name.</div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeRenameModal()">Cancel</button>
+            <button class="btn-primary" id="btnRename" onclick="submitRename()" disabled>Save</button>
         </div>
     </div>
 </div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div class="modal-overlay" id="deleteOverlay" onclick="handleDeleteOverlayClick(event)">
+    <div class="delete-modal">
+        <div class="modal-title">Delete Quiz?</div>
+        <div class="modal-sub" id="deleteModalSub">
+            This will permanently delete this quiz and all its questions. This cannot be undone.
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-delete-confirm" id="btnDeleteConfirm" onclick="submitDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── DOWNLOAD MODAL ── -->
+<div class="modal-overlay" id="downloadOverlay" onclick="handleDownloadOverlayClick(event)">
+    <div class="modal">
+        <div class="modal-title">Download Quiz</div>
+        <div class="modal-sub" id="downloadModalSub">Choose a format to download your quiz.</div>
+        <div style="display:flex;gap:12px;margin-bottom:8px;">
+            <button onclick="submitDownload('pdf')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                PDF
+            </button>
+            <button onclick="submitDownload('docx')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="12" y1="9" x2="8" y2="9"/></svg>
+                Word (DOCX)
+            </button>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDownloadModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── QUIZ TAKE MODAL ── -->
+<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:20px;width:min(620px,92vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0;">
+            <div>
+                <div id="modalQuizTitle" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);"></div>
+                <div id="modalQuizSub" style="font-size:12px;color:var(--text-muted);margin-top:2px;"></div>
+            </div>
+            <button onclick="closeQuizModal()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;">✕</button>
+        </div>
+        <div style="height:3px;background:var(--accent-soft);flex-shrink:0;">
+            <div id="modalProgress" style="height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;width:0%;"></div>
+        </div>
+        <div id="modalBody" style="flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;"></div>
+        <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div id="modalScore" style="font-size:13px;color:var(--text-muted);"></div>
+            <div style="display:flex;gap:10px;">
+                <button onclick="retryQuiz()" style="background:none;border:1px solid var(--border);border-radius:10px;color:var(--accent);font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .2s;">↺ Retry</button>
+                <button onclick="closeQuizModal()" style="background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .2s;">Done</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ── LOGOUT MODAL ── -->
-<div id="logoutModal" style="
-    display:none; position:fixed; inset:0; z-index:1000;
-    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
-    align-items:center; justify-content:center;">
-    <div style="
-        background:var(--card-bg); border:1px solid var(--border);
-        border-radius:16px; padding:28px 28px 24px;
-        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
-        <div style="width:48px; height:48px; border-radius:14px;
-            background:rgba(220,60,60,.12); display:flex; align-items:center;
-            justify-content:center; margin:0 auto 16px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px 28px 24px;width:340px;text-align:center;font-family:'DM Sans',sans-serif;">
+        <div style="width:48px;height:48px;border-radius:14px;background:rgba(220,60,60,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
                 <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
-                    color:var(--text-white); margin-bottom:8px;">Log Out?</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
-            Are you sure you want to log out of Rev'nLearn?
-        </div>
-        <div style="display:flex; gap:10px; justify-content:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);margin-bottom:8px;">Log Out?</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Are you sure you want to log out of Rev'nLearn?</div>
+        <div style="display:flex;gap:10px;justify-content:center;">
             <button onclick="document.getElementById('logoutModal').style.display='none'"
-                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
-                       background:transparent; color:var(--text-white);
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+                style="flex:1;height:38px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
                 Cancel
             </button>
             <a href="/Account/Logout"
-                style="flex:1; height:38px; border-radius:9px; border:none;
-                       background:#c0392b; color:#fff; text-decoration:none;
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
-                       cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                style="flex:1;height:38px;border-radius:9px;border:none;background:#c0392b;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;">
                 Yes, Log Out
             </a>
         </div>
     </div>
 </div>
 
+
 <script>
-  (function () {
-    if (localStorage.getItem('lightMode') === 'true')
-        document.body.classList.add('light-mode');
-})();
+    /* ── THEME ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
 
-const projectId = new URLSearchParams(window.location.search).get('id');
-let allSessions = [];
-let currentSession = [];
-let score = 0;
-let answered = 0;
+    const projectId = new URLSearchParams(window.location.search).get('id');
 
-document.addEventListener('DOMContentLoaded', loadQuizzes);
+    /* ── CONTEXT MENU STATE ── */
+    let ctxSessionId   = null;
+    let ctxCardEl      = null;
+    let ctxCurrentName = '';
 
-async function loadQuizzes() {
-    try {
-        const res  = await fetch(`/Chat/GetQuizzesByProject?projectId=${projectId}`);
-        const data = await res.json();
-        const grid = document.querySelector('.cards-grid');
+    /* ──────────────────────────────────────────────────
+       PROGRESS PERSISTENCE  (keyed per session)
+    ────────────────────────────────────────────────── */
+    function progressKey(sid) { return `quiz_progress_${sid}`; }
+
+    function loadProgress(sid) {
+        try {
+            const raw = localStorage.getItem(progressKey(sid));
+            return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+    }
+
+    // data = { score, answered, answers: { [qIndex]: { picked, correct } } }
+    function saveProgress(sid, data) {
+        try { localStorage.setItem(progressKey(sid), JSON.stringify(data)); }
+        catch { /* storage full — ignore */ }
+    }
+
+    function clearProgress(sid) {
+        localStorage.removeItem(progressKey(sid));
+    }
+
+    /* ──────────────────────────────────────────────────
+       LOAD & RENDER
+    ────────────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', loadQuizzes);
+
+    let allSessions = [];
+
+    async function loadQuizzes() {
+        try {
+            const res  = await fetch(`/Chat/GetQuizzesByProject?projectId=${projectId}`);
+            const data = await res.json();
+            renderGrid(data);
+        } catch (err) { console.error('Failed to load quizzes:', err); }
+    }
+
+    function renderGrid(data) {
+        const grid = document.getElementById('cardsGrid');
         grid.innerHTML = '';
 
         if (!data.length) {
@@ -638,10 +679,11 @@ async function loadQuizzes() {
                     </svg>
                     <p style="font-size:14px">No quizzes yet.<br>Go to a chat and ask to create a quiz.</p>
                 </div>`;
+            updateMeta(0);
             return;
         }
 
-        // Group by session_id
+        /* Group by sessionId */
         const sessions = new Map();
         data.forEach(q => {
             const sid = q.sessionId || q.quizId;
@@ -649,227 +691,534 @@ async function loadQuizzes() {
             sessions.get(sid).push(q);
         });
 
-        allSessions = [...sessions.values()];
+        allSessions = [...sessions.entries()];
 
         let cardNum = 1;
-        sessions.forEach((questions) => {
-            grid.appendChild(makeQuizCard(cardNum++, questions));
+        allSessions.forEach(([sid, questions]) => {
+            grid.appendChild(makeQuizCard(cardNum++, sid, questions));
         });
 
-        // Update topbar count
-        const countEl = document.querySelector('.set-meta');
-        if (countEl) countEl.innerHTML = countEl.innerHTML.replace(/\d+ Quizzes?/, `${sessions.size} Quiz${sessions.size !== 1 ? 'zes' : ''}`);
+        updateMeta(allSessions.length);
+    }
 
-    } catch (err) { console.error('Failed to load quizzes:', err); }
-}
+    function updateMeta(count) {
+        const el = document.getElementById('setMeta');
+        if (!el) return;
+        const dot = '<span class="dot"></span>';
+        el.innerHTML = `${count} Quiz${count !== 1 ? 'zes' : ''} ${dot} @setDate`;
+    }
 
-function makeQuizCard(num, questions) {
-    const total = questions.length;
-    const date  = questions[0]?.createdAt ?? '';
-    const label = `QUIZ ${String(num).padStart(2, '0')}`;
+    function makeQuizCard(num, sid, questions) {
+        const total = questions.length;
+        const date  = questions[0]?.createdAt ?? '';
 
-    const div = document.createElement('div');
-    div.className = 'qz-item';
-    div.style.animationDelay = `${(num - 1) * 0.05}s`;
-    div.innerHTML = `
-        <div class="qz-toprow">
-            <div class="qz-chips">
-                <div class="chip chip-download">
-                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Download
+        const rawTitle  = questions[0]?.sessionTitle ?? '';
+        const autoLabel = `QUIZ ${String(num).padStart(2, '0')}`;
+        const label     = (rawTitle && !rawTitle.toLowerCase().startsWith('session'))
+                        ? rawTitle.toUpperCase()
+                        : autoLabel;
+
+        const div = document.createElement('div');
+        div.className = 'qz-item';
+        div.dataset.sessionId = sid;
+        div.dataset.label     = label;
+        div.style.animationDelay = `${(num - 1) * 0.05}s`;
+
+        // ── Load saved progress for this session ──
+        const saved    = loadProgress(sid);
+        const answered = saved ? saved.answered : 0;
+        const score    = saved ? saved.score    : 0;
+        const pct      = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+        div.innerHTML = `
+            <div class="qz-toprow">
+                <div class="qz-chips">
+                    <div class="chip chip-download">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download
+                    </div>
+                    <div class="chip chip-buddy">
+                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        Study Buddy
+                    </div>
                 </div>
-                <div class="chip chip-buddy">
-                    <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
-                    <line x1="8" y1="23" x2="16" y2="23"/></svg>
-                    Study Buddy
+                <button class="btn-dots" title="Options">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+            <div>
+                <div class="qz-name">${escHtml(label)}</div>
+                <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${escHtml(date)}</div>
+            </div>
+            <div>
+                <div class="qz-prog-row">
+                    <span>Progress</span>
+                    <span class="prog-label">${answered}/${total}${answered > 0 ? ` · ${score} correct` : ''}</span>
+                </div>
+                <div class="qz-prog-bar">
+                    <div class="qz-prog-fill" style="width:${pct}%"></div>
                 </div>
             </div>
-            <button class="btn-dots" onclick="event.stopPropagation()">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-        <div>
-            <div class="qz-name">${label}</div>
-            <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${date}</div>
-        </div>
-        <div>
-            <div class="qz-prog-row">
-                <span>Progress</span>
-                <span>0/${total}</span>
-            </div>
-            <div class="qz-prog-bar">
-                <div class="qz-prog-fill" style="width:0%"></div>
-            </div>
-        </div>
-        <button class="btn-take">
-            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
-            Take the Quiz
-        </button>`;
+            <button class="btn-take">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+                ${answered === total && total > 0 ? 'Review Quiz' : answered > 0 ? 'Continue Quiz' : 'Take the Quiz'}
+            </button>`;
 
-    div.querySelector('.btn-take').addEventListener('click', (e) => {
-        e.stopPropagation();
-        openQuizModal(label, questions);
+        /* Download chip click */
+        div.querySelector('.chip-download').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDownloadModal(sid, label);
+        });
+
+        /* Three-dots → context menu */
+        div.querySelector('.btn-dots').addEventListener('click', (e) => {
+            e.stopPropagation();
+            showContextMenu(e, sid, label, div);
+        });
+
+        /* Take button → quiz modal */
+        div.querySelector('.btn-take').addEventListener('click', (e) => {
+            e.stopPropagation();
+            openQuizModal(label, questions, sid, div);
+        });
+
+        /* Card click → quiz modal */
+        div.addEventListener('click', () => openQuizModal(label, questions, sid, div));
+
+        return div;
+    }
+
+    /* Update a card's progress bar + label in-place */
+    function refreshCardProgress(cardEl, sid, score, answered, total) {
+        if (!cardEl) return;
+        const pct      = total > 0 ? Math.round((answered / total) * 100) : 0;
+        const fill     = cardEl.querySelector('.qz-prog-fill');
+        const label    = cardEl.querySelector('.prog-label');
+        const btn      = cardEl.querySelector('.btn-take');
+        if (fill)  fill.style.width  = `${pct}%`;
+        if (label) label.textContent = `${answered}/${total}${answered > 0 ? ` · ${score} correct` : ''}`;
+        if (btn) {
+            const svg = btn.querySelector('svg');
+            btn.innerHTML = '';
+            if (svg) btn.appendChild(svg);
+            btn.insertAdjacentText('beforeend',
+                answered === total && total > 0 ? ' Review Quiz'
+                : answered > 0                  ? ' Continue Quiz'
+                :                                 ' Take the Quiz');
+        }
+    }
+
+    /* ──────────────────────────────────────────────────
+       DOWNLOAD MODAL
+    ────────────────────────────────────────────────── */
+    let _downloadSid   = null;
+    let _downloadLabel = '';
+
+    function openDownloadModal(sid, label) {
+        _downloadSid   = sid;
+        _downloadLabel = label;
+        document.getElementById('downloadModalSub').textContent =
+            `Choose a format to download "${label}".`;
+        document.getElementById('downloadOverlay').classList.add('open');
+    }
+
+    function closeDownloadModal() {
+        document.getElementById('downloadOverlay').classList.remove('open');
+    }
+
+    function handleDownloadOverlayClick(e) {
+        if (e.target === document.getElementById('downloadOverlay')) closeDownloadModal();
+    }
+
+    function submitDownload(format) {
+        if (!_downloadSid) return;
+        window.location.href = `/Chat/DownloadQuizSession?sessionId=${_downloadSid}&format=${format}`;
+        closeDownloadModal();
+    }
+
+    /* ──────────────────────────────────────────────────
+       CONTEXT MENU
+    ────────────────────────────────────────────────── */
+    function showContextMenu(e, sid, label, cardEl) {
+        ctxSessionId   = sid;
+        ctxCurrentName = label;
+        ctxCardEl      = cardEl;
+
+        const menu = document.getElementById('ctxMenu');
+        menu.classList.add('visible');
+        const x = Math.min(e.clientX, window.innerWidth  - 170);
+        const y = Math.min(e.clientY + 4, window.innerHeight - 100);
+        menu.style.left = x + 'px';
+        menu.style.top  = y + 'px';
+    }
+
+    function hideContextMenu() {
+        document.getElementById('ctxMenu').classList.remove('visible');
+    }
+
+    document.addEventListener('click', hideContextMenu);
+
+    function ctxRename() {
+        hideContextMenu();
+        openRenameModal(ctxSessionId, ctxCurrentName, ctxCardEl);
+    }
+
+    function ctxDelete() {
+        hideContextMenu();
+        openDeleteModal(ctxSessionId, ctxCurrentName, ctxCardEl);
+    }
+
+    /* ──────────────────────────────────────────────────
+       RENAME MODAL
+    ────────────────────────────────────────────────── */
+    let _renameSid  = null;
+    let _renameCard = null;
+
+    function openRenameModal(sid, currentName, cardEl) {
+        _renameSid  = sid;
+        _renameCard = cardEl;
+
+        const input = document.getElementById('renameInput');
+        input.value = currentName;
+        document.getElementById('renameError').classList.remove('visible');
+        document.getElementById('btnRename').disabled = false;
+        document.getElementById('renameOverlay').classList.add('open');
+        setTimeout(() => { input.focus(); input.select(); }, 100);
+    }
+
+    function closeRenameModal() {
+        document.getElementById('renameOverlay').classList.remove('open');
+    }
+
+    function handleRenameOverlayClick(e) {
+        if (e.target === document.getElementById('renameOverlay')) closeRenameModal();
+    }
+
+    function handleRenameKey(e) {
+        if (e.key === 'Escape') closeRenameModal();
+        if (e.key === 'Enter' && !document.getElementById('btnRename').disabled) submitRename();
+    }
+
+    function validateRenameForm() {
+        const val = document.getElementById('renameInput').value.trim();
+        document.getElementById('btnRename').disabled = val.length === 0;
+        document.getElementById('renameError').classList.remove('visible');
+    }
+
+    async function submitRename() {
+        const newName = document.getElementById('renameInput').value.trim();
+        if (!newName) { document.getElementById('renameError').classList.add('visible'); return; }
+
+        const btn = document.getElementById('btnRename');
+        btn.disabled = true; btn.textContent = 'Saving…';
+
+        try {
+            const res  = await fetch('/Chat/RenameQuizSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: _renameSid, name: newName })
+            });
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+
+            if (_renameCard) {
+                const nameEl = _renameCard.querySelector('.qz-name');
+                if (nameEl) nameEl.textContent = newName.toUpperCase();
+                _renameCard.dataset.label = newName.toUpperCase();
+            }
+            closeRenameModal();
+        } catch (err) { alert('Network error: ' + err.message); }
+        finally { btn.disabled = false; btn.textContent = 'Save'; }
+    }
+
+    /* ──────────────────────────────────────────────────
+       DELETE MODAL
+    ────────────────────────────────────────────────── */
+    let _deleteSid  = null;
+    let _deleteCard = null;
+
+    function openDeleteModal(sid, name, cardEl) {
+        _deleteSid  = sid;
+        _deleteCard = cardEl;
+        document.getElementById('deleteModalSub').textContent =
+            `"${name}" and all its questions will be permanently deleted. This cannot be undone.`;
+        document.getElementById('deleteOverlay').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteOverlay').classList.remove('open');
+    }
+
+    function handleDeleteOverlayClick(e) {
+        if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal();
+    }
+
+    async function submitDelete() {
+        if (!_deleteSid) return;
+        const btn = document.getElementById('btnDeleteConfirm');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+
+        try {
+            const res  = await fetch(`/Chat/DeleteQuizSession/${_deleteSid}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+
+            // Also wipe saved progress for this session
+            clearProgress(_deleteSid);
+
+            _deleteCard?.remove();
+
+            const remaining = document.querySelectorAll('.qz-item');
+            if (remaining.length === 0) {
+                document.getElementById('cardsGrid').innerHTML = `
+                    <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;
+                        gap:12px;padding:60px 20px;color:var(--text-dim);text-align:center;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none"
+                            stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        <p style="font-size:14px">No quizzes yet.<br>Go to a chat and ask to create a quiz.</p>
+                    </div>`;
+                updateMeta(0);
+            } else {
+                updateMeta(remaining.length);
+            }
+
+            _deleteSid  = null;
+            _deleteCard = null;
+            closeDeleteModal();
+        } catch (err) { alert('Network error: ' + err.message); }
+        finally { btn.disabled = false; btn.textContent = 'Delete'; }
+    }
+
+    /* ──────────────────────────────────────────────────
+       GLOBAL ESC
+    ────────────────────────────────────────────────── */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            hideContextMenu();
+            closeRenameModal();
+            closeDeleteModal();
+            closeDownloadModal();
+            closeQuizModal();
+        }
     });
 
-    return div;
-}
+    /* ──────────────────────────────────────────────────
+       QUIZ TAKE MODAL
+    ────────────────────────────────────────────────── */
+    let currentSession  = [];
+    let currentSid      = null;
+    let currentCardEl   = null;
+    let score           = 0;
+    let answered        = 0;
+    // answers[qIndex] = { picked: optionIndex|'text', correct: bool }
+    let answers         = {};
 
-// ── MODAL ──────────────────────────────────────────────
-function openQuizModal(label, questions) {
-    currentSession = questions;
-    score = 0;
-    answered = 0;
+    function openQuizModal(label, questions, sid, cardEl) {
+        currentSession = questions;
+        currentSid     = sid;
+        currentCardEl  = cardEl;
 
-    document.getElementById('modalQuizTitle').textContent = label;
-    document.getElementById('modalQuizSub').textContent = `${questions.length} Questions`;
-    document.getElementById('modalScore').textContent = '';
-    document.getElementById('modalProgress').style.width = '0%';
+        // Restore saved state
+        const saved = loadProgress(sid);
+        score    = saved ? saved.score    : 0;
+        answered = saved ? saved.answered : 0;
+        answers  = saved ? (saved.answers || {}) : {};
 
-    buildModalBody(questions);
+        document.getElementById('modalQuizTitle').textContent = label;
+        document.getElementById('modalQuizSub').textContent   = `${questions.length} Questions`;
+        document.getElementById('modalScore').textContent     =
+            answered > 0 ? `${score}/${answered} correct` : '';
+        document.getElementById('modalProgress').style.width  =
+            questions.length > 0 ? `${(answered / questions.length) * 100}%` : '0%';
 
-    const modal = document.getElementById('quizModal');
-    modal.style.display = 'flex';
-}
+        buildModalBody(questions);
+        document.getElementById('quizModal').style.display = 'flex';
+    }
 
-function closeQuizModal() {
-    document.getElementById('quizModal').style.display = 'none';
-    document.getElementById('modalBody').innerHTML = '';
-}
+    function closeQuizModal() {
+        document.getElementById('quizModal').style.display = 'none';
+        document.getElementById('modalBody').innerHTML = '';
+    }
 
-function retryQuiz() {
-    score = 0;
-    answered = 0;
-    document.getElementById('modalScore').textContent = '';
-    document.getElementById('modalProgress').style.width = '0%';
-    buildModalBody(currentSession);
-}
+    function retryQuiz() {
+        score    = 0;
+        answered = 0;
+        answers  = {};
+        clearProgress(currentSid);
 
-function buildModalBody(questions) {
-    const body = document.getElementById('modalBody');
-    body.innerHTML = '';
+        document.getElementById('modalScore').textContent    = '';
+        document.getElementById('modalProgress').style.width = '0%';
+        buildModalBody(currentSession);
 
-    const letters = ['A','B','C','D'];
+        // Reset card on the grid too
+        refreshCardProgress(currentCardEl, currentSid, 0, 0, currentSession.length);
+    }
 
-    questions.forEach((q, idx) => {
-        const qwrap = document.createElement('div');
-        qwrap.style.cssText = 'margin-bottom:24px;';
+    function buildModalBody(questions) {
+        const body    = document.getElementById('modalBody');
+        body.innerHTML = '';
+        const letters = ['A','B','C','D'];
 
-        const qtext = document.createElement('div');
-        qtext.style.cssText = 'font-size:14px;color:#f0eeff;line-height:1.6;margin-bottom:10px;';
-        qtext.innerHTML = `<span style="color:#7c5cbf;font-weight:700;">Q${idx+1}.</span> ${escHtml(q.question)}`;
-        qwrap.appendChild(qtext);
+        questions.forEach((q, idx) => {
+            const qwrap = document.createElement('div');
+            qwrap.style.cssText = 'margin-bottom:24px;';
 
-        const type = q.questionType || 'mcq';
+            const qtext = document.createElement('div');
+            qtext.style.cssText = 'font-size:14px;color:var(--text-white);line-height:1.6;margin-bottom:10px;';
+            qtext.innerHTML = `<span style="color:var(--accent);font-weight:700;">Q${idx+1}.</span> ${escHtml(q.question)}`;
+            qwrap.appendChild(qtext);
 
-        if (type === 'fillblank') {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;gap:8px;';
-            const inp = document.createElement('input');
-            inp.type = 'text';
-            inp.placeholder = 'Type your answer…';
-            inp.style.cssText = 'flex:1;background:#13101f;border:1px solid rgba(124,92,191,0.25);border-radius:8px;padding:8px 12px;color:#f0eeff;font-size:13px;font-family:inherit;outline:none;';
-            const btn = document.createElement('button');
-            btn.textContent = 'Check';
-            btn.style.cssText = 'background:#7c5cbf;border:none;border-radius:8px;color:#fff;font-size:13px;padding:8px 16px;cursor:pointer;font-family:inherit;';
-            const fb = document.createElement('div');
-            fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
-            let picked = false;
-            btn.onclick = () => {
-                if (picked) return;
-                picked = true; answered++;
-                const ua = inp.value.trim().toLowerCase();
-                const ca = (q.answerText || '').toLowerCase();
-                const correct = ua === ca || (ca.length > 2 && ca.includes(ua) && ua.length > 2);
-                if (correct) {
-                    score++;
-                    fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;';
-                    fb.textContent = '✓ Correct!';
-                    inp.style.borderColor = '#2d522d';
-                } else {
-                    fb.style.cssText += 'display:block;background:#2d1a1a;color:#e07070;';
-                    fb.textContent = `✗ Answer: ${q.answerText}`;
-                    inp.style.borderColor = '#52302d';
+            const type       = q.questionType || 'mcq';
+            const savedAns   = answers[idx];   // restore if exists
+            const alreadyDone = !!savedAns;
+
+            if (type === 'fillblank') {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;gap:8px;';
+                const inp = document.createElement('input');
+                inp.type = 'text'; inp.placeholder = 'Type your answer…';
+                inp.style.cssText = 'flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text-white);font-size:13px;font-family:inherit;outline:none;';
+                const btn = document.createElement('button');
+                btn.textContent = 'Check';
+                btn.style.cssText = 'background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;padding:8px 16px;cursor:pointer;font-family:inherit;';
+                const fb = document.createElement('div');
+                fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
+
+                let picked = false;
+
+                const applyFillResult = (correct, ansText, userVal) => {
+                    inp.value = userVal || '';
+                    inp.disabled = true;
+                    if (correct) {
+                        fb.style.cssText += 'display:block;background:rgba(46,139,87,.12);color:#2e8b57;';
+                        fb.textContent = '✓ Correct!';
+                        inp.style.borderColor = 'rgba(46,139,87,.4)';
+                    } else {
+                        fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;';
+                        fb.textContent = `✗ Answer: ${ansText}`;
+                        inp.style.borderColor = '#52302d';
+                    }
+                    btn.disabled = true;
+                    btn.style.opacity = '0.4';
+                };
+
+                // Restore previous answer
+                if (alreadyDone) {
+                    applyFillResult(savedAns.correct, q.answerText || q.correctAnswer || '', savedAns.picked);
+                    picked = true;
                 }
-                updateModalScore();
-            };
-            inp.onkeydown = e => { if (e.key === 'Enter') btn.click(); };
-            row.appendChild(inp); row.appendChild(btn);
-            qwrap.appendChild(row); qwrap.appendChild(fb);
 
-        } else {
-            // MCQ or True/False
-            const opts = type === 'truefalse'
-                ? ['True', 'False']
-                : [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean);
-
-            const correctLetter = (q.correctAnswer || '').toUpperCase();
-            const correctIndex  = type === 'truefalse'
-                ? (correctLetter === 'A' ? 0 : 1)
-                : letters.indexOf(correctLetter);
-
-            let picked = false;
-            const fb = document.createElement('div');
-            fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
-
-            const optEls = [];
-            opts.forEach((opt, oi) => {
-                const ob = document.createElement('div');
-                ob.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid rgba(124,92,191,0.15);transition:background .15s,border-color .15s;';
-                const letter = type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
-                ob.innerHTML = `<span style="font-size:11px;font-weight:700;color:#7c5cbf;flex-shrink:0;width:16px;">${letter}</span><span style="font-size:13px;color:#ccc;line-height:1.5;">${escHtml(opt)}</span>`;
-                ob.onmouseenter = () => { if (!picked) ob.style.background = 'rgba(124,92,191,0.1)'; };
-                ob.onmouseleave = () => { if (!picked) ob.style.background = ''; };
-                ob.onclick = () => {
+                btn.onclick = () => {
                     if (picked) return;
                     picked = true; answered++;
-                    if (oi === correctIndex) {
-                        score++;
-                        ob.style.cssText += 'background:#1a2d1a!important;border-color:#2d522d;cursor:default;';
+                    const ua = inp.value.trim().toLowerCase();
+                    const ca = (q.answerText || q.correctAnswer || '').toLowerCase();
+                    const correct = ua && (ua === ca || (ca.length > 3 && ua.length > 3 && ca.includes(ua)));
+                    if (correct) score++;
+                    answers[idx] = { picked: inp.value.trim(), correct };
+                    saveProgress(currentSid, { score, answered, answers });
+                    refreshCardProgress(currentCardEl, currentSid, score, answered, currentSession.length);
+                    applyFillResult(correct, q.answerText || q.correctAnswer || 'N/A', inp.value.trim());
+                    updateModalScore();
+                };
+                inp.onkeydown = e => { if (e.key === 'Enter') btn.click(); };
+                row.appendChild(inp); row.appendChild(btn);
+                qwrap.appendChild(row); qwrap.appendChild(fb);
+
+            } else {
+                const opts = type === 'truefalse'
+                    ? ['True', 'False']
+                    : [q.choiceA, q.choiceB, q.choiceC, q.choiceD].filter(Boolean);
+
+                const correctLetter = (q.correctAnswer || '').toUpperCase();
+                const correctIndex  = type === 'truefalse'
+                    ? (correctLetter === 'A' ? 0 : 1)
+                    : letters.indexOf(correctLetter);
+
+                let picked = false;
+                const fb = document.createElement('div');
+                fb.style.cssText = 'font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;display:none;';
+
+                const optEls = [];
+
+                const applyChoiceResult = (chosenIdx) => {
+                    const correct = chosenIdx === correctIndex;
+                    const chosenEl  = optEls[chosenIdx];
+                    const correctEl = optEls[correctIndex];
+
+                    if (correct) {
+                        chosenEl.style.cssText  += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);cursor:default;';
                         fb.style.cssText += 'display:block;background:#1a2d1a;color:#6dbf6d;';
                         fb.textContent = '✓ Correct!';
                     } else {
-                        ob.style.cssText += 'background:#2d1a1a!important;border-color:#52302d;cursor:default;';
-                        if (optEls[correctIndex]) optEls[correctIndex].style.cssText += 'background:#1a2d1a!important;border-color:#2d522d;';
-                        fb.style.cssText += 'display:block;background:#2d1a1a;color:#e07070;';
+                        chosenEl.style.cssText  += 'background:rgba(192,57,43,.15)!important;border-color:rgba(192,57,43,.4);cursor:default;';
+                        if (correctEl) correctEl.style.cssText += 'background:rgba(46,139,87,.15)!important;border-color:rgba(46,139,87,.4);';
+                        fb.style.cssText += 'display:block;background:rgba(192,57,43,.12);color:#c0392b;';
                         fb.textContent = `✗ Correct: ${type === 'truefalse' ? (correctIndex === 0 ? 'True' : 'False') : letters[correctIndex]}`;
                     }
-                    optEls.forEach(el => el.onclick = null);
-                    updateModalScore();
+                    optEls.forEach(el => { el.style.cursor = 'default'; el.onclick = null; });
                 };
-                optEls.push(ob);
-                qwrap.appendChild(ob);
-            });
-            qwrap.appendChild(fb);
-        }
 
-        // Divider
-        if (idx < questions.length - 1) {
-            const hr = document.createElement('hr');
-            hr.style.cssText = 'border:none;border-top:1px solid rgba(124,92,191,0.1);margin-top:20px;';
-            qwrap.appendChild(hr);
-        }
+                opts.forEach((opt, oi) => {
+                    const ob = document.createElement('div');
+                    ob.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border);transition:background .15s,border-color .15s;';
+                    const letter = type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                    ob.innerHTML = `<span style="font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;width:16px;">${letter}</span><span style="font-size:13px;color:var(--text-muted);line-height:1.5;">${escHtml(opt)}</span>`;
+                    ob.onmouseenter = () => { if (!picked) ob.style.background = 'var(--accent-soft)'; };
+                    ob.onmouseleave = () => { if (!picked) ob.style.background = ''; };
+                    ob.onclick = () => {
+                        if (picked) return;
+                        picked = true; answered++;
+                        const correct = oi === correctIndex;
+                        if (correct) score++;
+                        answers[idx] = { picked: oi, correct };
+                        saveProgress(currentSid, { score, answered, answers });
+                        refreshCardProgress(currentCardEl, currentSid, score, answered, currentSession.length);
+                        applyChoiceResult(oi);
+                        updateModalScore();
+                    };
+                    optEls.push(ob);
+                    qwrap.appendChild(ob);
+                });
 
-        body.appendChild(qwrap);
+                // Restore previous answer visually
+                if (alreadyDone) {
+                    picked = true;
+                    // defer so optEls is fully populated
+                    setTimeout(() => applyChoiceResult(savedAns.picked), 0);
+                }
+
+                qwrap.appendChild(fb);
+            }
+
+            if (idx < questions.length - 1) {
+                const hr = document.createElement('hr');
+                hr.style.cssText = 'border:none;border-top:1px solid var(--border);margin-top:20px;';
+                qwrap.appendChild(hr);
+            }
+            body.appendChild(qwrap);
+        });
+    }
+
+    function updateModalScore() {
+        const total = currentSession.length;
+        document.getElementById('modalScore').textContent    = `${score}/${answered} correct`;
+        document.getElementById('modalProgress').style.width = `${(answered / total) * 100}%`;
+    }
+
+    document.getElementById('quizModal').addEventListener('click', function(e) {
+        if (e.target === this) closeQuizModal();
     });
-}
 
-function updateModalScore() {
-    const total = currentSession.length;
-    document.getElementById('modalScore').textContent = `${score}/${answered} correct`;
-    document.getElementById('modalProgress').style.width = `${(answered / total) * 100}%`;
-}
-
-// Close on backdrop click
-document.getElementById('quizModal').addEventListener('click', function(e) {
-    if (e.target === this) closeQuizModal();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuizModal(); });
-
-function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
 </script>
 </body>
 </html>
