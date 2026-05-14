@@ -908,16 +908,50 @@ namespace RavnLearnWeb.Controllers
         }
 
         [HttpGet]
-        public IActionResult QuizzesView(int id)
+        public async Task<IActionResult> QuizzesView(int id)
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+            string projectName = "My Quiz";
+            string projectDate = "";
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("pid", id);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    projectName = reader.GetString(0);
+                    projectDate = reader.GetDateTime(1).ToString("MMM dd, yyyy");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content($"DB ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
+            }
+
+            ViewBag.SetName  = projectName.ToUpper();
+            ViewBag.SetDate  = projectDate;
             ViewBag.Username = Username;
             ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
-            return View();
+
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return Content($"VIEW ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
+            }
         }
 
+
         [HttpGet]
-[HttpGet]
         public async Task<IActionResult> GetQuizzesByProject(int projectId)
         {
             if (!IsLoggedIn()) return Unauthorized();
