@@ -414,6 +414,7 @@ window.SB = (() => {
     let synth            = window.speechSynthesis;
     let speechSupported  = false;
     let selectedVoice    = null;
+    let closed = false; // ← bagong flag
 
     /* ── DOM helpers ── */
     const $           = id => document.getElementById(id);
@@ -655,6 +656,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
 
     /* ── Quiz flow ── */
     async function showQuestion() {
+        if (closed) return; 
         if (idx >= questions.length) { showResults(); return; }
 
         const q   = questions[idx];
@@ -677,6 +679,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
 
         speak(intro, () => {
             if (!waitingAns) return;
+            if (closed) return;
             setOrb('idle');
             stateLabel().textContent = 'YOUR TURN';
             setTab('user');
@@ -695,9 +698,8 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
         const ua        = userAnswer.trim().toLowerCase();
         const ca        = correct.trim().toLowerCase();
         const isCorrect = ua === ca
-            || ca.includes(ua)
-            || ua.includes(ca)
-            || ca.replace(/\s+/g, '') === ua.replace(/\s+/g, '');
+            || (ca.length > 3 && ua.length > 3 && (ca.includes(ua) || ua.includes(ca)));
+
         answered++;
         if (isCorrect) score++;
         updateProgress();
@@ -710,6 +712,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
         feedback().style.display  = 'block';
 
         speak(fbText, () => {
+          if (closed) return; 
             setOrb('idle');
             stateLabel().textContent = 'READY';
             idx++;
@@ -742,6 +745,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
     return {
 
         open(label, qs) {
+            closed = false;
             quizLabel = label;
             questions = qs;
             idx = 0; score = 0; answered = 0; waitingAns = false;
@@ -805,6 +809,7 @@ Be friendly and encouraging. No bullet points. Speak naturally as if talking to 
         },
 
         close() {
+            closed = true;
             synth.cancel();
             stopListening();
             waitingAns = false;
