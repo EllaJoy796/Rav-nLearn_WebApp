@@ -932,14 +932,37 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
-        [HttpGet]
-        public IActionResult QuizzesView(int id)
-        {
-            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-            ViewBag.Username = Username;
-            ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
-            return View();
-        }
+            [HttpGet]
+            public async Task<IActionResult> QuizzesView(int id)
+            {
+                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+                string projectName = "My Quiz";
+                string projectDate = "";
+
+                try
+                {
+                    using var conn = RavnLearnWeb.Database.GetConnection();
+                    await conn.OpenAsync();
+                    using var cmd = new NpgsqlCommand(
+                        "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+                    cmd.Parameters.AddWithValue("pid", id);
+                    cmd.Parameters.AddWithValue("uid", UserId);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        projectName = reader.GetString(0);
+                        projectDate = reader.GetDateTime(1).ToString("MMM dd, yyyy");
+                    }
+                }
+                catch { }
+
+                ViewBag.SetName  = projectName.ToUpper();
+                ViewBag.SetDate  = projectDate;
+                ViewBag.Username = Username;
+                ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
+                return View();
+            }
 
         [HttpGet]
         public async Task<IActionResult> GetQuizzesByProject(int projectId)
@@ -952,9 +975,11 @@ namespace RavnLearnWeb.Controllers
                 await conn.OpenAsync();
                 using var cmd = new NpgsqlCommand(@"
                     SELECT q.quiz_id, q.question, q.choice_a, q.choice_b, q.choice_c, q.choice_d,
-                        q.correct_answer, q.question_type, q.answer_text, q.session_id, q.created_at
+                        q.correct_answer, q.question_type, q.answer_text, q.session_id, q.created_at,
+                        COALESCE(cs.title, '') AS session_title        -- ← ADD THIS
                     FROM quizzes q
                     JOIN chats c ON c.chat_id = q.chat_id
+                    JOIN chat_sessions cs ON cs.session_id = q.session_id -- ← ADD THIS
                     WHERE c.project_id = @pid AND c.user_id = @uid
                     ORDER BY q.session_id, q.quiz_id", conn);
                 cmd.Parameters.AddWithValue("pid", projectId);
@@ -963,17 +988,18 @@ namespace RavnLearnWeb.Controllers
                 while (await reader.ReadAsync())
                 {
                     result.Add(new {
-                        quizId       = reader.GetInt32(0),
-                        question     = reader.GetString(1),
-                        choiceA      = reader.IsDBNull(2)  ? "" : reader.GetString(2),
-                        choiceB      = reader.IsDBNull(3)  ? "" : reader.GetString(3),
-                        choiceC      = reader.IsDBNull(4)  ? "" : reader.GetString(4),
-                        choiceD      = reader.IsDBNull(5)  ? "" : reader.GetString(5),
-                        correctAnswer= reader.IsDBNull(6)  ? "" : reader.GetString(6),
-                        questionType = reader.IsDBNull(7)  ? "mcq" : reader.GetString(7),
-                        answerText   = reader.IsDBNull(8)  ? "" : reader.GetString(8),
-                        sessionId    = reader.IsDBNull(9)  ? 0  : reader.GetInt32(9),
-                        createdAt    = reader.GetDateTime(10).ToString("MMM dd, yyyy")
+                        quizId        = reader.GetInt32(0),
+                        question      = reader.GetString(1),
+                        choiceA       = reader.IsDBNull(2)  ? "" : reader.GetString(2),
+                        choiceB       = reader.IsDBNull(3)  ? "" : reader.GetString(3),
+                        choiceC       = reader.IsDBNull(4)  ? "" : reader.GetString(4),
+                        choiceD       = reader.IsDBNull(5)  ? "" : reader.GetString(5),
+                        correctAnswer = reader.IsDBNull(6)  ? "" : reader.GetString(6),
+                        questionType  = reader.IsDBNull(7)  ? "mcq" : reader.GetString(7),
+                        answerText    = reader.IsDBNull(8)  ? "" : reader.GetString(8),
+                        sessionId     = reader.IsDBNull(9)  ? 0   : reader.GetInt32(9),
+                        createdAt     = reader.GetDateTime(10).ToString("MMM dd, yyyy"),
+                        sessionTitle  = reader.GetString(11)  // ← ADD THIS
                     });
                 }
             }
@@ -1109,7 +1135,342 @@ public async Task<IActionResult> FlashcardStudy(int sessionId)
     return View();
 }
         
-        
+
+        [HttpPost]
+public async Task<IActionResult> RenameQuizSession([FromBody] RenameQuizSessionRequest req)
+{
+    if (!IsLoggedIn()) return Unauthorized();
+    if (string.IsNullOrWhiteSpace(req.Name))
+        return BadRequest(new { error = "Name is required" });
+
+    try
+    {
+        using var conn = RavnLearnWeb.Database.GetConnection();
+        await conn.OpenAsync();
+        using var cmd = new NpgsqlCommand(
+            @"UPDATE chat_sessions cs
+              SET title = @name
+              FROM chats c
+              WHERE cs.session_id = @sid
+                AND cs.chat_id = c.chat_id
+                AND c.user_id = @uid", conn);
+        cmd.Parameters.AddWithValue("name", req.Name);
+        cmd.Parameters.AddWithValue("sid",  req.SessionId);
+        cmd.Parameters.AddWithValue("uid",  UserId);
+        int rows = await cmd.ExecuteNonQueryAsync();
+        if (rows == 0) return NotFound(new { error = "Session not found" });
+        return Json(new { success = true });
+    }
+    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+}
+
+[HttpDelete]
+public async Task<IActionResult> DeleteQuizSession(int id)
+{
+    if (!IsLoggedIn()) return Unauthorized();
+    try
+    {
+        using var conn = RavnLearnWeb.Database.GetConnection();
+        await conn.OpenAsync();
+
+        // Verify ownership before deleting
+        using var check = new NpgsqlCommand(
+            @"SELECT 1 FROM chat_sessions cs
+              JOIN chats c ON c.chat_id = cs.chat_id
+              WHERE cs.session_id = @sid AND c.user_id = @uid", conn);
+        check.Parameters.AddWithValue("sid", id);
+        check.Parameters.AddWithValue("uid", UserId);
+        if (await check.ExecuteScalarAsync() == null)
+            return NotFound(new { error = "Session not found" });
+
+        using var delQ = new NpgsqlCommand(
+            "DELETE FROM quizzes WHERE session_id = @sid", conn);
+        delQ.Parameters.AddWithValue("sid", id);
+        await delQ.ExecuteNonQueryAsync();
+
+        using var delF = new NpgsqlCommand(
+            "DELETE FROM flashcards WHERE session_id = @sid", conn);
+        delF.Parameters.AddWithValue("sid", id);
+        await delF.ExecuteNonQueryAsync();
+
+        using var delS = new NpgsqlCommand(
+            "DELETE FROM chat_sessions WHERE session_id = @sid", conn);
+        delS.Parameters.AddWithValue("sid", id);
+        await delS.ExecuteNonQueryAsync();
+
+        return Json(new { success = true });
+    }
+    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Paste this action inside ChatController (before the closing brace of the class)
+// No new NuGet packages needed — uses PdfPig + OpenXml you already have.
+// ─────────────────────────────────────────────────────────────────────────────
+
+[HttpGet]
+public async Task<IActionResult> DownloadQuizSession(int sessionId, string format)
+{
+    if (!IsLoggedIn()) return Unauthorized();
+
+    // ── 1. Fetch questions + session title ───────────────────────────────────
+    var questions    = new List<dynamic>();
+    string quizTitle = $"Quiz Session {sessionId}";
+
+    try
+    {
+        using var conn = RavnLearnWeb.Database.GetConnection();
+        await conn.OpenAsync();
+
+        // Verify ownership & grab title
+        using var titleCmd = new NpgsqlCommand(
+            @"SELECT cs.title
+              FROM chat_sessions cs
+              JOIN chats c ON c.chat_id = cs.chat_id
+              WHERE cs.session_id = @sid AND c.user_id = @uid", conn);
+        titleCmd.Parameters.AddWithValue("sid", sessionId);
+        titleCmd.Parameters.AddWithValue("uid", UserId);
+        var titleResult = await titleCmd.ExecuteScalarAsync();
+        if (titleResult == null) return NotFound("Session not found.");
+        if (titleResult != DBNull.Value && !string.IsNullOrWhiteSpace(titleResult.ToString()))
+            quizTitle = titleResult.ToString()!;
+
+        // Fetch questions
+        using var cmd = new NpgsqlCommand(
+            @"SELECT question, question_type,
+                     choice_a, choice_b, choice_c, choice_d,
+                     correct_answer, answer_text
+              FROM quizzes
+              WHERE session_id = @sid
+              ORDER BY quiz_id ASC", conn);
+        cmd.Parameters.AddWithValue("sid", sessionId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            questions.Add(new
+            {
+                Question      = reader.GetString(0),
+                QuestionType  = reader.IsDBNull(1) ? "mcq" : reader.GetString(1),
+                ChoiceA       = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                ChoiceB       = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                ChoiceC       = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                ChoiceD       = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                CorrectAnswer = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                AnswerText    = reader.IsDBNull(7) ? "" : reader.GetString(7),
+            });
+        }
+    }
+    catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+
+    if (!questions.Any()) return NotFound("No questions found for this session.");
+
+    string safeName = string.Concat(quizTitle.Split(Path.GetInvalidFileNameChars()));
+
+    // ── 2. Build & return file ───────────────────────────────────────────────
+    if (format?.ToLower() == "pdf")
+    {
+        var bytes = BuildQuizPdf(quizTitle, questions);
+        return File(bytes, "application/pdf", $"{safeName}.pdf");
+    }
+    else if (format?.ToLower() == "docx")
+    {
+        var bytes = BuildQuizDocx(quizTitle, questions);
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            $"{safeName}.docx");
+    }
+
+    return BadRequest("Unsupported format. Use 'pdf' or 'docx'.");
+}
+
+// ── PDF (using UglyToad.PdfPig.Writer) ───────────────────────────────────────
+private static byte[] BuildQuizPdf(string title, List<dynamic> questions)
+{
+    // PdfPig's writer API: PdfDocumentBuilder
+    var builder  = new UglyToad.PdfPig.Writer.PdfDocumentBuilder();
+    var page     = builder.AddPage(UglyToad.PdfPig.Content.PageSize.A4);
+
+    // PdfPig ships a standard font you can use without embedding files
+    var font     = builder.AddStandard14Font(UglyToad.PdfPig.Fonts.Standard14Fonts.Standard14Font.Helvetica);
+    var fontBold = builder.AddStandard14Font(UglyToad.PdfPig.Fonts.Standard14Fonts.Standard14Font.HelveticaBold);
+
+    double pageW  = 595;   // A4 points
+    double pageH  = 842;
+    double margin = 50;
+    double x      = margin;
+    double y      = pageH - margin;
+    double lineH  = 14;
+
+    // Helper: add a new page when we run out of space
+    UglyToad.PdfPig.Writer.PdfPageBuilder? curPage = page;
+    void CheckNewPage(double needed = 0)
+    {
+        if (y - needed < margin)
+        {
+            curPage = builder.AddPage(UglyToad.PdfPig.Content.PageSize.A4);
+            y = pageH - margin;
+        }
+    }
+
+    void WriteLine(string text, double size, bool bold = false, double extraGap = 0)
+    {
+        CheckNewPage(size + extraGap);
+        var f = bold ? fontBold : font;
+        // PdfPig draws text from bottom-left; y is our running top cursor
+        curPage!.AddText(text, (decimal)size, new UglyToad.PdfPig.Core.PdfPoint(x, y - size), f);
+        y -= size + 3 + extraGap;
+    }
+
+    // Title
+    WriteLine(title.ToUpper(), 16, bold: true, extraGap: 6);
+
+    string[] letters = { "A", "B", "C", "D" };
+
+    for (int i = 0; i < questions.Count; i++)
+    {
+        var q = questions[i];
+        string qtype = (string)q.QuestionType;
+
+        CheckNewPage(lineH * 3);
+        // Question number + text (wrap naively at ~80 chars)
+        string qHeader = $"Q{i + 1}. {(string)q.Question}";
+        foreach (var line in WrapText(qHeader, 85))
+            WriteLine(line, 10, bold: true);
+
+        if (qtype == "fillblank")
+        {
+            WriteLine($"Answer: {(string)q.AnswerText}", 9);
+        }
+        else if (qtype == "truefalse")
+        {
+            string correct = (string)q.CorrectAnswer == "A" ? "True" : "False";
+            WriteLine("  T  True", 9);
+            WriteLine("  F  False", 9);
+            WriteLine($"Correct: {correct}", 9, bold: true);
+        }
+        else // mcq
+        {
+            string[] choices = { (string)q.ChoiceA, (string)q.ChoiceB, (string)q.ChoiceC, (string)q.ChoiceD };
+            string   ans     = ((string)q.CorrectAnswer).ToUpper();
+            for (int ci = 0; ci < choices.Length; ci++)
+            {
+                if (!string.IsNullOrWhiteSpace(choices[ci]))
+                    WriteLine($"  {letters[ci]}.  {choices[ci]}", 9);
+            }
+            string ansText = ans switch
+            {
+                "A" => (string)q.ChoiceA, "B" => (string)q.ChoiceB,
+                "C" => (string)q.ChoiceC, "D" => (string)q.ChoiceD, _ => ans
+            };
+            WriteLine($"Correct: {ans}. {ansText}", 9, bold: true);
+        }
+
+        y -= 6; // gap between questions
+    }
+
+    return builder.Build();
+}
+
+// Naive word-wrap
+private static IEnumerable<string> WrapText(string text, int maxChars)
+{
+    if (text.Length <= maxChars) { yield return text; yield break; }
+    var words = text.Split(' ');
+    var line  = new StringBuilder();
+    foreach (var w in words)
+    {
+        if (line.Length + w.Length + 1 > maxChars && line.Length > 0)
+        {
+            yield return line.ToString();
+            line.Clear();
+        }
+        if (line.Length > 0) line.Append(' ');
+        line.Append(w);
+    }
+    if (line.Length > 0) yield return line.ToString();
+}
+
+// ── DOCX (using DocumentFormat.OpenXml) ──────────────────────────────────────
+private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
+{
+    using var ms  = new MemoryStream();
+    using var doc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Create(
+                        ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document);
+
+    var mainPart = doc.AddMainDocumentPart();
+    mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+    var body = mainPart.Document.AppendChild(
+                   new DocumentFormat.OpenXml.Wordprocessing.Body());
+
+    // Helper: add paragraph
+    DocumentFormat.OpenXml.Wordprocessing.Paragraph AddPara(
+        string text, bool bold = false, int sizePt = 11, int spacingAfter = 100)
+    {
+        var para = new DocumentFormat.OpenXml.Wordprocessing.Paragraph();
+        var pPr  = new DocumentFormat.OpenXml.Wordprocessing.ParagraphProperties(
+                       new DocumentFormat.OpenXml.Wordprocessing.SpacingBetweenLines
+                           { After = spacingAfter.ToString() });
+        para.AppendChild(pPr);
+
+        var run  = new DocumentFormat.OpenXml.Wordprocessing.Run();
+        var rPr  = new DocumentFormat.OpenXml.Wordprocessing.RunProperties();
+        if (bold) rPr.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Bold());
+        rPr.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.FontSize
+                            { Val = (sizePt * 2).ToString() });
+        run.AppendChild(rPr);
+        run.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Text(text)
+                            { Space = DocumentFormat.OpenXml.SpaceProcessingModeValues.Preserve });
+        para.AppendChild(run);
+        body.AppendChild(para);
+        return para;
+    }
+
+    // Title
+    AddPara(title.ToUpper(), bold: true, sizePt: 16, spacingAfter: 200);
+
+    string[] letters = { "A", "B", "C", "D" };
+
+    for (int i = 0; i < questions.Count; i++)
+    {
+        var    q     = questions[i];
+        string qtype = (string)q.QuestionType;
+
+        AddPara($"Q{i + 1}. {(string)q.Question}", bold: true, spacingAfter: 60);
+
+        if (qtype == "fillblank")
+        {
+            AddPara($"Answer: {(string)q.AnswerText}", bold: false, spacingAfter: 160);
+        }
+        else if (qtype == "truefalse")
+        {
+            AddPara("  T.  True",  spacingAfter: 40);
+            AddPara("  F.  False", spacingAfter: 40);
+            string correct = (string)q.CorrectAnswer == "A" ? "True" : "False";
+            AddPara($"✓ Correct: {correct}", bold: true, spacingAfter: 160);
+        }
+        else // mcq
+        {
+            string[] choices = { (string)q.ChoiceA, (string)q.ChoiceB,
+                                 (string)q.ChoiceC, (string)q.ChoiceD };
+            string   ans     = ((string)q.CorrectAnswer).ToUpper();
+            for (int ci = 0; ci < choices.Length; ci++)
+                if (!string.IsNullOrWhiteSpace(choices[ci]))
+                    AddPara($"  {letters[ci]}.  {choices[ci]}", spacingAfter: 40);
+
+            string ansText = ans switch
+            {
+                "A" => (string)q.ChoiceA, "B" => (string)q.ChoiceB,
+                "C" => (string)q.ChoiceC, "D" => (string)q.ChoiceD, _ => ans
+            };
+            AddPara($"✓ Correct: {ans}. {ansText}", bold: true, spacingAfter: 200);
+        }
+    }
+
+    mainPart.Document.Save();
+    doc.Dispose();
+    return ms.ToArray();
+}
+
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";
@@ -1185,6 +1546,11 @@ public async Task<IActionResult> FlashcardStudy(int sessionId)
         public string QuizText { get; set; } = "";
     }
 
+        public class RenameQuizSessionRequest
+        {
+            public int    SessionId { get; set; }
+            public string Name      { get; set; } = "";
+        }
     public class SaveQuizQuestionsRequest
     {
         public int ChatId { get; set; }
@@ -1231,4 +1597,6 @@ public async Task<IActionResult> FlashcardStudy(int sessionId)
         public int Id      { get; set; }
         public string Name { get; set; } = "";
     }
+
+    
 }
