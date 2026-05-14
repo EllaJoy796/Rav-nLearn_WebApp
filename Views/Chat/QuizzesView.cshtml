@@ -13,7 +13,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rev'nLearn – @setName</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -63,7 +63,7 @@
         html, body {
             height: 100%;
             background: var(--bg);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Poppins', sans-serif;
             color: var(--text-white);
             overflow: hidden;
         }
@@ -93,7 +93,7 @@
         }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
         .logo-text {
-            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800;
             color: var(--text-white); white-space: nowrap;
             opacity: 0; transition: opacity .2s ease .05s;
         }
@@ -175,7 +175,7 @@
 
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
         .set-title {
-            font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900;
+            font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 900;
             color: var(--text-white); letter-spacing: -.3px;
         }
         .set-meta {
@@ -246,7 +246,7 @@
         .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
 
         .qz-name {
-            font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800;
             color: var(--text-white); letter-spacing: .3px;
         }
         .qz-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -267,7 +267,7 @@
         .btn-take {
             width: 100%; height: 38px; background: transparent;
             border: 1px solid rgba(124,92,191,.35); border-radius: 10px;
-            color: var(--text-white); font-family: 'DM Sans', sans-serif;
+            color: var(--text-white); font-family: 'Poppins', sans-serif;
             font-size: 13px; font-weight: 600;
             display: flex; align-items: center; justify-content: center;
             gap: 8px; cursor: pointer; margin-top: auto;
@@ -314,7 +314,7 @@
             to   { opacity: 1; transform: none; }
         }
         .modal-title {
-            font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800;
+            font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800;
             color: var(--text-white); margin-bottom: 6px;
         }
         .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
@@ -327,7 +327,7 @@
             width: 100%; height: 44px; background: #0f0d1a;
             border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
             padding: 0 14px; color: var(--text-white);
-            font-size: 14px; font-family: inherit; outline: none;
+            font-size: 14px; font-family: 'Poppins', sans-serif; outline: none;
             transition: border-color .2s; margin-bottom: 16px;
         }
         .field-input:focus { border-color: var(--accent); }
@@ -337,14 +337,14 @@
             flex: 1; height: 44px; background: none;
             border: 1px solid rgba(124,92,191,.2); border-radius: 10px;
             color: var(--text-muted); font-size: 14px; font-weight: 600;
-            font-family: inherit; cursor: pointer;
+            font-family: 'Poppins', sans-serif; cursor: pointer;
             transition: border-color .2s, color .2s;
         }
         .btn-cancel:hover { border-color: var(--accent); color: var(--text-white); }
         .btn-primary {
             flex: 2; height: 44px; background: var(--accent); border: none;
             border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700;
-            font-family: inherit; cursor: pointer; transition: background .2s;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: background .2s;
         }
         .btn-primary:hover { background: #6b4daa; }
         .btn-primary:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
@@ -548,12 +548,12 @@
         <div class="modal-title">Download Quiz</div>
         <div class="modal-sub" id="downloadModalSub">Choose a format to download your quiz.</div>
         <div style="display:flex;gap:12px;margin-bottom:8px;">
-            <button onclick="submitDownload('pdf')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+            <button onclick="submitDownload('pdf')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 PDF
             </button>
-            <button onclick="submitDownload('docx')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="12" y1="9" x2="8" y2="9"/></svg>
+            <button onclick="submitDownload('docx')" style="flex:1;height:80px;background:var(--accent-soft);border:1px solid rgba(124,92,191,.3);border-radius:12px;color:var(--text-white);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0
                 Word (DOCX)
             </button>
         </div>
@@ -568,7 +568,7 @@
     <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:20px;width:min(620px,92vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0;">
             <div>
-                <div id="modalQuizTitle" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);"></div>
+                <div id="modalQuizTitle" style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);"></div>
                 <div id="modalQuizSub" style="font-size:12px;color:var(--text-muted);margin-top:2px;"></div>
             </div>
             <button onclick="closeQuizModal()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;">✕</button>
@@ -589,7 +589,7 @@
 
 <!-- ── LOGOUT MODAL ── -->
 <div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px 28px 24px;width:340px;text-align:center;font-family:'DM Sans',sans-serif;">
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px 28px 24px;width:340px;text-align:center;font-family:'Poppins',sans-serif;">
         <div style="width:48px;height:48px;border-radius:14px;background:rgba(220,60,60,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -597,15 +597,15 @@
                 <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);margin-bottom:8px;">Log Out?</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:var(--text-white);margin-bottom:8px;">Log Out?</div>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Are you sure you want to log out of Rev'nLearn?</div>
         <div style="display:flex;gap:10px;justify-content:center;">
             <button onclick="document.getElementById('logoutModal').style.display='none'"
-                style="flex:1;height:38px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
+                style="flex:1;height:38px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text-white);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
                 Cancel
             </button>
             <a href="/Account/Logout"
-                style="flex:1;height:38px;border-radius:9px;border:none;background:#c0392b;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                style="flex:1;height:38px;border-radius:9px;border:none;background:#c0392b;color:#fff;text-decoration:none;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;">
                 Yes, Log Out
             </a>
         </div>

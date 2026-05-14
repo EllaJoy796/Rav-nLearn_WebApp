@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rev'nLearn - My Flashcards</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -56,7 +56,7 @@
         body.light-mode .filter-select { background-color: #fff; color: #1a1535; }
         body.light-mode .filter-select option { background: #fff; color: #1a1535; }
 
-        html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        html, body { height: 100%; background-color: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ══ SIDEBAR ══ */
@@ -65,7 +65,7 @@
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; flex-shrink: 0; overflow: hidden; }
         .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
+        .logo-text { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
         .sidebar:hover .logo-text { opacity: 1; }
         .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
         .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -84,7 +84,7 @@
         /* ══ MAIN ══ */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
+        .page-title { font-family: 'Poppins', sans-serif; font-size: 25px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
         .search-bar { width: 600px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
@@ -102,10 +102,10 @@
         .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
         .filter-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
-        .filter-select { height: 34px; padding: 0 32px 0 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; transition: border-color .2s, color .2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7490' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+        .filter-select { height: 34px; padding: 0 32px 0 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; transition: border-color .2s, color .2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7490' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
         .filter-select:focus, .filter-select:hover { border-color: var(--accent); color: var(--text-white); }
         .filter-select option { background: #1e1a2e; color: var(--text-white); }
-        .filter-reset { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: none; border: 1px solid rgba(124,92,191,.3); border-radius: 8px; color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s; }
+        .filter-reset { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: none; border: 1px solid rgba(124,92,191,.3); border-radius: 8px; color: var(--accent); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s; }
         .filter-reset:hover { background: var(--accent-soft); border-color: var(--accent); }
         .filter-reset svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -123,7 +123,7 @@
         .banner-chip { position: absolute; top: 12px; left: 14px; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: 0.5px; text-transform: uppercase; }
 
         .card-fc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .fc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; }
+        .fc-name { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; }
         .fc-subject { display: inline-block; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: 0.5px; text-transform: uppercase; width: fit-content; }
 
         .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: auto; }
@@ -138,12 +138,12 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .delete-modal { background: #1a1626; border: 1px solid rgba(224,112,112,0.2); border-radius: 20px; padding: 32px; width: min(380px, 90vw); box-shadow: 0 24px 60px rgba(0,0,0,0.5); animation: modalIn 0.2s ease; }
-        .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #e07070; margin-bottom: 6px; }
+        .modal-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #e07070; margin-bottom: 6px; }
         .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
         .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
-        .btn-cancel { flex: 1; height: 44px; background: none; border: 1px solid rgba(124,92,191,0.2); border-radius: 10px; color: var(--text-muted); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+        .btn-cancel { flex: 1; height: 44px; background: none; border: 1px solid rgba(124,92,191,0.2); border-radius: 10px; color: var(--text-muted); font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
         .btn-cancel:hover { border-color: var(--accent); color: var(--text-white); }
-        .btn-delete-confirm { flex: 2; height: 44px; background: #c0392b; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; }
+        .btn-delete-confirm { flex: 2; height: 44px; background: #c0392b; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; transition: background 0.2s; }
         .btn-delete-confirm:hover { background: #a93226; }
         .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
@@ -187,7 +187,7 @@
             <div class="nav-group-label">Main</div>
             <a class="nav-item" href="/Chat/MyChats" data-tip="Home / Chat">
                 <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
-                <span class="nav-label">Home / Chat</span>
+                <span class="nav-label">Home/Chat</span>
             </a>
             <a class="nav-item active" href="/Chat/Flashcards" data-tip="Flashcards">
                 <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
@@ -327,7 +327,7 @@
     <div style="
         background:var(--card-bg); border:1px solid var(--border);
         border-radius:16px; padding:28px 28px 24px;
-        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+        width:340px; text-align:center; font-family:'Poppins',sans-serif;">
         <div style="width:48px; height:48px; border-radius:14px;
             background:rgba(220,60,60,.12); display:flex; align-items:center;
             justify-content:center; margin:0 auto 16px;">
@@ -338,7 +338,7 @@
                 <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+        <div style="font-family:'Poppins',sans-serif; font-size:16px; font-weight:800;
                     color:var(--text-white); margin-bottom:8px;">Log Out?</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
             Are you sure you want to log out of Rev'nLearn?
@@ -347,13 +347,13 @@
             <button onclick="document.getElementById('logoutModal').style.display='none'"
                 style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
                        background:transparent; color:var(--text-white);
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+                       font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
                 Cancel
             </button>
             <a href="/Account/Logout"
                 style="flex:1; height:38px; border-radius:9px; border:none;
                        background:#c0392b; color:#fff; text-decoration:none;
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                       font-family:'Poppins',sans-serif; font-size:13px; font-weight:600;
                        cursor:pointer; display:flex; align-items:center; justify-content:center;">
                 Yes, Log Out
             </a>

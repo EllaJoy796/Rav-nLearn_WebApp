@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rev'nLearn - My Chats</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -58,7 +58,7 @@
         body.light-mode .filter-select { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
         body.light-mode .filter-select:hover { border-color: var(--accent); }
 
-        html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        html, body { height: 100%; background-color: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ── SIDEBAR ── */
@@ -67,7 +67,7 @@
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; flex-shrink: 0; overflow: hidden; }
         .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
+        .logo-text { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
         .sidebar:hover .logo-text { opacity: 1; }
         .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
         .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -86,7 +86,7 @@
         /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; }
+        .page-title { font-family: 'Poppins', sans-serif; font-size: 25px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; }
         
        .filters-group { display: flex; align-items: center; gap: 12px; min-width: 600px; }
         .search-bar { width: 360px; position: relative; }
@@ -96,8 +96,8 @@
         .search-bar .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
         .search-bar .search-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; min-width: 110px; }
-        .filter-select:hover { border-color: var(--accent); }
+        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition： border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position： right 12px center; min-width： 110px； }
+        .filter-select:hover { border-color： var(--accent)； }
         .filter-select:focus { border-color: var(--accent); }
 
         /* ── CONTENT ── */
@@ -126,7 +126,7 @@
         .btn-more:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-more span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
         .card-body { flex: 1; }
-        .chat-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; margin-bottom: 8px; }
+        .chat-name { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; margin-bottom: 8px; }
         .chip { display: inline-block; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: 0.5px; text-transform: uppercase; }
         .chip.empty { display: none; }
         .card-meta { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 10px; margin-top: auto; }
@@ -151,7 +151,7 @@
         .modal-overlay.open { display: flex; }
         .modal { background: #1a1626; border: 1px solid rgba(124,92,191,0.25); border-radius: 20px; padding: 32px; width: min(420px, 90vw); box-shadow: 0 24px 60px rgba(0,0,0,0.5); animation: modalIn 0.2s ease; }
         @@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
-        .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-white); margin-bottom: 6px; }
+        .modal-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-white); margin-bottom: 6px; }
         .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
         .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 7px; display: block; }
         .field-input { width: 100%; height: 44px; background: #0f0d1a; border: 1px solid rgba(124,92,191,0.2); border-radius: 10px; padding: 0 14px; color: var(--text-white); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; margin-bottom: 16px; }
@@ -210,7 +210,7 @@
             <div class="nav-group-label">Main</div>
             <a class="nav-item active" href="/Chat/MyChats" data-tip="My Chats">
                 <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
-                <span class="nav-label">My Chats</span>
+                <span class="nav-label">Home/Chat</span>
             </a>
             <a class="nav-item" href="/Chat/Flashcards" data-tip="Flashcards">
                 <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
@@ -374,7 +374,7 @@
     <div style="
         background:var(--card-bg); border:1px solid var(--border);
         border-radius:16px; padding:28px 28px 24px;
-        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+        width:340px; text-align:center; font-family: 'Poppins', sans-serif;">
         <div style="width:48px; height:48px; border-radius:14px;
             background:rgba(220,60,60,.12); display:flex; align-items:center;
             justify-content:center; margin:0 auto 16px;">
@@ -385,7 +385,7 @@
                 <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+        <div style="font-family:'Poppins',sans-serif; font-size:16px; font-weight:800;
                     color:var(--text-white); margin-bottom:8px;">Log Out?</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
             Are you sure you want to log out of Rev'nLearn?
@@ -394,13 +394,13 @@
             <button onclick="document.getElementById('logoutModal').style.display='none'"
                 style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
                        background:transparent; color:var(--text-white);
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+                       font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
                 Cancel
             </button>
             <a href="/Account/Logout"
                 style="flex:1; height:38px; border-radius:9px; border:none;
                        background:#c0392b; color:#fff; text-decoration:none;
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                       font-family:'Poppins',sans-serif; font-size:13px; font-weight:600;
                        cursor:pointer; display:flex; align-items:center; justify-content:center;">
                 Yes, Log Out
             </a>

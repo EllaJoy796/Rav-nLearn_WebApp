@@ -16,7 +16,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rev'nLearn – @projectName</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -56,7 +56,7 @@
         body.light-mode .flip-back .flip-text  { color: #ffffff; }
         body.light-mode .fc-list-item { background: #fff; border-color: rgba(124,92,191,.2); }
 
-        html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        html, body { height: 100%; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ══ SIDEBAR ══ */
@@ -65,7 +65,7 @@
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden; }
         .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
+        .logo-text { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
         .sidebar:hover .logo-text { opacity: 1; }
         .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
         .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -85,18 +85,18 @@
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 
-        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
+        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
         .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
         .btn-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-        .set-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
+        .set-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
         .set-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
 
         /* View toggle */
         .view-toggle { display: flex; gap: 6px; flex-shrink: 0; }
-        .btn-view { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s ease; display: flex; align-items: center; gap: 6px; }
+        .btn-view { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s ease; display: flex; align-items: center; gap: 6px; }
         .btn-view svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         .btn-view:hover { border-color: var(--accent); color: var(--text-white); }
         .btn-view.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -135,7 +135,7 @@
         .flip-front .flip-label { color: var(--text-muted); }
         .flip-back .flip-label  { color: #9b7ee0; }
 
-        .flip-text { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-white); line-height: 1.4; }
+        .flip-text { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-white); line-height: 1.4; }
         .flip-back .flip-text { color: #f0eeff; }
 
         .flip-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
@@ -146,7 +146,7 @@
         .btn-nav:hover { border-color: var(--accent); color: var(--text-white); background: var(--accent-soft); }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
         .btn-nav svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-shuffle { height: 38px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s ease; }
+        .btn-shuffle { height: 38px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s ease; }
         .btn-shuffle:hover { border-color: var(--accent); color: var(--text-white); }
         .btn-shuffle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
