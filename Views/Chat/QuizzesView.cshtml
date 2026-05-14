@@ -773,6 +773,11 @@
             openDownloadModal(sid, label);
         });
 
+        div.querySelector('.chip-buddy').addEventListener('click', (e) => {
+            e.stopPropagation();
+            SB.open(label, questions);
+        });
+
         /* Three-dots → context menu */
         div.querySelector('.btn-dots').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1219,6 +1224,9 @@
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    
 </script>
+<script src="~/js/StudyBuddy.js"></script>
 </body>
 </html>

@@ -912,8 +912,10 @@ namespace RavnLearnWeb.Controllers
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
 
+
             string projectName = "My Quiz";
             string projectDate = "";
+
 
             try
             {
@@ -935,10 +937,12 @@ namespace RavnLearnWeb.Controllers
                 return Content($"DB ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
             }
 
+
             ViewBag.SetName  = projectName.ToUpper();
             ViewBag.SetDate  = projectDate;
             ViewBag.Username = Username;
             ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
+
 
             try
             {
@@ -949,7 +953,6 @@ namespace RavnLearnWeb.Controllers
                 return Content($"VIEW ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetQuizzesByProject(int projectId)
