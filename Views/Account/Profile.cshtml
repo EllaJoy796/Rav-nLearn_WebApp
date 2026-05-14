@@ -429,7 +429,8 @@
                 <div class="field-group">
                     <label class="field-label">Email</label>
                     <input class="field-input" id="emailInput" type="email"
-                           value="@(ViewBag.Email ?? "")" disabled />
+                           value="@(ViewBag.Email ?? "")" disabled
+                           style="opacity:.4; cursor:not-allowed;" />
                 </div>
 
                 <div id="saveRow" style="display:none; margin-top:16px; display:none; gap:8px;">
@@ -516,14 +517,12 @@
     function toggleEdit() {
         editing = !editing;
         document.getElementById('usernameInput').disabled = !editing;
-        document.getElementById('emailInput').disabled = !editing;
         document.getElementById('saveRow').style.display = editing ? 'flex' : 'none';
     }
 
     function cancelEdit() {
         editing = false;
         document.getElementById('usernameInput').disabled = true;
-        document.getElementById('emailInput').disabled = true;
         document.getElementById('saveRow').style.display = 'none';
     }
 
