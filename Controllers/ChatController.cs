@@ -956,39 +956,105 @@ namespace RavnLearnWeb.Controllers
       
         [HttpGet]
         public async Task<IActionResult> FlashcardView(int id)
+        {
+            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+            string projectName = "";
+            DateTime projectDate = DateTime.UtcNow;
+            var sessions = new List<dynamic>();
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+
+                using var infoCmd = new NpgsqlCommand(
+                    "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+                infoCmd.Parameters.AddWithValue("pid", id);
+                infoCmd.Parameters.AddWithValue("uid", UserId);
+                using var infoReader = await infoCmd.ExecuteReaderAsync();
+                if (await infoReader.ReadAsync())
+                {
+                    projectName = infoReader.GetString(0);
+                    projectDate = infoReader.GetDateTime(1);
+                }
+                await infoReader.CloseAsync();
+
+                // Get sessions with flashcard count per session
+                using var cmd = new NpgsqlCommand(
+                    @"SELECT cs.session_id,
+                            cs.title,
+                            cs.created_at,
+                            COUNT(fc.flashcard_id) AS card_count
+                    FROM chat_sessions cs
+                    JOIN chats c ON c.chat_id = cs.chat_id
+                    JOIN flashcards fc ON fc.session_id = cs.session_id
+                    WHERE c.project_id = @pid
+                    GROUP BY cs.session_id, cs.title, cs.created_at
+                    ORDER BY cs.created_at ASC", conn);
+                cmd.Parameters.AddWithValue("pid", id);
+                using var reader = await cmd.ExecuteReaderAsync();
+                int idx = 1;
+                while (await reader.ReadAsync())
+                {
+                    sessions.Add(new
+                    {
+                        SessionId = reader.GetInt32(0),
+                        Title     = $"FLASHCARD SET {idx:D2}",
+                        Date      = reader.GetDateTime(2).ToString("MMM dd, yyyy"),
+                        CardCount = reader.GetInt64(3)
+                    });
+                    idx++;
+                }
+            }
+            catch { }
+
+            ViewBag.SetName    = projectName.ToUpper();
+            ViewBag.SetDate    = projectDate.ToString("MMM dd, yyyy");
+            ViewBag.SessionCount = sessions.Count;
+            ViewBag.Sessions   = sessions;
+            ViewBag.ProjectId  = id;
+            return View();
+        }
+        
+        [HttpGet]
+public async Task<IActionResult> FlashcardStudy(int sessionId)
 {
     if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
 
     var cards = new List<dynamic>();
-    string projectName = "";
-    DateTime projectDate = DateTime.UtcNow;
+    string sessionTitle = "";
+    string projectName  = "";
+    int    projectId    = 0;
 
     try
     {
         using var conn = RavnLearnWeb.Database.GetConnection();
         await conn.OpenAsync();
 
-        // Get project info
         using var infoCmd = new NpgsqlCommand(
-            "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
-        infoCmd.Parameters.AddWithValue("pid", id);
+            @"SELECT cs.title, p.name, p.project_id
+              FROM chat_sessions cs
+              JOIN chats c ON c.chat_id = cs.chat_id
+              JOIN projects p ON p.project_id = c.project_id
+              WHERE cs.session_id = @sid AND p.user_id = @uid", conn);
+        infoCmd.Parameters.AddWithValue("sid", sessionId);
         infoCmd.Parameters.AddWithValue("uid", UserId);
         using var infoReader = await infoCmd.ExecuteReaderAsync();
         if (await infoReader.ReadAsync())
         {
-            projectName = infoReader.GetString(0);
-            projectDate = infoReader.GetDateTime(1);
+            sessionTitle = infoReader.GetString(0);
+            projectName  = infoReader.GetString(1);
+            projectId    = infoReader.GetInt32(2);
         }
         await infoReader.CloseAsync();
 
-        // Get flashcards of this project
         using var cmd = new NpgsqlCommand(
-            @"SELECT fc.flashcard_id, fc.front, fc.back
-              FROM flashcards fc
-              JOIN chats c ON c.chat_id = fc.chat_id
-              WHERE c.project_id = @pid
-              ORDER BY fc.created_at ASC", conn);
-        cmd.Parameters.AddWithValue("pid", id);
+            @"SELECT flashcard_id, front, back
+              FROM flashcards
+              WHERE session_id = @sid
+              ORDER BY created_at ASC", conn);
+        cmd.Parameters.AddWithValue("sid", sessionId);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -1002,14 +1068,19 @@ namespace RavnLearnWeb.Controllers
     }
     catch { }
 
-    ViewBag.SetName   = projectName.ToUpper();
-    ViewBag.SetDate   = projectDate.ToString("MMM dd, yyyy");
-    ViewBag.CardCount = cards.Count;
-    ViewBag.Cards     = cards;
-    ViewBag.ProjectId = id;
+    var cardsList  = cards.Select(c => (object)new { front = (string)c.Front, back = (string)c.Back }).ToList();
+    var cardsJson  = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsList);
+
+    ViewBag.SessionTitle = sessionTitle;
+    ViewBag.ProjectName  = projectName.ToUpper();
+    ViewBag.ProjectId    = projectId;
+    ViewBag.CardCount    = cards.Count;
+    ViewBag.CardsJson    = cardsJson;
+    ViewBag.Cards        = cards;
     return View();
 }
-
+        
+        
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";

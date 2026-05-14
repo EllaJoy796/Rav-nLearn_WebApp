@@ -2,16 +2,10 @@
     ViewData["Title"] = "Flashcard Set";
     Layout = null;
 
-    var setName  = (string)(ViewBag.SetName  ?? "FLASHCARD SET");
-    var setDate  = (string)(ViewBag.SetDate  ?? "");
-    var cardCount = (int)(ViewBag.CardCount ?? 0);
-    var cards    = ViewBag.Cards as IEnumerable<dynamic>;
-
-var cardsList = cards == null 
-    ? new List<object>()
-    : cards.Select(c => (object)new { front = (string)c.Front, back = (string)c.Back }).ToList();
-
-var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsList);
+    var setName      = (string)(ViewBag.SetName  ?? "FLASHCARD SET");
+    var setDate      = (string)(ViewBag.SetDate  ?? "");
+    var sessionCount = (int)(ViewBag.SessionCount ?? 0);
+    var sessions     = ViewBag.Sessions as IEnumerable<dynamic>;
 }
 
 <!DOCTYPE html>
@@ -55,21 +49,13 @@ var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsLis
         body.light-mode .nav-item { color: #2d1f5e; }
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
-        body.light-mode .flip-card-inner .flip-front,
-        body.light-mode .flip-card-inner .flip-back { background: #fff; border-color: rgba(124,92,191,.25); }
-        body.light-mode .fc-list-item { background: #fff; border-color: rgba(124,92,191,.2); }
+        body.light-mode .card-fc-banner { background: linear-gradient(135deg, #ded8f5 0%, #e8e3f8 100%); }
 
         html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ══ SIDEBAR ══ */
-        .sidebar {
-            width: var(--sidebar-width); background: var(--sidebar-bg);
-            border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: flex-start;
-            padding: 16px 0; flex-shrink: 0; z-index: 100;
-            overflow: hidden; transition: width .25s ease;
-        }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; padding: 16px 0; flex-shrink: 0; z-index: 100; overflow: hidden; transition: width .25s ease; }
         .sidebar:hover { width: var(--sidebar-expanded); }
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden; }
         .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
@@ -103,121 +89,37 @@ var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsLis
         .set-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
 
-        /* View toggle */
-        .view-toggle { display: flex; gap: 6px; flex-shrink: 0; }
-        .btn-view { height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s ease; display: flex; align-items: center; gap: 6px; }
-        .btn-view svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-view:hover { border-color: var(--accent); color: var(--text-white); }
-        .btn-view.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
         /* ── CONTENT ── */
         .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         .content::-webkit-scrollbar { width: 4px; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        /* ══ STUDY MODE (big flip card) ══ */
-        .study-view { display: flex; flex-direction: column; align-items: center; gap: 24px; }
-        .study-view.hidden { display: none; }
+        .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: .5px; margin-bottom: 20px; }
 
-        .card-counter { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        /* ── GRID ── */
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-        .flip-card {
-            width: 100%; max-width: 680px;
-            height: 320px;
-            perspective: 1200px;
-            cursor: pointer;
-        }
-        .flip-card-inner {
-            position: relative; width: 100%; height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.55s cubic-bezier(.4,0,.2,1);
-        }
-        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        /* ── CARD ── */
+        .card-fc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; cursor: pointer; position: relative; min-height: 200px; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; overflow: hidden; }
+        .card-fc:hover { background: var(--card-hover); border-color: rgba(124,92,191,.3); transform: translateY(-2px); }
 
-        .flip-front, .flip-back {
-            position: absolute; inset: 0;
-            backface-visibility: hidden;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding: 32px;
-            text-align: center;
-            gap: 16px;
-        }
-        .flip-back { transform: rotateY(180deg); background: #1a1630; border-color: rgba(124,92,191,.3); }
+        .card-fc-banner { width: 100%; height: 110px; background: linear-gradient(135deg, #251f3a 0%, #1a1530 100%); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+        .fc-stack { position: relative; width: 64px; height: 52px; display: flex; align-items: center; justify-content: center; }
+        .fc-icon-back { width: 64px; height: 52px; }
 
-        .flip-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
-        .flip-front .flip-label { color: var(--text-muted); }
-        .flip-back .flip-label { color: #9b7ee0; }
+        .banner-chip { position: absolute; top: 12px; left: 14px; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: .5px; text-transform: uppercase; }
 
-        .flip-text { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-white); line-height: 1.4; }
-        .flip-back .flip-text { color: #e8deff; }
+        .card-fc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .fc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: .3px; }
+        .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: auto; }
+        .card-fc-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-        .flip-hint { font-size: 11px; color: var(--text-dim); margin-top: 8px; }
-
-        /* nav buttons */
-        .study-nav { display: flex; align-items: center; gap: 16px; }
-        .btn-nav { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border); background: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s ease; }
-        .btn-nav:hover { border-color: var(--accent); color: var(--text-white); background: var(--accent-soft); }
-        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-        .btn-nav svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-shuffle { height: 38px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s ease; }
-        .btn-shuffle:hover { border-color: var(--accent); color: var(--text-white); }
-        .btn-shuffle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* progress dots */
-        .progress-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 500px; }
-        .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); transition: background .3s ease; }
-        .prog-dot.active { background: var(--accent); }
-        .prog-dot.visited { background: rgba(124,92,191,.4); }
-
-        /* ══ LIST MODE ══ */
-        .list-view { display: flex; flex-direction: column; gap: 12px; }
-        .list-view.hidden { display: none; }
-
-        .fc-list-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            display: grid;
-            grid-template-columns: 1fr 1px 1fr;
-            min-height: 72px;
-            overflow: hidden;
-            animation: fadeUp .3s ease both;
-            transition: border-color .2s ease;
-        }
-        .fc-list-item:hover { border-color: rgba(124,92,191,.3); }
-
-        .fc-list-item:nth-child(2) { animation-delay: .03s; }
-        .fc-list-item:nth-child(3) { animation-delay: .06s; }
-        .fc-list-item:nth-child(4) { animation-delay: .09s; }
-        .fc-list-item:nth-child(5) { animation-delay: .12s; }
-
-        .fc-list-divider { background: var(--border); }
-
-        .fc-list-front, .fc-list-back {
-            padding: 16px 20px;
-            display: flex; align-items: center;
-        }
-        .fc-list-front { border-right: none; }
-
-        .fc-list-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); display: block; margin-bottom: 6px; }
-        .fc-list-front .fc-list-label { color: var(--text-muted); }
-        .fc-list-back .fc-list-label { color: #9b7ee0; }
-
-        .fc-list-text { font-size: 14px; color: var(--text-white); line-height: 1.5; }
-        .fc-list-back .fc-list-text { color: #ddd4f8; }
-
-        .fc-list-num { font-size: 10px; font-weight: 700; color: var(--text-dim); margin-right: 12px; flex-shrink: 0; }
-
-        /* empty */
-        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 80px 20px; color: var(--text-dim); text-align: center; }
-        .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; opacity: 0.5; }
+        /* ── EMPTY ── */
+        .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--text-dim); text-align: center; }
+        .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: .5; }
         .empty-state p { font-size: 14px; }
 
-        @@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
         @@media (max-width: 640px) {
             html, body { overflow: auto; }
@@ -232,18 +134,14 @@ var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsLis
             .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
             .nav-item::after { display: none; }
             .nav-label { display: none; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
-            .flip-card { height: 260px; }
-            .flip-text { font-size: 17px; }
-            .fc-list-item { grid-template-columns: 1fr; }
-            .fc-list-divider { height: 1px; width: 100%; }
         }
     </style>
 </head>
 <body>
 <div class="shell">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <div class="logo-icon">
@@ -286,7 +184,6 @@ var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsLis
         </div>
     </aside>
 
-    <!-- MAIN -->
     <div class="main">
         <header class="topbar">
             <a class="btn-back" href="/Chat/Flashcards">
@@ -296,180 +193,61 @@ var cardsJson = System.Text.Json.JsonSerializer.Serialize<List<object>>(cardsLis
             <div class="set-header">
                 <div class="set-title">@setName</div>
                 <div class="set-meta">
-                    @cardCount @(cardCount == 1 ? "Flashcard" : "Flashcards")
+                    @sessionCount @(sessionCount == 1 ? "Set" : "Sets")
                     <span class="dot"></span>
                     @setDate
                 </div>
             </div>
-            <div class="view-toggle">
-                <button class="btn-view active" id="btnStudy" onclick="setView('study')">
-                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    Study
-                </button>
-                <button class="btn-view" id="btnList" onclick="setView('list')">
-                    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                    List
-                </button>
-            </div>
         </header>
 
         <div class="content">
-
-            @if (cards == null || !((IEnumerable<dynamic>)ViewBag.Cards).Any())
-            {
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    <p>No flashcards in this set yet.<br>Generate a quiz in <strong>My Chats</strong> to populate this set.</p>
-                </div>
-            }
-            else
-            {
-                <!-- STUDY VIEW -->
-                <div class="study-view" id="studyView">
-                    <div class="card-counter" id="cardCounter">1 / @cardCount</div>
-
-                    <div class="flip-card" id="flipCard" onclick="flipCard()">
-                        <div class="flip-card-inner" id="flipCardInner">
-                            <div class="flip-front">
-                                <span class="flip-label">Question</span>
-                                <div class="flip-text" id="flipFront">Loading…</div>
-                                <span class="flip-hint">Click to reveal answer</span>
+            <div class="section-label">Flashcard Sets</div>
+            <div class="cards-grid">
+                @if (sessions == null || !sessions.Any())
+                {
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        <p>No flashcard sets yet.<br>Generate a quiz in <strong>My Chats</strong> to populate this set.</p>
+                    </div>
+                }
+                else
+                {
+                    int i = 0;
+                    foreach (var s in sessions)
+                    {
+                        <div class="card-fc"
+                             onclick="window.location.href='/Chat/FlashcardStudy?sessionId=@(s.SessionId)'"
+                             style="animation-delay: @(i * 0.05)s">
+                            <div class="card-fc-banner">
+                                <span class="banner-chip">@s.CardCount Flashcards</span>
+                                <div class="fc-stack">
+                                    <svg class="fc-icon-back" viewBox="0 0 48 48" fill="none">
+                                        <rect x="10" y="14" width="30" height="22" rx="3" stroke="rgba(255,255,255,0.35)" stroke-width="2" transform="rotate(-6 10 14)"/>
+                                        <rect x="8" y="12" width="30" height="22" rx="3" fill="rgba(124,92,191,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="flip-back">
-                                <span class="flip-label">Answer</span>
-                                <div class="flip-text" id="flipBack"></div>
+                            <div class="card-fc-body">
+                                <div class="fc-name">@s.Title</div>
+                                <div class="card-fc-meta">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    @s.Date
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="study-nav">
-                        <button class="btn-nav" id="btnPrev" onclick="prevCard()" disabled>
-                            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                        </button>
-                        <button class="btn-shuffle" onclick="shuffleCards()">
-                            <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
-                            Shuffle
-                        </button>
-                        <button class="btn-nav" id="btnNext" onclick="nextCard()">
-                            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="progress-dots" id="progressDots"></div>
-                </div>
-
-                <!-- LIST VIEW -->
-                <div class="list-view hidden" id="listView">
-                    @{
-                        int i = 0;
-                        foreach (var card in cards)
-                        {
-                            i++;
-                            <div class="fc-list-item" style="animation-delay: @((i-1) * 0.03)s">
-                                <div class="fc-list-front">
-                                    <span class="fc-list-num">@i</span>
-                                    <div>
-                                        <span class="fc-list-label">Question</span>
-                                        <div class="fc-list-text">@card.Front</div>
-                                    </div>
-                                </div>
-                                <div class="fc-list-divider"></div>
-                                <div class="fc-list-back">
-                                    <div>
-                                        <span class="fc-list-label">Answer</span>
-                                        <div class="fc-list-text">@card.Back</div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
+                        i++;
                     }
-                </div>
-            }
-
+                }
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    (function () { if (localStorage.getItem('lightMode') === 'true') document.body.classList.add('light-mode'); })();
-
-    // ── Card data from Razor ──
-    const allCards = @Html.Raw(cardsJson);
-
-    let deck = [...allCards];
-    let current = 0;
-    let isFlipped = false;
-
-    function renderCard() {
-        if (!deck.length) return;
-        const card = deck[current];
-        document.getElementById('flipFront').textContent = card.front;
-        document.getElementById('flipBack').textContent  = card.back;
-        document.getElementById('cardCounter').textContent = `${current + 1} / ${deck.length}`;
-
-        // Reset flip
-        isFlipped = false;
-        document.getElementById('flipCard').classList.remove('flipped');
-
-        // Buttons
-        document.getElementById('btnPrev').disabled = current === 0;
-        document.getElementById('btnNext').disabled = current === deck.length - 1;
-
-        // Dots
-        const dots = document.querySelectorAll('.prog-dot');
-        dots.forEach((d, idx) => {
-            d.classList.toggle('active', idx === current);
-            d.classList.toggle('visited', idx < current);
-        });
-    }
-
-    function buildDots() {
-        const container = document.getElementById('progressDots');
-        if (!container) return;
-        container.innerHTML = '';
-        deck.forEach((_, idx) => {
-            const d = document.createElement('div');
-            d.className = 'prog-dot' + (idx === 0 ? ' active' : '');
-            d.onclick = () => { current = idx; renderCard(); };
-            container.appendChild(d);
-        });
-    }
-
-    function flipCard() {
-        isFlipped = !isFlipped;
-        document.getElementById('flipCard').classList.toggle('flipped', isFlipped);
-    }
-
-    function nextCard() { if (current < deck.length - 1) { current++; renderCard(); } }
-    function prevCard() { if (current > 0) { current--; renderCard(); } }
-
-    function shuffleCards() {
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-        current = 0;
-        buildDots();
-        renderCard();
-    }
-
-    function setView(v) {
-        const isStudy = v === 'study';
-        document.getElementById('studyView').classList.toggle('hidden', !isStudy);
-        document.getElementById('listView').classList.toggle('hidden', isStudy);
-        document.getElementById('btnStudy').classList.toggle('active', isStudy);
-        document.getElementById('btnList').classList.toggle('active', !isStudy);
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') nextCard();
-        if (e.key === 'ArrowLeft')  prevCard();
-        if (e.key === ' ') { e.preventDefault(); flipCard(); }
-    });
-
-    // Init
-    if (allCards.length) { buildDots(); renderCard(); }
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
 </script>
 </body>
 </html>
