@@ -173,6 +173,17 @@
             .search-bar { max-width: 100%; flex: 1 1 100%; }
             .filter-select { flex: 1; min-width: 120px; }
         }
+
+        .btn-dots-proj {
+    background: none; border: 1px solid var(--border); border-radius: 7px;
+    cursor: pointer; color: var(--text-dim);
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 2.5px;
+    transition: color .2s ease, background .2s ease; flex-shrink: 0;
+}
+.btn-dots-proj:hover { color: var(--text-muted); background: var(--accent-soft); }
+.btn-dots-proj span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
     </style>
 </head>
 <body>
@@ -309,6 +320,144 @@
     </div>
 </div>
 
+<!-- ── CREATE PROJECT MODAL ── -->
+<div id="createProjectModal" style="
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:var(--card-bg); border:1px solid var(--border);
+        border-radius:20px; padding:28px;
+        width:min(460px,92vw); font-family:'DM Sans',sans-serif;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.5);">
+
+        <!-- Header -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div>
+                <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white);">
+                    New Quiz Project
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                    Create a project to hold your custom quizzes
+                </div>
+            </div>
+            <button onclick="closeCreateModal()" style="
+                background:none; border:1px solid var(--border);
+                border-radius:8px; color:var(--text-dim);
+                width:30px; height:30px; cursor:pointer;
+                display:flex; align-items:center; justify-content:center;
+                font-size:16px;">✕</button>
+        </div>
+
+        <!-- Fields -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted);
+                              text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">
+                    Project Name *
+                </label>
+                <input id="cpName" type="text" placeholder="e.g. Science Quiz, Math Review..."
+                    style="width:100%; height:42px; background:var(--bg);
+                           border:1px solid var(--border); border-radius:10px;
+                           padding:0 14px; color:var(--text-white);
+                           font-size:13px; font-family:inherit; outline:none;
+                           transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'" />
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted);
+                              text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">
+                    Subject / Tag
+                </label>
+                <input id="cpSubject" type="text" placeholder="e.g. Biology, History..."
+                    style="width:100%; height:42px; background:var(--bg);
+                           border:1px solid var(--border); border-radius:10px;
+                           padding:0 14px; color:var(--text-white);
+                           font-size:13px; font-family:inherit; outline:none;
+                           transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'" />
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="cpError" style="display:none; margin-top:12px;
+            background:rgba(224,112,112,.1); border:1px solid rgba(224,112,112,.25);
+            border-radius:8px; padding:10px 14px;
+            font-size:12px; color:#e07070;"></div>
+
+        <!-- Actions -->
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="closeCreateModal()" style="
+                flex:1; height:42px; background:none;
+                border:1px solid var(--border); border-radius:10px;
+                color:var(--text-muted); font-size:13px; font-weight:600;
+                font-family:inherit; cursor:pointer;
+                transition:border-color .2s, color .2s;"
+                onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--text-white)'"
+                onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-muted)'">
+                Cancel
+            </button>
+            <button onclick="submitCreateProject()" id="cpSubmitBtn" style="
+                flex:2; height:42px; background:var(--accent);
+                border:none; border-radius:10px; color:#fff;
+                font-size:13px; font-weight:700; font-family:inherit;
+                cursor:pointer; transition:background .2s;">
+                Create Project
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- PROJECT CONTEXT MENU -->
+<div class="ctx-menu" id="projCtxMenu">
+    <div class="ctx-item" onclick="projCtxRename()">
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Rename
+    </div>
+    <div class="ctx-item danger" onclick="projCtxDelete()">
+        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+        </svg>
+        Delete
+    </div>
+</div>
+
+<!-- PROJECT RENAME MODAL -->
+<div class="modal-overlay" id="projRenameOverlay" onclick="if(event.target===this) closeProjRenameModal()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:500; align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:20px; padding:28px; width:min(420px,90vw); box-shadow:0 24px 60px rgba(0,0,0,.5);">
+        <div style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--text-white); margin-bottom:6px;">Rename Project</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Enter a new name for this project.</div>
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:.6px; text-transform:uppercase; margin-bottom:7px; display:block;">New name</label>
+        <input id="projRenameInput" type="text" maxlength="100"
+            style="width:100%; height:44px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; margin-bottom:16px;"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+            oninput="document.getElementById('projRenameSaveBtn').disabled = !this.value.trim()"
+            onkeydown="if(event.key==='Enter') submitProjRename(); if(event.key==='Escape') closeProjRenameModal();" />
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeProjRenameModal()" style="flex:1; height:44px; background:none; border:1px solid var(--border); border-radius:10px; color:var(--text-muted); font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;">Cancel</button>
+            <button id="projRenameSaveBtn" onclick="submitProjRename()" style="flex:2; height:44px; background:var(--accent); border:none; border-radius:10px; color:#fff; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer;">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- PROJECT DELETE MODAL -->
+<div id="projDeleteOverlay" onclick="if(event.target===this) closeProjDeleteModal()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:500; align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid rgba(224,112,112,.2); border-radius:20px; padding:28px; width:min(380px,90vw); box-shadow:0 24px 60px rgba(0,0,0,.5);">
+        <div style="font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#e07070; margin-bottom:6px;">Delete Project?</div>
+        <div id="projDeleteSub" style="font-size:13px; color:var(--text-muted); margin-bottom:24px;"></div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeProjDeleteModal()" style="flex:1; height:44px; background:none; border:1px solid var(--border); border-radius:10px; color:var(--text-muted); font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;">Cancel</button>
+            <button id="projDeleteConfirmBtn" onclick="submitProjDelete()" style="flex:2; height:44px; background:#c0392b; border:none; border-radius:10px; color:#fff; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer;">Delete</button>
+        </div>
+    </div>
+</div>
 <script>
     (function () {
         if (localStorage.getItem('lightMode') === 'true')
@@ -333,29 +482,110 @@
                 return;
             }
 
-            populateTagFilter(projects);
-            projects.forEach((p, i) => grid.appendChild(makeCard(p, i)));
-            // Fetch quiz counts for each project
-                projects.forEach(async (p) => {
+            // Fetch quiz counts for ALL projects in parallel first
+            const counts = await Promise.all(
+                projects.map(async (p) => {
                     try {
-                        const res   = await fetch(`/Chat/GetQuizzesByProject?projectId=${p.id}`);
-                        const quizzes = await res.json();
-
-                        // Group by sessionId (same logic as QuizzesView)
+                        const r       = await fetch(`/Chat/GetQuizzesByProject?projectId=${p.id}`);
+                        const quizzes = await r.json();
                         const sessions = new Set(quizzes.map(q => q.sessionId || q.quizId));
-                        const count = sessions.size;
-
-                        const el = document.getElementById(`quiz-count-${p.id}`);
-                        if (el) {
-                            const span = el.querySelector('span');
-                            if (span) span.textContent = `${count} Quiz${count !== 1 ? 'zes' : ''}`;
-                        }
+                        return { project: p, count: sessions.size };
                     } catch {
-                        const el = document.getElementById(`quiz-count-${p.id}`);
-                        if (el) { const s = el.querySelector('span'); if (s) s.textContent = 'Quizzes'; }
+                        return { project: p, count: 0 };
                     }
-                });
+                })
+            );
+
+            // Keep only projects that have at least one quiz session
+            const withQuizzes = counts.filter(c => c.count > 0 || c.project.isManual);
+
+            if (withQuizzes.length === 0) {
+    // New Quiz Project card
+    const newCard = document.createElement('div');
+    newCard.className = 'card-project';
+    newCard.style.cssText = 'border-style: dashed; cursor: pointer; align-items: center; justify-content: center; min-height: 180px;';
+    newCard.onclick = openCreateModal;
+    newCard.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;
+                    gap:10px; height:100%; padding:20px; text-align:center;">
+            <div style="width:44px; height:44px; border-radius:50%;
+                        background:var(--accent-soft); border:1.5px dashed var(--accent);
+                        display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </div>
+            <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                         color:var(--text-muted);">New Quiz Project</span>
+        </div>`;
+    grid.appendChild(newCard);
+
+    const emptyMsg = document.createElement('div');
+    emptyMsg.className = 'empty-state';
+    emptyMsg.style.gridColumn = '1/-1';
+    emptyMsg.innerHTML = `
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <p>No quizzes yet.<br>Open a chat and generate a quiz first.</p>`;
+    grid.appendChild(emptyMsg);
+    return;
+}
+
+            // Populate tag filter and render only qualifying cards
+// Populate tag filter and render only qualifying cards
+                populateTagFilter(withQuizzes.map(c => c.project));
+
+                // ── New Quiz Project card (always first) ──
+                const newCard = document.createElement('div');
+                newCard.className = 'card-project';
+                newCard.style.cssText = 'border-style: dashed; cursor: pointer; align-items: center; justify-content: center; min-height: 180px;';
+                newCard.onclick = openCreateModal;
+                newCard.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;
+                                gap:10px; height:100%; padding:20px; text-align:center;">
+                        <div style="width:44px; height:44px; border-radius:50%;
+                                    background:var(--accent-soft); border:1.5px dashed var(--accent);
+                                    display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </div>
+                        <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                                    color:var(--text-muted);">New Quiz Project</span>
+                    </div>`;
+                grid.appendChild(newCard);
+
+                withQuizzes.forEach(({ project, count }, i) => {
+                const card = makeCard(project, i);
+                grid.appendChild(card);
+
+                // Fill in the quiz count badge immediately (no second fetch needed)
+                const el = document.getElementById(`quiz-count-${project.id}`);
+                if (el) {
+                    const span = el.querySelector('span');
+                    if (span) span.textContent = `${count} Quiz${count !== 1 ? 'zes' : ''}`;
+                }
+            });
+
         } catch (err) { console.error('Failed to load projects:', err); }
+    }
+        
+    
+    function populateTagFilter(projects) {
+        const tagSet = new Set();
+        projects.forEach(p => {
+            if (p.subject && p.subject.trim()) tagSet.add(p.subject.trim());
+        });
+
+        const filterTag = document.getElementById('filterTag');
+        filterTag.innerHTML = '<option value="">All Tags</option>';
+        Array.from(tagSet).sort().forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.toLowerCase();
+            option.textContent = tag;
+            filterTag.appendChild(option);
+        });
     }
 
     function populateTagFilter(projects) {
@@ -374,39 +604,46 @@
         });
     }
 
-    function makeCard(project, index) {
-        const card = document.createElement('div');
-        card.className = 'card-project';
-        card.dataset.id      = project.id;
-        card.dataset.name    = project.name.toLowerCase();
-        card.dataset.subject = (project.subject || '').toLowerCase();
-        card.dataset.timestamp = parseDateToTimestamp(project.date);
-        card.style.animationDelay = `${index * 0.05}s`;
-        card.onclick = () => openProject(project.id);
+ function makeCard(project, index) {
+    const card = document.createElement('div');
+    card.className = 'card-project';
+    card.dataset.id        = project.id;
+    card.dataset.name      = project.name.toLowerCase();
+    card.dataset.subject   = (project.subject || '').toLowerCase();
+    card.dataset.timestamp = parseDateToTimestamp(project.date);
+    card.style.animationDelay = `${index * 0.05}s`;
+    card.onclick = () => openProject(project.id);
 
-        card.innerHTML = `
-            <div class="card-top-row">
-                <div class="project-icon">
-                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                </div>
+    card.innerHTML = `
+        <div class="card-top-row">
+            <div class="project-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             </div>
-            <div class="card-body">
-                <div class="project-name">${escHtml(project.name.toUpperCase())}</div>
-                <span class="chip ${!project.subject ? 'empty' : ''}">${escHtml(project.subject || '')}</span>
+            ${project.isManual ? `
+            <button class="btn-dots-proj" title="Options"
+                data-pid="${project.id}"
+                data-pname="${escHtml(project.name).replace(/"/g,'&quot;')}"
+                onclick="event.stopPropagation(); showProjectCtxMenu(event, this)">
+                <span></span><span></span><span></span>
+            </button>` : ''}
+        </div>
+        <div class="card-body">
+            <div class="project-name">${escHtml(project.name.toUpperCase())}</div>
+            <span class="chip ${!project.subject ? 'empty' : ''}">${escHtml(project.subject || '')}</span>
+        </div>
+        <div class="card-footer">
+            <div class="meta-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                ${escHtml(project.date)}
             </div>
-            <div class="card-footer">
-                <div class="meta-item">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    ${escHtml(project.date)}
-                </div>
-                <div class="meta-item" id="quiz-count-${project.id}">
-                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    <span>—</span>
-                </div>
-            </div>`;
+            <div class="meta-item" id="quiz-count-${project.id}">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <span>—</span>
+            </div>
+        </div>`;
 
-        return card;
-    }
+    return card;
+}
 
     function parseDateToTimestamp(dateStr) {
         return new Date(dateStr).getTime();
@@ -476,6 +713,186 @@
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    function openCreateModal() {
+    document.getElementById('cpName').value = '';
+    document.getElementById('cpSubject').value = '';
+    document.getElementById('cpError').style.display = 'none';
+    document.getElementById('createProjectModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('cpName').focus(), 100);
+}
+
+function closeCreateModal() {
+    document.getElementById('createProjectModal').style.display = 'none';
+}
+
+async function submitCreateProject() {
+    const name    = document.getElementById('cpName').value.trim();
+    const subject = document.getElementById('cpSubject').value.trim();
+    const errEl   = document.getElementById('cpError');
+    const btn     = document.getElementById('cpSubmitBtn');
+
+    if (!name) {
+        errEl.textContent = 'Project name is required.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    btn.textContent = 'Creating…';
+    btn.disabled = true;
+    errEl.style.display = 'none';
+
+    try {
+        const res  = await fetch('/Chat/CreateManualProject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, subject })
+        });
+        const data = await res.json();
+
+        if (data.id) {
+            closeCreateModal();
+            // Redirect straight into the new project
+            window.location.href = `/Chat/QuizzesView?id=${data.id}`;
+        } else {
+            errEl.textContent = data.error || 'Something went wrong.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Network error. Please try again.';
+        errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Create Project';
+        btn.disabled = false;
+    }
+}
+
+    // Close modal on backdrop click
+    document.getElementById('createProjectModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCreateModal();
+    });
+
+
+    let _ctxProjectId   = null;
+let _ctxProjectName = null;
+let _ctxCard        = null;
+
+function showProjectCtxMenu(e, btn) {
+    e.preventDefault();
+    _ctxProjectId   = btn.dataset.pid;
+    _ctxProjectName = btn.dataset.pname;
+    _ctxCard        = btn.closest('.card-project');
+
+    const menu = document.getElementById('projCtxMenu');
+    menu.style.left = e.clientX + 'px';
+    menu.style.top  = e.clientY + 'px';
+    menu.classList.add('visible');
+}
+
+document.addEventListener('click', () => {
+    document.getElementById('projCtxMenu').classList.remove('visible');
+});
+
+// ── RENAME ──
+function projCtxRename() {
+    document.getElementById('projCtxMenu').classList.remove('visible');
+    const input = document.getElementById('projRenameInput');
+    input.value = _ctxProjectName;
+    document.getElementById('projRenameSaveBtn').disabled = false;
+    const overlay = document.getElementById('projRenameOverlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => input.focus(), 100);
+}
+
+function closeProjRenameModal() {
+    document.getElementById('projRenameOverlay').style.display = 'none';
+}
+
+async function submitProjRename() {
+    const newName = document.getElementById('projRenameInput').value.trim();
+    if (!newName) return;
+
+    const btn = document.getElementById('projRenameSaveBtn');
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+
+    try {
+        const res  = await fetch('/Chat/RenameProject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ id: _ctxProjectId, name: newName })
+        });
+
+        // ← idagdag: i-log ang raw response kung may error
+        if (!res.ok) {
+            const text = await res.text();
+            console.error('RenameProject HTTP error:', res.status, text);
+            alert(`Server error ${res.status}. Check console.`);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.success) {
+            closeProjRenameModal();
+            if (_ctxCard) {
+                const nameEl = _ctxCard.querySelector('.project-name');
+                if (nameEl) nameEl.textContent = newName.toUpperCase();
+                _ctxCard.dataset.name = newName.toLowerCase();
+
+                // i-update rin ang data-pname ng button para consistent
+                const dotBtn = _ctxCard.querySelector('.btn-dots-proj');
+                if (dotBtn) dotBtn.dataset.pname = newName;
+            }
+            _ctxProjectName = newName;
+        } else {
+            alert(data.error || 'Failed to rename.');
+        }
+    } catch (err) {
+        console.error('Rename network error:', err);
+        alert('Network error. Please try again.');
+    } finally {
+        btn.textContent = 'Save';
+        btn.disabled = false;
+    }
+}
+// ── DELETE ──
+function projCtxDelete() {
+    document.getElementById('projCtxMenu').classList.remove('visible');
+    document.getElementById('projDeleteSub').textContent =
+        `Are you sure you want to delete "${_ctxProjectName}"? This cannot be undone.`;
+    document.getElementById('projDeleteOverlay').style.display = 'flex';
+}
+
+function closeProjDeleteModal() {
+    document.getElementById('projDeleteOverlay').style.display = 'none';
+}
+
+async function submitProjDelete() {
+    const btn = document.getElementById('projDeleteConfirmBtn');
+    btn.textContent = 'Deleting…';
+    btn.disabled = true;
+
+    try {
+        const res  = await fetch(`/Chat/DeleteProject?id=${_ctxProjectId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            closeProjDeleteModal();
+            // Remove card from grid
+            if (_ctxCard) _ctxCard.remove();
+        } else {
+            alert(data.error || 'Failed to delete.');
+        }
+    } catch {
+        alert('Network error. Please try again.');
+    } finally {
+        btn.textContent = 'Delete';
+        btn.disabled = false;
+    }
+}
 </script>
 </body>
 </html>
