@@ -2402,27 +2402,70 @@ function speakModuleContent(content, btn) {
 
 (function () {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const btnMic        = document.getElementById('btnMic');
-    const txtInput      = document.getElementById('txtInput');
-    const statusBar     = document.getElementById('voiceStatusBar');
-    const statusText    = document.getElementById('voiceStatusText');
-    const countdownEl   = document.getElementById('voiceCountdown');
-    const cancelBtn     = document.getElementById('voiceCancelBtn');
-    const inputHint     = document.getElementById('inputHint');
+    const btnMic    = document.getElementById('btnMic');
+    const txtInput  = document.getElementById('txtInput');
+    const statusBar = document.getElementById('voiceStatusBar');
+    const statusText= document.getElementById('voiceStatusText');
+    const countdownEl = document.getElementById('voiceCountdown');
+    const cancelBtn = document.getElementById('voiceCancelBtn');
+    const inputHint = document.getElementById('inputHint');
 
     if (!SpeechRecognition) { if (btnMic) btnMic.style.display = 'none'; return; }
 
-    let recognition = null, isRecording = false;
-    let countdownInterval = null, silenceSeconds = 0;
-    const SILENCE_LIMIT = 5;
+    const SILENCE_LIMIT = 5;        // seconds of quiet before auto-send
+    const SILENCE_THRESHOLD = 0.01; // RMS below this = silence
+    const CHECK_INTERVAL = 150;     // ms between audio level checks
 
+    let recognition   = null;
+    let isRecording   = false;
+    let finalTranscript = '';
+    let countdownInterval = null;
+    let silenceSeconds  = 0;
+    let isCounting      = false;
+
+    // ── Audio-level silence detection ──────────────────────
+    let audioCtx = null, analyser = null, micStream = null, silenceRaf = null;
+
+    async function startAudioMonitor() {
+        try {
+            micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+            analyser  = audioCtx.createAnalyser();
+            analyser.fftSize = 512;
+            audioCtx.createMediaStreamSource(micStream).connect(analyser);
+            monitorSilence();
+        } catch (_) { /* mic permission denied – fall back gracefully */ }
+    }
+
+    function monitorSilence() {
+        if (!isRecording) return;
+        const data = new Float32Array(analyser.fftSize);
+        analyser.getFloatTimeDomainData(data);
+        const rms = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
+
+        if (rms > SILENCE_THRESHOLD) {
+            // Sound detected — reset countdown
+            if (isCounting) { isCounting = false; clearSilenceTimer(); setListeningState(); }
+        } else {
+            // Silence — start countdown only if we have text and aren't already counting
+            if (!isCounting && finalTranscript.trim()) startSilenceTimer();
+        }
+        silenceRaf = setTimeout(monitorSilence, CHECK_INTERVAL);
+    }
+
+    function stopAudioMonitor() {
+        clearTimeout(silenceRaf); silenceRaf = null;
+        try { audioCtx?.close(); } catch (_) {}
+        micStream?.getTracks().forEach(t => t.stop());
+        audioCtx = null; analyser = null; micStream = null;
+    }
+
+    // ── Recognition ────────────────────────────────────────
     function buildRecognition() {
         const r = new SpeechRecognition();
         r.continuous = true; r.interimResults = true; r.lang = 'en-US';
-        let finalTranscript = '';
 
         r.onstart = () => {
-            finalTranscript = txtInput.value.trim();
             statusBar.classList.add('visible');
             inputHint.style.display = 'none';
             setListeningState();
@@ -2436,26 +2479,24 @@ function speakModuleContent(content, btn) {
             }
             txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
             autoResize(txtInput);
-            resetSilenceTimer();
         };
-        r.onspeechend = () => startSilenceTimer();
-        r.onsoundend  = () => startSilenceTimer();
         r.onerror = (e) => {
-            if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
             if (e.error === 'aborted') return;
-            stopRecording(false);
+            // non-fatal errors: just keep going
         };
         r.onend = () => { if (isRecording) try { r.start(); } catch (_) {} };
         return r;
     }
 
+    // ── Countdown UI ───────────────────────────────────────
     function setListeningState() {
         statusText.innerHTML = '<span class="mic-dot"></span> Listening…';
         countdownEl.textContent = '';
-        countdownEl.classList.remove('urgent');
     }
+
     function startSilenceTimer() {
-        clearSilenceTimer();
+        if (isCounting) return;
+        isCounting = true;
         silenceSeconds = SILENCE_LIMIT;
         updateInlineCountdown(silenceSeconds);
         countdownInterval = setInterval(() => {
@@ -2464,38 +2505,47 @@ function speakModuleContent(content, btn) {
             if (silenceSeconds <= 0) { clearSilenceTimer(); stopRecording(true); }
         }, 1000);
     }
+
     function updateInlineCountdown(secs) {
         const urgent = secs <= 2;
-        const dotColor = urgent ? '#e0a040' : '#e74c3c';
-        const textColor = urgent ? '#e0a040' : '#e74c3c';
-        statusText.innerHTML = `<span class="mic-dot" style="background:${dotColor};"></span> <span style="color:${textColor};font-weight:${urgent?'700':'500'};">Sending in ${secs}s…</span>`;
+        const col = urgent ? '#e0a040' : '#e74c3c';
+        statusText.innerHTML = `<span class="mic-dot" style="background:${col};"></span> <span style="color:${col};font-weight:${urgent?'700':'500'};">Sending in ${secs}s…</span>`;
         countdownEl.textContent = '';
     }
-    function resetSilenceTimer() { clearSilenceTimer(); setListeningState(); }
-    function clearSilenceTimer() { clearInterval(countdownInterval); countdownInterval = null; }
 
-    function startRecording() {
+    function clearSilenceTimer() {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        isCounting = false;
+    }
+
+    // ── Start / Stop ───────────────────────────────────────
+    async function startRecording() {
         if (isRecording) return;
         isRecording = true;
+        finalTranscript = txtInput.value.trim(); // preserve existing text
         btnMic.classList.add('recording');
         btnMic.title = 'Stop recording';
         recognition = buildRecognition();
         try { recognition.start(); } catch (_) {}
+        await startAudioMonitor();
     }
+
     function stopRecording(andSend = false) {
         if (!isRecording) return;
         isRecording = false;
         clearSilenceTimer();
+        stopAudioMonitor();
         btnMic.classList.remove('recording');
         btnMic.title = 'Voice input';
         statusBar.classList.remove('visible');
         inputHint.style.display = '';
-        countdownEl.classList.remove('urgent');
         try { recognition.abort(); } catch (_) {}
         recognition = null;
         if (andSend && txtInput.value.trim()) sendMessage();
     }
 
+    // ── Event listeners (attached once, work across all chats) ─
     btnMic.addEventListener('click', () => isRecording ? stopRecording(false) : startRecording());
     cancelBtn.addEventListener('click', () => stopRecording(false));
     txtInput.addEventListener('keydown', (e) => {
