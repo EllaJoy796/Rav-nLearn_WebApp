@@ -8,8 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/images/logo sa taas.png?v=999&t=@DateTime.Now.Ticks" />
-    <title>Rev'nLearn</title>
+    <title>RavnLearn</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,182 +30,9 @@
             --accent-hover: #6a4eaa;
             --btn-flat:     #f3edf9;
             --radius:       10px;
-            --dots-hover-bg: #f5effc;
-            --dots-hover-color: #111111;
-            --icon-color:   #7c5cbf;
         }
 
-        /* ── LIGHT MODE (applies to Chat view) ── */
-        body.light-mode {
-            --bg:           #f5f1fb;
-            --left-bg:      #ffffff;
-            --center-bg:    #fbf8ff;
-            --right-bg:     #ffffff;
-            --panel-border: #ddd1ef;
-            --input-bg:     #ffffff;
-            --input-border: #d6c8ea;
-            --bubble-user:  #8c63d2;
-            --bubble-ai:    #ffffff;
-            --text:         #111111;
-            --text-muted:   #454545;
-            --text-dim:     #757575;
-            --accent:       #7c5cbf;
-            --accent-hover: #6a4eaa;
-            --btn-flat:     #f3edf9;
-            --dots-hover-bg: #f5effc;
-            --dots-hover-color: #111111;
-            --icon-color:   #7c5cbf;
-        }
-        /* ── DARK MODE (when lightMode=false in profile) ── */
-body.dark-mode {
-    --bg:            #0e0b17;
-    --left-bg:       #110e1c;
-    --center-bg:     #0f0c1a;
-    --right-bg:      #110e1c;
-    --panel-border:  #2d2045;
-    --input-bg:      #1a1528;
-    --input-border:  #352a50;
-    --bubble-user:   #7c5cbf;
-    --bubble-ai:     #1e1830;
-    --text:          #e8e0f8;
-    --text-muted:    #a090c0;
-    --text-dim:      #6a5890;
-    --accent:        #9070d4;
-    --accent-hover:  #7c5cbf;
-    --btn-flat:      #1e1830;
-    --dots-hover-bg: #2a1f45;
-    --dots-hover-color: #e8e0f8;
-    --icon-color:    #9070d4;
-}
-/* Hardcoded-color overrides for dark mode */
-body.dark-mode .context-menu      { background:#1e1830; border-color:#352a50; }
-body.dark-mode .ctx-menu-item     { color:#a090c0; }
-body.dark-mode .ctx-menu-item:hover { background:#2a1f45; color:#e8e0f8; }
-body.dark-mode .doc-item          { background:#1e1830; border-color:#2d2045; }
-body.dark-mode .doc-item:hover    { background:#241d38; border-color:#352a50; }
-body.dark-mode .quiz-card         { background:#1e1830; border-color:#2d2045; }
-body.dark-mode .quiz-card:hover   { border-color:#352a50; }
-body.dark-mode .quiz-card-header:hover { background:#241d38; }
-body.dark-mode .quiz-card-body    { border-color:#2d2045; }
-body.dark-mode .quiz-opt:hover    { background:#241d38; border-color:#352a50; }
-body.dark-mode .modal-card        { background:#1e1830; }
-body.dark-mode .modal-head        { border-color:#352a50; }
-body.dark-mode .modal-input       { background:#0f0c1a; border-color:#352a50; color:#e8e0f8; }
-body.dark-mode .btn-reviewer-action { background:#1e1830; border-color:#2d2045; }
-body.dark-mode .right-rail        { background:linear-gradient(180deg,#110e1c,#0e0b17); }
-body.dark-mode .rail-icon-btn     { background:#1e1830; border-color:#2d2045; }
-body.dark-mode .rail-icon-btn:hover { background:#241d38; }
-body.dark-mode .side-toggle       { background:#1e1830; border-color:#352a50; color:#e8e0f8; }
-body.dark-mode .side-toggle:hover { background:#241d38; }
-body.dark-mode .chat-item:hover   { background:#241d38; }
-body.dark-mode .chat-item.active  { background:rgba(144,112,212,.25); }
-body.dark-mode .btn-back          { border-color:#352a50; }
-body.dark-mode .btn-back:hover    { background:#241d38; border-color:#4a3570; }
-body.dark-mode .msg-wrapper.ai .bubble { border-color:#352a50; }
-body.dark-mode .left-rail,
-body.dark-mode .right-rail { background: linear-gradient(180deg, #110e1c, #0e0b17); }
-body.dark-mode .msg-wrapper.ai .bubble { color: #e8e0f8; border-color: #352a50; }
-body.dark-mode .reviewer-icon   { background: #2a1f45; border-color: #352a50; }
-body.dark-mode .doc-item-icon   { background: #2a1f45; border-color: #352a50; }
-body.dark-mode .quiz-q-text,
-body.dark-mode .quiz-opt-text   { color: #e8e0f8; }
-/* ── Quiz Modal ── */
-body.dark-mode #quizModal > div                          { background: #1e1830 !important; border-color: #352a50 !important; }
-body.dark-mode #quizModal > div > div:first-child        { border-bottom-color: #352a50 !important; }
-body.dark-mode #modalQuizBody .quiz-q-text               { color: #e8e0f8; }
-body.dark-mode #modalQuizBody .quiz-opt-text             { color: #e8e0f8; }
-body.dark-mode #modalQuizBody .quiz-opt:hover            { background: #241d38 !important; border-color: #352a50 !important; }
-body.dark-mode #modalQuizBody .quiz-score                { color: #a090c0; }
-
-/* ── Flashcard faces (inline bg override) ── */
-body.dark-mode #modalQuizBody div[style*="background:#ffffff"] { background: #1e1830 !important; border-color: #352a50 !important; }
-body.dark-mode #modalQuizBody div[style*="background:#f4eefc"] { background: #241d38 !important; border-color: #4a3570 !important; }
-body.dark-mode #modalQuizBody div[style*="color:#111"]         { color: #e8e0f8 !important; }
-
-/* ── Flashcard nav buttons ── */
-body.dark-mode #modalQuizBody button[style*="background:none"] { color: #a090c0 !important; border-color: #352a50 !important; }
-body.dark-mode #modalQuizBody div[style*="color:#555"]         { color: #a090c0 !important; }
-
-/* ── Fill-blank input ── */
-body.dark-mode #modalQuizBody input[type="text"] { background: #0f0c1a !important; border-color: #352a50 !important; color: #e8e0f8 !important; }
-
-/* ── Action Modal (Rename/Delete) ── */
-body.dark-mode #actionModal .modal-card  { background: #1e1830; }
-body.dark-mode #actionModal .modal-head  { border-color: #352a50; }
-body.dark-mode #actionModal .modal-copy  { color: #a090c0; }
-body.dark-mode #actionModal .modal-btn   { background: #241d38; border-color: #352a50; color: #e8e0f8; }
-/* ── Flashcard card face (front/back) ── */
-body.dark-mode #modalQuizBody div[style*="perspective"] div[style*="background:#ffffff"],
-body.dark-mode #modalQuizBody div[style*="background:#ffffff"]  { background: #1e1830 !important; border-color: #352a50 !important; color: #e8e0f8 !important; }
-body.dark-mode #modalQuizBody div[style*="background:#f4eefc"]  { background: #241d38 !important; border-color: #4a3570 !important; }
-
-/* Flashcard nav buttons (Prev, Next, Flip, Know it, Still learning) */
-body.dark-mode #modalQuizBody button[style*="background:none"],
-body.dark-mode #modalQuizBody button[style*="background: none"]  { background: #1e1830 !important; border-color: #352a50 !important; color: #a090c0 !important; }
-body.dark-mode #modalQuizBody button[style*="background:rgba(124"] { background: rgba(144,112,212,0.2) !important; }
-
-/* Flashcard counter + progress bar track */
-body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] { background: #2d2045 !important; }
-body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
-.flashcard-progress-track { background: #ebe1f8; }
-body.dark-mode .flashcard-progress-track { background: #2d2045 !important; }
-body.dark-mode .flashcard-progress-bar { background: var(--accent) !important; }
-body.dark-mode .quiz-card-body { background: #1e1830; }
-body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
-body.dark-mode #modalQuizBody span[style*="color:#555"],
-body.dark-mode #modalQuizBody div[style*="color:#555"]         { color: #a090c0 !important; }
-
-/* ── Quiz fill-blank feedback row ── */
-body.dark-mode #modalQuizBody .quiz-feedback.wrong  { background: #2d1a1a !important; color: #e07070 !important; border: none; }
-body.dark-mode #modalQuizBody .quiz-feedback.correct { background: #1a2d1a !important; color: #6dbf6d !important; border: none; }
-
-/* MCQ option rows */
-body.dark-mode #modalQuizBody .quiz-opt              { border-color: #2d2045; }
-body.dark-mode #modalQuizBody .quiz-opt.correct      { background: #1a2d1a !important; border-color: #4a8c4a !important; }
-body.dark-mode #modalQuizBody .quiz-opt.wrong        { background: #2d1a1a !important; border-color: #8c4a4a !important; }
-body.dark-mode .flashcard-front { background: #1e1830 !important; border-color: #352a50 !important; }
-body.dark-mode .flashcard-back  { background: #241d38 !important; border-color: #4a3570 !important; }
-body.dark-mode .flashcard-face,
-body.dark-mode .flashcard-face * { color: #e8e0f8 !important; }
-/* Retry button */
-body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { background: #1e1830 !important; border-color: #352a50 !important; color: #9070d4 !important; }
-/* ── Know it / Still learning flashcard buttons ── */
-.btn-know-it {
-    flex: 1;
-    background: #edf8ee;
-    border: 1px solid #8cc68d;
-    border-radius: 6px;
-    color: #317d34;
-    font-size: 11px;
-    padding: 5px 0;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-.btn-still-learning {
-    flex: 1;
-    background: #fdeeee;
-    border: 1px solid #e0a0a0;
-    border-radius: 6px;
-    color: #b54c4c;
-    font-size: 11px;
-    padding: 5px 0;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-body.dark-mode .btn-know-it {
-    background: #1a2d1a !important;
-    border-color: #4a8c4a !important;
-    color: #6dbf6d !important;
-}
-body.dark-mode .btn-still-learning {
-    background: #2d1a1a !important;
-    border-color: #8c4a4a !important;
-    color: #e07070 !important;
-}
-
-        html, body { height: 100%; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); overflow: hidden; }
+        html, body { height: 100%; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); overflow: hidden; }
 
         .app-shell { display: flex; height: 100vh; width: 100vw; }
 
@@ -968,7 +794,7 @@ body.dark-mode .btn-still-learning {
             <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
                  alt="Logo" style="width:26px;height:26px;object-fit:contain;"
                  onerror="this.style.display='none'" />
-            <span class="left-logo-text">Rev'nLearn</span>
+            Rev'nLearn
         </div>
 
         <!-- Back + New Chat -->

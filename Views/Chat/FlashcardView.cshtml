@@ -15,8 +15,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rev'nLearn – @setName</title>
-    <link rel="icon" type="image/png" href="/images/logo sa taas.png?v=999&t=@DateTime.Now.Ticks" />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -54,7 +53,7 @@
         body.light-mode .card-fc-banner { background: linear-gradient(135deg, #ded8f5 0%, #e8e3f8 100%); }
         body.light-mode .fc-card-img { filter: brightness(0) invert(0) !important; opacity: 0.4 !important; }
 
-        html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        html, body { height: 100%; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
 
         /* ══ SIDEBAR ══ */
@@ -63,7 +62,7 @@
         .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; overflow: hidden; }
         .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
-        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
+        .logo-text { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity .2s ease .05s; }
         .sidebar:hover .logo-text { opacity: 1; }
         .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
         .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -83,12 +82,12 @@
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 
-        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
+        .btn-back { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--text-white); font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; padding: 0 14px; height: 36px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: background .2s ease, border-color .2s ease; }
         .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
         .btn-back svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
         .set-header { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-        .set-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
+        .set-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -.3px; }
         .set-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .set-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
 
@@ -131,7 +130,7 @@
         .menu-item svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
         .card-fc-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .fc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: .3px; }
+        .fc-name { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: .3px; }
 
         /* progress */
         .fc-prog-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
@@ -414,55 +413,55 @@
 
 <!-- ── RENAME MODAL ── -->
 <div id="renameModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif;">
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:6px;">Rename Set</div>
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px; width:360px; font-family:'Poppins',sans-serif;">
+        <div style="font-family:'Poppins',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:6px;">Rename Set</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Enter a new name for this flashcard set.</div>
         <input id="renameInput" type="text" placeholder="Set name…"
             style="width:100%; height:42px; background:#13101f; border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:13px; font-family:inherit; outline:none; margin-bottom:20px; transition:border-color .2s;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
         />
         <div style="display:flex; gap:10px;">
-            <button onclick="closeRename()" style="flex:1; height:40px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
-            <button onclick="submitRename()" style="flex:2; height:40px; border-radius:9px; border:none; background:var(--accent); color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Save</button>
+            <button onclick="closeRename()" style="flex:1; height:40px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitRename()" style="flex:2; height:40px; border-radius:9px; border:none; background:var(--accent); color:#fff; font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Save</button>
         </div>
     </div>
 </div>
 
 <!-- ── DELETE MODAL ── -->
 <div id="deleteModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-    <div style="background:var(--card-bg); border:1px solid rgba(220,60,60,.2); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif; text-align:center;">
+    <div style="background:var(--card-bg); border:1px solid rgba(220,60,60,.2); border-radius:16px; padding:28px; width:360px; font-family:'Poppins',sans-serif; text-align:center;">
         <div style="width:48px; height:48px; border-radius:14px; background:rgba(220,60,60,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
                 <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Delete Set?</div>
+        <div style="font-family:'Poppins',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Delete Set?</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
             "<span id="deleteSetName"></span>" will be permanently deleted along with all its flashcards and quizzes.
         </div>
         <div style="display:flex; gap:10px; justify-content:center;">
-            <button onclick="closeDelete()" style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
-            <button onclick="submitDelete()" style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Yes, Delete</button>
+            <button onclick="closeDelete()" style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitDelete()" style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Yes, Delete</button>
         </div>
     </div>
 </div>
 
 <!-- ── LOGOUT MODAL ── -->
 <div id="logoutModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px 28px 24px; width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px 28px 24px; width:340px; text-align:center; font-family:'Poppins',sans-serif;">
         <div style="width:48px; height:48px; border-radius:14px; background:rgba(220,60,60,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Log Out?</div>
+        <div style="font-family:'Poppins',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Log Out?</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Are you sure you want to log out of Rev'nLearn?</div>
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="document.getElementById('logoutModal').style.display='none'"
-                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
             <a href="/Account/Logout"
-                style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; text-decoration:none; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;">Yes, Log Out</a>
+                style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; text-decoration:none; font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;">Yes, Log Out</a>
         </div>
     </div>
 </div>
