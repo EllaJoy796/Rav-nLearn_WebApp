@@ -385,7 +385,7 @@
         <div class="results-title" id="resultsTitle"></div>
         <div class="results-sub" id="resultsSub"></div>
         <div class="results-actions">
-            <button class="btn-result btn-result-cancel" onclick="closeResults()">Close</button>
+            <button class="btn-result btn-result-cancel" onclick="goToFlashcardView()">Done</button>
             <button class="btn-result btn-result-retry" onclick="retryWrong()">
                 ↺ Retry Missed
             </button>
@@ -522,6 +522,10 @@
 
     function closeResults() {
         document.getElementById('resultsModal').classList.remove('open');
+    }
+
+    function goToFlashcardView() {
+        window.location.href = '/Chat/FlashcardView?id=@projectId';
     }
 
     function retryWrong() {

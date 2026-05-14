@@ -1106,14 +1106,17 @@ namespace RavnLearnWeb.Controllers
                     @"SELECT cs.session_id,
                             cs.title,
                             cs.created_at,
-                            COUNT(fc.flashcard_id) AS card_count
+                            COUNT(fc.flashcard_id) AS card_count,
+                            COUNT(fr.flashcard_id) FILTER (WHERE fr.status = 'correct') AS got_count
                     FROM chat_sessions cs
                     JOIN chats c ON c.chat_id = cs.chat_id
                     JOIN flashcards fc ON fc.session_id = cs.session_id
+                    LEFT JOIN flashcard_reviews fr ON fr.flashcard_id = fc.flashcard_id AND fr.user_id = @uid
                     WHERE c.project_id = @pid
                     GROUP BY cs.session_id, cs.title, cs.created_at
                     ORDER BY cs.created_at ASC", conn);
                 cmd.Parameters.AddWithValue("pid", id);
+                cmd.Parameters.AddWithValue("uid", UserId);
                 using var reader = await cmd.ExecuteReaderAsync();
                 int idx = 1;
                 while (await reader.ReadAsync())
@@ -1123,7 +1126,8 @@ namespace RavnLearnWeb.Controllers
                         SessionId = reader.GetInt32(0),
                         Title     = $"FLASHCARD SET {idx:D2}",
                         Date      = reader.GetDateTime(2).ToString("MMM dd, yyyy"),
-                        CardCount = reader.GetInt64(3)
+                        CardCount = reader.GetInt64(3),
+                        GotCount  = reader.GetInt64(4)
                     });
                     idx++;
                 }
