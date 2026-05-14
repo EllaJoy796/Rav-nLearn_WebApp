@@ -1471,6 +1471,45 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     return ms.ToArray();
 }
 
+[HttpPost]
+        public async Task<IActionResult> SaveFlashcardReview([FromBody] SaveFlashcardReviewRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+
+                // Get the flashcard_id at this index within the session
+                using var idCmd = new NpgsqlCommand(
+                    @"SELECT flashcard_id FROM flashcards
+                      WHERE session_id = @sid
+                      ORDER BY created_at ASC
+                      LIMIT 1 OFFSET @offset", conn);
+                idCmd.Parameters.AddWithValue("sid",    int.Parse(req.SessionId.ToString()));
+                idCmd.Parameters.AddWithValue("offset", req.CardIndex);
+                var idResult = await idCmd.ExecuteScalarAsync();
+                if (idResult == null) return Ok(); // card not found, skip silently
+
+                int flashcardId = Convert.ToInt32(idResult);
+
+                // Upsert into flashcard_reviews
+                using var cmd = new NpgsqlCommand(
+                    @"INSERT INTO flashcard_reviews (user_id, flashcard_id, status, last_reviewed)
+                      VALUES (@uid, @fid, @status, @now)
+                      ON CONFLICT (user_id, flashcard_id)
+                      DO UPDATE SET status = @status, last_reviewed = @now", conn);
+                cmd.Parameters.AddWithValue("uid",    UserId);
+                cmd.Parameters.AddWithValue("fid",    flashcardId);
+                cmd.Parameters.AddWithValue("status", req.Status);
+                cmd.Parameters.AddWithValue("now",    DateTime.UtcNow);
+                await cmd.ExecuteNonQueryAsync();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";
@@ -1590,6 +1629,13 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     {
         public int Id       { get; set; }
         public string Title { get; set; } = "";
+    }
+
+    public class SaveFlashcardReviewRequest
+    {
+        public object SessionId { get; set; } = 0;
+        public int    CardIndex { get; set; }
+        public string Status    { get; set; } = "";
     }
 
     public class RenameProjectRequest

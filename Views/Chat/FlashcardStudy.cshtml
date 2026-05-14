@@ -150,6 +150,30 @@
         .btn-shuffle:hover { border-color: var(--accent); color: var(--text-white); }
         .btn-shuffle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+        /* ── SELF-ASSESSMENT BUTTONS ── */
+        .assess-btns { display: flex; gap: 12px; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+        .assess-btns.visible { opacity: 1; pointer-events: all; }
+        .btn-assess { height: 42px; padding: 0 24px; border-radius: 12px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform .15s ease, filter .15s ease; }
+        .btn-assess:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .btn-assess:active { transform: translateY(0); }
+        .btn-assess svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-correct { background: #2d6a3f; color: #7debb0; }
+        .btn-wrong   { background: #6a2d2d; color: #eb7d7d; }
+
+        /* ── RESULTS MODAL ── */
+        .results-modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; }
+        .results-modal-overlay.open { display: flex; }
+        .results-modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 36px 32px; width: min(440px, 90vw); text-align: center; }
+        .results-ring { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 900; }
+        .results-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); margin-bottom: 6px; }
+        .results-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+        .results-actions { display: flex; gap: 10px; justify-content: center; }
+        .btn-result { height: 42px; padding: 0 20px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: filter .2s; }
+        .btn-result:hover { filter: brightness(1.1); }
+        .btn-result-retry  { background: #6a2d2d; color: #eb7d7d; border: none; }
+        .btn-result-restart { background: var(--accent); color: #fff; border: none; }
+        .btn-result-cancel { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+
         /* progress dots */
         .progress-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 500px; }
         .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); transition: background .3s ease; cursor: pointer; }
@@ -297,6 +321,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="assess-btns" id="assessBtns">
+                        <button class="btn-assess btn-wrong" onclick="rateCard(false)">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Still Learning
+                        </button>
+                        <button class="btn-assess btn-correct" onclick="rateCard(true)">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Got It
+                        </button>
+                    </div>
                     <div class="study-nav">
                         <button class="btn-nav" id="btnPrev" onclick="prevCard()" disabled>
                             <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -344,13 +378,208 @@
     </div>
 </div>
 
+<!-- ── RESULTS MODAL ── -->
+<div class="results-modal-overlay" id="resultsModal">
+    <div class="results-modal">
+        <div class="results-ring" id="resultsRing"></div>
+        <div class="results-title" id="resultsTitle"></div>
+        <div class="results-sub" id="resultsSub"></div>
+        <div class="results-actions">
+            <button class="btn-result btn-result-cancel" onclick="closeResults()">Close</button>
+            <button class="btn-result btn-result-retry" onclick="retryWrong()">
+                ↺ Retry Missed
+            </button>
+            <button class="btn-result btn-result-restart" onclick="restartDeck()">
+                ⟳ Restart All
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     (function () { if (localStorage.getItem('lightMode') === 'true') document.body.classList.add('light-mode'); })();
 
-    const allCards = @Html.Raw(cardsJson);
-    let deck = [...allCards];
-    let current = 0;
-    let isFlipped = false;
+    const allCards  = @Html.Raw(cardsJson);
+    const cardIds   = allCards.map((_, i) => i); // index-based since we may not have DB ids here
+    let deck        = [...allCards];
+    let deckIndices = [...Array(allCards.length).keys()]; // tracks original index for DB save
+    let current     = 0;
+    let isFlipped   = false;
+
+    // score tracking: map of originalIndex -> true/false
+    let ratings = {};
+    let wrongCards = []; // original indices of wrong cards
+
+    function renderCard() {
+        if (!deck.length) return;
+        const card = deck[current];
+        document.getElementById('flipFront').textContent = card.front;
+        document.getElementById('flipBack').textContent  = card.back;
+        document.getElementById('cardCounter').textContent = `${current + 1} / ${deck.length}`;
+        isFlipped = false;
+        document.getElementById('flipCard').classList.remove('flipped');
+        document.getElementById('btnPrev').disabled = current === 0;
+        document.getElementById('btnNext').disabled = current === deck.length - 1;
+        // hide assess buttons until flipped
+        document.getElementById('assessBtns').classList.remove('visible');
+        document.querySelectorAll('.prog-dot').forEach((d, idx) => {
+            d.classList.toggle('active',  idx === current);
+            d.classList.toggle('visited', idx < current);
+        });
+    }
+
+    function buildDots() {
+        const c = document.getElementById('progressDots');
+        if (!c) return;
+        c.innerHTML = '';
+        deck.forEach((_, idx) => {
+            const d = document.createElement('div');
+            d.className = 'prog-dot' + (idx === 0 ? ' active' : '');
+            d.onclick = () => { current = idx; renderCard(); };
+            c.appendChild(d);
+        });
+    }
+
+    function flipCard() {
+        isFlipped = !isFlipped;
+        document.getElementById('flipCard').classList.toggle('flipped', isFlipped);
+        // show assess buttons only when flipped to answer side
+        document.getElementById('assessBtns').classList.toggle('visible', isFlipped);
+    }
+
+    function nextCard()  { if (current < deck.length - 1) { current++; renderCard(); } }
+    function prevCard()  { if (current > 0) { current--; renderCard(); } }
+
+    async function rateCard(correct) {
+        const origIdx = deckIndices[current];
+        ratings[origIdx] = correct;
+        if (!correct) {
+            if (!wrongCards.includes(origIdx)) wrongCards.push(origIdx);
+        } else {
+            wrongCards = wrongCards.filter(i => i !== origIdx);
+        }
+
+        // Save to DB
+        await saveReview(origIdx, correct);
+
+        // Update dot color
+        const dots = document.querySelectorAll('.prog-dot');
+        if (dots[current]) {
+            dots[current].style.background = correct ? '#2d9e5f' : '#9e2d2d';
+        }
+
+        // Auto-advance or show results
+        if (current < deck.length - 1) {
+            current++;
+            renderCard();
+        } else {
+            showResults();
+        }
+    }
+
+    async function saveReview(origIdx, correct) {
+        const card = allCards[origIdx];
+        if (!card) return;
+        try {
+            await fetch('/Chat/SaveFlashcardReview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: getSessionIdFromUrl(),
+                    cardIndex: origIdx,
+                    status: correct ? 'correct' : 'wrong'
+                })
+            });
+        } catch (e) { console.error('Review save failed:', e); }
+    }
+
+    function getSessionIdFromUrl() {
+        return new URLSearchParams(window.location.search).get('sessionId') ?? 0;
+    }
+
+    function showResults() {
+        const total   = Object.keys(ratings).length;
+        const correct = Object.values(ratings).filter(Boolean).length;
+        const pct     = total > 0 ? Math.round(correct / total * 100) : 0;
+        const color   = pct >= 70 ? '#2d9e5f' : pct >= 40 ? '#9e7a2d' : '#9e2d2d';
+        const bgColor = pct >= 70 ? 'rgba(45,158,95,.15)' : pct >= 40 ? 'rgba(158,122,45,.15)' : 'rgba(158,45,45,.15)';
+        const emoji   = pct >= 70 ? '🎉' : pct >= 40 ? '📚' : '💪';
+
+        document.getElementById('resultsRing').style.cssText =
+            `background:${bgColor}; color:${color}; border: 3px solid ${color};`;
+        document.getElementById('resultsRing').textContent = `${pct}%`;
+        document.getElementById('resultsTitle').textContent =
+            pct >= 70 ? 'Great job!' : pct >= 40 ? 'Keep going!' : 'Keep practicing!';
+        document.getElementById('resultsSub').textContent =
+            `${emoji} You got ${correct} out of ${total} correct.`;
+
+        // hide retry button if no wrong cards
+        document.querySelector('.btn-result-retry').style.display =
+            wrongCards.length > 0 ? '' : 'none';
+
+        document.getElementById('resultsModal').classList.add('open');
+    }
+
+    function closeResults() {
+        document.getElementById('resultsModal').classList.remove('open');
+    }
+
+    function retryWrong() {
+        closeResults();
+        // rebuild deck with only wrong cards
+        const wrongDeck = wrongCards.map(i => allCards[i]);
+        deck = wrongDeck;
+        deckIndices = [...wrongCards];
+        ratings = {};
+        wrongCards = [];
+        current = 0;
+        buildDots();
+        renderCard();
+    }
+
+    function restartDeck() {
+        closeResults();
+        deck = [...allCards];
+        deckIndices = [...Array(allCards.length).keys()];
+        ratings = {};
+        wrongCards = [];
+        current = 0;
+        buildDots();
+        renderCard();
+    }
+
+    function shuffleCards() {
+        // Fisher-Yates on both deck and deckIndices together
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+            [deckIndices[i], deckIndices[j]] = [deckIndices[j], deckIndices[i]];
+        }
+        ratings = {};
+        wrongCards = [];
+        current = 0;
+        buildDots();
+        renderCard();
+    }
+
+    function setView(v) {
+        const isStudy = v === 'study';
+        document.getElementById('studyView').classList.toggle('hidden', !isStudy);
+        document.getElementById('listView').classList.toggle('hidden', isStudy);
+        document.getElementById('btnStudy').classList.toggle('active', isStudy);
+        document.getElementById('btnList').classList.toggle('active', !isStudy);
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') nextCard();
+        if (e.key === 'ArrowLeft')  prevCard();
+        if (e.key === ' ') { e.preventDefault(); flipCard(); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); if (isFlipped) rateCard(true);  }
+        if (e.key === 'ArrowDown') { e.preventDefault(); if (isFlipped) rateCard(false); }
+    });
+
+    if (allCards.length) { buildDots(); renderCard(); }
+</script>
 
     function renderCard() {
         if (!deck.length) return;
