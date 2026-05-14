@@ -43,6 +43,14 @@ namespace RavnLearnWeb.Controllers
                         {
                             HttpContext.Session.SetString("Username", username);
                             HttpContext.Session.SetInt32("UserId", Convert.ToInt32(result));
+
+                            // Fetch email so sidebar can display it
+                            using var emailCmd = new NpgsqlCommand(
+                                "SELECT email FROM users WHERE username = @u", conn);
+                            emailCmd.Parameters.AddWithValue("u", username);
+                            var email = emailCmd.ExecuteScalar()?.ToString() ?? "";
+                            HttpContext.Session.SetString("Email", email);
+
                             return RedirectToAction("MyChats", "Chat");
                         }
                         else
