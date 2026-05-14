@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Rev'nLearn";
+    ViewData["Title"] = "RavnLearn";
     Layout = null;
 }
 
@@ -8,8 +8,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RavnLearn</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Rev'nLearn</title>
+    <link rel="icon" type="image/png" href="/images/logo sa taas.png?v=999&t=@DateTime.Now.Ticks" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -30,29 +31,182 @@
             --accent-hover: #6a4eaa;
             --btn-flat:     #f3edf9;
             --radius:       10px;
-            --dots-hover-bg: rgba(124,92,191,0.12);
+            --dots-hover-bg: #f5effc;
+            --dots-hover-color: #111111;
+            --icon-color:   #7c5cbf;
         }
 
-        body.dark-mode {
-            --bg:           #0d0d12;
-            --left-bg:      #111118;
-            --center-bg:    #0f0d14;
-            --right-bg:     #111118;
-            --panel-border: rgba(124,92,191,0.18);
-            --input-bg:     #1a1726;
-            --input-border: rgba(124,92,191,0.3);
-            --bubble-user:  #7c5cbf;
-            --bubble-ai:    #1e1a2e;
-            --text:         #f0eeff;
-            --text-muted:   #7a7490;
-            --text-dim:     #4e4868;
+        /* ── LIGHT MODE (applies to Chat view) ── */
+        body.light-mode {
+            --bg:           #f5f1fb;
+            --left-bg:      #ffffff;
+            --center-bg:    #fbf8ff;
+            --right-bg:     #ffffff;
+            --panel-border: #ddd1ef;
+            --input-bg:     #ffffff;
+            --input-border: #d6c8ea;
+            --bubble-user:  #8c63d2;
+            --bubble-ai:    #ffffff;
+            --text:         #111111;
+            --text-muted:   #454545;
+            --text-dim:     #757575;
             --accent:       #7c5cbf;
             --accent-hover: #6a4eaa;
-            --btn-flat:     rgba(124,92,191,0.12);
-            --dots-hover-bg: rgba(124,92,191,0.18);
+            --btn-flat:     #f3edf9;
+            --dots-hover-bg: #f5effc;
+            --dots-hover-color: #111111;
+            --icon-color:   #7c5cbf;
         }
+        /* ── DARK MODE (when lightMode=false in profile) ── */
+body.dark-mode {
+    --bg:            #0e0b17;
+    --left-bg:       #110e1c;
+    --center-bg:     #0f0c1a;
+    --right-bg:      #110e1c;
+    --panel-border:  #2d2045;
+    --input-bg:      #1a1528;
+    --input-border:  #352a50;
+    --bubble-user:   #7c5cbf;
+    --bubble-ai:     #1e1830;
+    --text:          #e8e0f8;
+    --text-muted:    #a090c0;
+    --text-dim:      #6a5890;
+    --accent:        #9070d4;
+    --accent-hover:  #7c5cbf;
+    --btn-flat:      #1e1830;
+    --dots-hover-bg: #2a1f45;
+    --dots-hover-color: #e8e0f8;
+    --icon-color:    #9070d4;
+}
+/* Hardcoded-color overrides for dark mode */
+body.dark-mode .context-menu      { background:#1e1830; border-color:#352a50; }
+body.dark-mode .ctx-menu-item     { color:#a090c0; }
+body.dark-mode .ctx-menu-item:hover { background:#2a1f45; color:#e8e0f8; }
+body.dark-mode .doc-item          { background:#1e1830; border-color:#2d2045; }
+body.dark-mode .doc-item:hover    { background:#241d38; border-color:#352a50; }
+body.dark-mode .quiz-card         { background:#1e1830; border-color:#2d2045; }
+body.dark-mode .quiz-card:hover   { border-color:#352a50; }
+body.dark-mode .quiz-card-header:hover { background:#241d38; }
+body.dark-mode .quiz-card-body    { border-color:#2d2045; }
+body.dark-mode .quiz-opt:hover    { background:#241d38; border-color:#352a50; }
+body.dark-mode .modal-card        { background:#1e1830; }
+body.dark-mode .modal-head        { border-color:#352a50; }
+body.dark-mode .modal-input       { background:#0f0c1a; border-color:#352a50; color:#e8e0f8; }
+body.dark-mode .btn-reviewer-action { background:#1e1830; border-color:#2d2045; }
+body.dark-mode .right-rail        { background:linear-gradient(180deg,#110e1c,#0e0b17); }
+body.dark-mode .rail-icon-btn     { background:#1e1830; border-color:#2d2045; }
+body.dark-mode .rail-icon-btn:hover { background:#241d38; }
+body.dark-mode .side-toggle       { background:#1e1830; border-color:#352a50; color:#e8e0f8; }
+body.dark-mode .side-toggle:hover { background:#241d38; }
+body.dark-mode .chat-item:hover   { background:#241d38; }
+body.dark-mode .chat-item.active  { background:rgba(144,112,212,.25); }
+body.dark-mode .btn-back          { border-color:#352a50; }
+body.dark-mode .btn-back:hover    { background:#241d38; border-color:#4a3570; }
+body.dark-mode .msg-wrapper.ai .bubble { border-color:#352a50; }
+body.dark-mode .left-rail,
+body.dark-mode .right-rail { background: linear-gradient(180deg, #110e1c, #0e0b17); }
+body.dark-mode .msg-wrapper.ai .bubble { color: #e8e0f8; border-color: #352a50; }
+body.dark-mode .reviewer-icon   { background: #2a1f45; border-color: #352a50; }
+body.dark-mode .doc-item-icon   { background: #2a1f45; border-color: #352a50; }
+body.dark-mode .quiz-q-text,
+body.dark-mode .quiz-opt-text   { color: #e8e0f8; }
+/* ── Quiz Modal ── */
+body.dark-mode #quizModal > div                          { background: #1e1830 !important; border-color: #352a50 !important; }
+body.dark-mode #quizModal > div > div:first-child        { border-bottom-color: #352a50 !important; }
+body.dark-mode #modalQuizBody .quiz-q-text               { color: #e8e0f8; }
+body.dark-mode #modalQuizBody .quiz-opt-text             { color: #e8e0f8; }
+body.dark-mode #modalQuizBody .quiz-opt:hover            { background: #241d38 !important; border-color: #352a50 !important; }
+body.dark-mode #modalQuizBody .quiz-score                { color: #a090c0; }
 
-        html, body { height: 100%; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); overflow: hidden; }
+/* ── Flashcard faces (inline bg override) ── */
+body.dark-mode #modalQuizBody div[style*="background:#ffffff"] { background: #1e1830 !important; border-color: #352a50 !important; }
+body.dark-mode #modalQuizBody div[style*="background:#f4eefc"] { background: #241d38 !important; border-color: #4a3570 !important; }
+body.dark-mode #modalQuizBody div[style*="color:#111"]         { color: #e8e0f8 !important; }
+
+/* ── Flashcard nav buttons ── */
+body.dark-mode #modalQuizBody button[style*="background:none"] { color: #a090c0 !important; border-color: #352a50 !important; }
+body.dark-mode #modalQuizBody div[style*="color:#555"]         { color: #a090c0 !important; }
+
+/* ── Fill-blank input ── */
+body.dark-mode #modalQuizBody input[type="text"] { background: #0f0c1a !important; border-color: #352a50 !important; color: #e8e0f8 !important; }
+
+/* ── Action Modal (Rename/Delete) ── */
+body.dark-mode #actionModal .modal-card  { background: #1e1830; }
+body.dark-mode #actionModal .modal-head  { border-color: #352a50; }
+body.dark-mode #actionModal .modal-copy  { color: #a090c0; }
+body.dark-mode #actionModal .modal-btn   { background: #241d38; border-color: #352a50; color: #e8e0f8; }
+/* ── Flashcard card face (front/back) ── */
+body.dark-mode #modalQuizBody div[style*="perspective"] div[style*="background:#ffffff"],
+body.dark-mode #modalQuizBody div[style*="background:#ffffff"]  { background: #1e1830 !important; border-color: #352a50 !important; color: #e8e0f8 !important; }
+body.dark-mode #modalQuizBody div[style*="background:#f4eefc"]  { background: #241d38 !important; border-color: #4a3570 !important; }
+
+/* Flashcard nav buttons (Prev, Next, Flip, Know it, Still learning) */
+body.dark-mode #modalQuizBody button[style*="background:none"],
+body.dark-mode #modalQuizBody button[style*="background: none"]  { background: #1e1830 !important; border-color: #352a50 !important; color: #a090c0 !important; }
+body.dark-mode #modalQuizBody button[style*="background:rgba(124"] { background: rgba(144,112,212,0.2) !important; }
+
+/* Flashcard counter + progress bar track */
+body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] { background: #2d2045 !important; }
+body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] { background: #2d2045 !important; }
+body.dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
+.flashcard-progress-track { background: #ebe1f8; }
+body.dark-mode .flashcard-progress-track { background: #2d2045 !important; }
+body.dark-mode .flashcard-progress-bar { background: var(--accent) !important; }
+body.dark-mode .quiz-card-body { background: #1e1830; }dark-mode #modalQuizBody div[style*="background:#ebe1f8"] > div { background: var(--accent) !important; }
+body.dark-mode #modalQuizBody span[style*="color:#555"],
+body.dark-mode #modalQuizBody div[style*="color:#555"]         { color: #a090c0 !important; }
+
+/* ── Quiz fill-blank feedback row ── */
+body.dark-mode #modalQuizBody .quiz-feedback.wrong  { background: #2d1a1a !important; color: #e07070 !important; border: none; }
+body.dark-mode #modalQuizBody .quiz-feedback.correct { background: #1a2d1a !important; color: #6dbf6d !important; border: none; }
+
+/* MCQ option rows */
+body.dark-mode #modalQuizBody .quiz-opt              { border-color: #2d2045; }
+body.dark-mode #modalQuizBody .quiz-opt.correct      { background: #1a2d1a !important; border-color: #4a8c4a !important; }
+body.dark-mode #modalQuizBody .quiz-opt.wrong        { background: #2d1a1a !important; border-color: #8c4a4a !important; }
+body.dark-mode .flashcard-front { background: #1e1830 !important; border-color: #352a50 !important; }
+body.dark-mode .flashcard-back  { background: #241d38 !important; border-color: #4a3570 !important; }
+body.dark-mode .flashcard-face,
+body.dark-mode .flashcard-face * { color: #e8e0f8 !important; }
+/* Retry button */
+body.dark-mode #modalQuizBody button[style*="border:1px solid #d7caeb"] { background: #1e1830 !important; border-color: #352a50 !important; color: #9070d4 !important; }
+/* ── Know it / Still learning flashcard buttons ── */
+.btn-know-it {
+    flex: 1;
+    background: #edf8ee;
+    border: 1px solid #8cc68d;
+    border-radius: 6px;
+    color: #317d34;
+    font-size: 11px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn-still-learning {
+    flex: 1;
+    background: #fdeeee;
+    border: 1px solid #e0a0a0;
+    border-radius: 6px;
+    color: #b54c4c;
+    font-size: 11px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+body.dark-mode .btn-know-it {
+    background: #1a2d1a !important;
+    border-color: #4a8c4a !important;
+    color: #6dbf6d !important;
+}
+body.dark-mode .btn-still-learning {
+    background: #2d1a1a !important;
+    border-color: #8c4a4a !important;
+    color: #e07070 !important;
+}
+
+        html, body { height: 100%; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); overflow: hidden; }
 
         .app-shell { display: flex; height: 100vh; width: 100vw; }
 
@@ -214,26 +368,23 @@
             height: 16px;
             fill: currentColor;
         }
-
         .chat-item:hover .btn-more-chat,
         .quiz-card:hover .btn-more-reviewer,
         .doc-item:hover .btn-doc-speak {
             opacity: 1;
         }
-
         .btn-more-chat:hover,
         .btn-more-reviewer:hover,
         .btn-doc-speak:hover {
             color: var(--text);
             background: var(--dots-hover-bg);
         }
-
         .context-menu {
             position: absolute;
             right: 10px;
             top: calc(100% - 2px);
-            background: var(--left-bg);
-            border: 1px solid var(--panel-border);
+            background: #ffffff;
+            border: 1px solid #d7caeb;
             border-radius: 10px;
             min-width: 140px;
             padding: 6px;
@@ -241,7 +392,6 @@
             box-shadow: 0 16px 32px rgba(0,0,0,0.35);
             white-space: nowrap;
         }
-
         .ctx-menu-item {
             width: 100%;
             border: none;
@@ -267,7 +417,7 @@
             stroke-linejoin: round;
             flex-shrink: 0;
         }
-        .ctx-menu-item:hover { background: var(--btn-flat); color: var(--text); }
+        .ctx-menu-item:hover { background: #f4eefc; color: var(--text); }
         .ctx-menu-item.delete-item:hover { color: #f08080; }
 
         /* ── DIVIDER ── */
@@ -314,8 +464,8 @@
         .doc-list::-webkit-scrollbar { width: 3px; }
         .doc-list::-webkit-scrollbar-thumb { background: #d3c3eb; border-radius: 4px; }
         .doc-item {
-            background: var(--left-bg);
-            border: 1px solid var(--panel-border);
+            background: #ffffff;
+            border: 1px solid #ddd1ef;
             border-radius: 8px;
             padding: 7px 10px;
             font-size: 12px;
@@ -327,20 +477,21 @@
             margin-bottom: 5px;
             transition: border-color 0.15s, background 0.15s;
         }
-        .doc-item:hover { background: var(--btn-flat); border-color: var(--accent); }
+        .doc-item:hover { background: #f7f2fd; border-color: #cdb8ea; }
         .doc-item-icon {
             width: 28px;
             height: 28px;
             border-radius: 8px;
-            background: var(--btn-flat);
-            border: 1px solid var(--panel-border);
+            background: #f4eefc;
+            border: 1px solid #d7caeb;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             color: var(--icon-color);
         }
-        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; text-align: left; min-width: 0; }        .doc-item-spinner {
+        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; text-align: left; min-width: 0; }
+        .doc-item-spinner {
             width: 11px; height: 11px;
             border: 2px solid #d2c5e6;
             border-top-color: var(--accent);
@@ -538,14 +689,14 @@
         .quiz-list::-webkit-scrollbar-thumb { background: #d3c3eb; border-radius: 4px; }
 
         .quiz-card {
-            background: var(--right-bg);
-            border: 1px solid var(--panel-border);
+            background: #ffffff;
+            border: 1px solid #ddd1ef;
             border-radius: 10px;
             margin-bottom: 8px;
             overflow: visible;
             transition: border-color 0.15s;
         }
-        .quiz-card:hover { border-color: rgba(124,92,191,0.4); }
+        .quiz-card:hover { border-color: #cdb8ea; }
 
         /* ── REVIEWER CARD HEADER ── */
         .quiz-card-header {
@@ -557,12 +708,12 @@
             transition: background .15s;
             position: relative;
         }
-        .quiz-card-header:hover { background: var(--btn-flat); }
+        .quiz-card-header:hover { background: #f5effc; }
 
         .reviewer-icon {
             width: 34px; height: 34px;
-            background: var(--btn-flat);
-            border: 1px solid var(--panel-border);
+            background: #f4eefc;
+            border: 1px solid #d7caeb;
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
@@ -605,8 +756,8 @@
         .btn-reviewer-action {
             flex: 1;
             padding: 7px 4px;
-            background: var(--right-bg);
-            border: 1px solid var(--panel-border);
+            background: #ffffff;
+            border: 1px solid #ddd1ef;
             border-radius: 7px;
             color: var(--text-muted);
             font-size: 11px;
@@ -627,15 +778,15 @@
         .btn-reviewer-action svg { width: 11px; height: 11px; fill: currentColor; }
 
         /* ── EXPANDABLE QUIZ BODY ── */
-        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid var(--panel-border); }
+        .quiz-card-body { display: none; padding: 0 12px 10px; border-top: 1px solid #e7dcf5; }
         .quiz-card-body.open { display: block; }
-        .quiz-q-text { font-size: 12px; color: var(--text); line-height: 1.5; margin: 8px 0 6px; }
+        .quiz-q-text { font-size: 12px; color: #222; line-height: 1.5; margin: 8px 0 6px; }
         .quiz-opt { display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; transition: background .15s; border: 1px solid transparent; }
-        .quiz-opt:hover { background: var(--btn-flat); border-color: rgba(124,92,191,0.3); }
-        .quiz-opt.correct { background: rgba(46,139,87,0.12); border-color: #8cc68d; }
-        .quiz-opt.wrong { background: rgba(192,57,43,0.12); border-color: #e0a0a0; }
+        .quiz-opt:hover { background: #f5effc; border-color: #ceb9ea; }
+        .quiz-opt.correct { background: #edf8ee; border-color: #8cc68d; }
+        .quiz-opt.wrong { background: #fdeeee; border-color: #e0a0a0; }
         .quiz-opt-letter { font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; width: 14px; }
-        .quiz-opt-text { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        .quiz-opt-text { font-size: 12px; color: #222; line-height: 1.4; }
         .quiz-feedback { font-size: 11px; margin-top: 6px; padding: 5px 8px; border-radius: 5px; display: none; }
         .quiz-feedback.show { display: block; }
         .quiz-feedback.correct { background: #edf8ee; color: #317d34; }
@@ -726,15 +877,15 @@
         .modal-shell.open { display: flex; }
         .modal-card {
             width: min(440px, 92vw);
-            background: var(--left-bg);
-            border: 1px solid var(--panel-border);
+            background: #ffffff;
+            border: 1px solid #ddd1ef;
             border-radius: 16px;
             box-shadow: 0 24px 60px rgba(87,57,138,0.16);
             overflow: hidden;
         }
         .modal-head {
             padding: 16px 18px;
-            border-bottom: 1px solid var(--panel-border);
+            border-bottom: 1px solid #ece2f7;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -763,8 +914,8 @@
         }
         .modal-input {
             width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
+            background: #ffffff;
+            border: 1px solid #d7caeb;
             border-radius: 12px;
             color: var(--text);
             font-size: 13px;
@@ -783,8 +934,8 @@
             padding: 0 18px 18px;
         }
         .modal-btn {
-            border: 1px solid var(--panel-border);
-            background: var(--input-bg);
+            border: 1px solid #d7caeb;
+            background: #ffffff;
             color: var(--text);
             border-radius: 10px;
             padding: 10px 14px;
@@ -818,7 +969,7 @@
             <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
                  alt="Logo" style="width:26px;height:26px;object-fit:contain;"
                  onerror="this.style.display='none'" />
-            Rev'nLearn
+            <span class="left-logo-text">Rev'nLearn</span>
         </div>
 
         <!-- Back + New Chat -->
@@ -1059,14 +1210,16 @@
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
-        // Sync with profile display preference
-        const _lm = localStorage.getItem('lightMode');
-        if (_lm === 'true') {
-            document.body.classList.remove('dark-mode');
-        } else {
-            // Default to dark mode if no preference or explicitly set to false
-            document.body.classList.add('dark-mode');
-        }
+        // Load light mode preference
+        // NEW — two-way sync with profile setting
+const _lm = localStorage.getItem('lightMode');
+if (_lm === 'true') {
+    document.body.classList.add('light-mode');
+    document.body.classList.remove('dark-mode');
+} else if (_lm === 'false') {
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+}
         setupEventListeners();
         setupResizeHandles();
         syncPanelToggles();
@@ -2269,16 +2422,12 @@ function speakModuleContent(content, btn) {
         let finalTranscript = '';
 
         r.onstart = () => {
-            // Only initialize on the very first start, not on auto-restarts
-            if (!statusBar.classList.contains('visible')) {
-                finalTranscript = txtInput.value.trim();
-                statusBar.classList.add('visible');
-                inputHint.style.display = 'none';
-            }
-            // Don't wipe the countdown if it's already ticking
-            if (!countdownInterval) setListeningState();
+            finalTranscript = txtInput.value.trim();
+            statusBar.classList.add('visible');
+            inputHint.style.display = 'none';
+            setListeningState();
         };
-                r.onresult = (e) => {
+        r.onresult = (e) => {
             let interim = '';
             for (let i = e.resultIndex; i < e.results.length; i++) {
                 const t = e.results[i][0].transcript;
