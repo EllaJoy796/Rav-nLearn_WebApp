@@ -44,12 +44,14 @@ namespace RavnLearnWeb.Controllers
                      p.name,
                      COALESCE(p.subject, '')         AS subject,
                      p.created_at,
-                     COUNT(DISTINCT fc.flashcard_id) AS card_count
+                     COUNT(DISTINCT fc.flashcard_id) AS card_count,
+                     COALESCE(p.is_manual, false)    AS is_manual
               FROM projects p
               LEFT JOIN chats c        ON c.project_id = p.project_id
               LEFT JOIN flashcards fc  ON fc.chat_id   = c.chat_id
               WHERE p.user_id = @uid
               GROUP BY p.project_id
+              HAVING COUNT(DISTINCT fc.flashcard_id) > 0
               ORDER BY p.created_at DESC", conn);
         cmd.Parameters.AddWithValue("uid", UserId);
         using var reader = await cmd.ExecuteReaderAsync();
@@ -61,7 +63,8 @@ namespace RavnLearnWeb.Controllers
                 Name      = reader.GetString(1),
                 Subject   = reader.GetString(2),
                 Date      = reader.GetDateTime(3),
-                CardCount = reader.GetInt64(4)
+                CardCount = reader.GetInt64(4),
+                IsManual  = !reader.IsDBNull(5) && reader.GetBoolean(5)
             });
         }
     }
@@ -925,13 +928,21 @@ namespace RavnLearnWeb.Controllers
                             COUNT(DISTINCT f.file_id)       AS file_count,
                             COUNT(DISTINCT fc.flashcard_id) AS flashcard_count,
                             COALESCE(p.is_manual, false)    AS is_manual
-                    FROM projects p
-                    LEFT JOIN chats c       ON c.project_id = p.project_id
-                    LEFT JOIN files f       ON f.chat_id    = c.chat_id
-                    LEFT JOIN flashcards fc ON fc.chat_id   = c.chat_id
-                    WHERE p.user_id = @uid
-                    GROUP BY p.project_id
-                    ORDER BY p.created_at DESC", conn);
+                 FROM projects p
+                 LEFT JOIN chats c        ON c.project_id = p.project_id
+                 LEFT JOIN files f        ON f.chat_id    = c.chat_id
+                 LEFT JOIN flashcards fc  ON fc.chat_id   = c.chat_id
+                 WHERE p.user_id = @uid
+                 GROUP BY p.project_id
+                 HAVING COUNT(DISTINCT fc.flashcard_id) > 0
+                    OR EXISTS (
+                        SELECT 1
+                        FROM chats c2
+                        JOIN chat_sessions cs ON cs.chat_id = c2.chat_id
+                        JOIN quizzes q        ON q.session_id = cs.session_id
+                        WHERE c2.project_id = p.project_id
+                    )
+                 ORDER BY p.created_at DESC", conn);
                 cmd.Parameters.AddWithValue("uid", UserId);
                 using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -1113,7 +1124,8 @@ namespace RavnLearnWeb.Controllers
                             cs.title,
                             cs.created_at,
                             COUNT(fc.flashcard_id) AS card_count,
-                            COUNT(fr.flashcard_id) FILTER (WHERE fr.status = 'correct') AS got_count
+                            COUNT(fr.flashcard_id) FILTER (WHERE fr.status = 'correct') AS got_count,
+                            COALESCE(cs.is_manual, false) AS is_manual
                     FROM chat_sessions cs
                     JOIN chats c ON c.chat_id = cs.chat_id
                     JOIN flashcards fc ON fc.session_id = cs.session_id
@@ -1133,7 +1145,8 @@ namespace RavnLearnWeb.Controllers
                         Title     = $"FLASHCARD SET {idx:D2}",
                         Date      = reader.GetDateTime(2).ToString("MMM dd, yyyy"),
                         CardCount = reader.GetInt64(3),
-                        GotCount  = reader.GetInt64(4)
+                        GotCount  = reader.GetInt64(4),
+                        IsManual  = !reader.IsDBNull(5) && reader.GetBoolean(5)
                     });
                     idx++;
                 }
@@ -1576,6 +1589,126 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
 }
 
 [HttpPost]
+        public async Task<IActionResult> CreateManualFlashcardProject([FromBody] CreateChatRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Name))
+                return BadRequest(new { error = "Name is required" });
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"INSERT INTO projects (user_id, name, subject, created_at, is_manual)
+                      VALUES (@uid, @name, @subject, @now, true)
+                      RETURNING project_id", conn);
+                cmd.Parameters.AddWithValue("uid",     UserId);
+                cmd.Parameters.AddWithValue("name",    req.Name);
+                cmd.Parameters.AddWithValue("subject", req.Subject ?? "");
+                cmd.Parameters.AddWithValue("now",     DateTime.UtcNow);
+                int newId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                return Json(new { id = newId, name = req.Name });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateManualFlashcardSession([FromBody] CreateManualFlashcardSessionRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Title))
+                return Json(new { error = "Title is required" });
+            if (req.Cards == null || req.Cards.Count == 0)
+                return Json(new { error = "No cards provided" });
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+
+                // Find or create a chat for this project
+                int chatId = 0;
+                using (var chatCmd = new NpgsqlCommand(
+                    "SELECT chat_id FROM chats WHERE project_id = @pid AND user_id = @uid LIMIT 1", conn))
+                {
+                    chatCmd.Parameters.AddWithValue("pid", req.ProjectId);
+                    chatCmd.Parameters.AddWithValue("uid", UserId);
+                    var r = await chatCmd.ExecuteScalarAsync();
+                    if (r == null)
+                    {
+                        using var nc = new NpgsqlCommand(
+                            @"INSERT INTO chats (user_id, project_id, name, created_at, is_manual)
+                              VALUES (@uid, @pid, @name, @now, true) RETURNING chat_id", conn);
+                        nc.Parameters.AddWithValue("uid",  UserId);
+                        nc.Parameters.AddWithValue("pid",  req.ProjectId);
+                        nc.Parameters.AddWithValue("name", req.Title);
+                        nc.Parameters.AddWithValue("now",  DateTime.UtcNow);
+                        chatId = Convert.ToInt32(await nc.ExecuteScalarAsync());
+                    }
+                    else { chatId = Convert.ToInt32(r); }
+                }
+
+                // Create session marked as manual
+                int sessionId;
+                using (var sc = new NpgsqlCommand(
+                    @"INSERT INTO chat_sessions (chat_id, title, created_at, is_manual)
+                      VALUES (@cid, @title, @now, true) RETURNING session_id", conn))
+                {
+                    sc.Parameters.AddWithValue("cid",   chatId);
+                    sc.Parameters.AddWithValue("title", req.Title);
+                    sc.Parameters.AddWithValue("now",   DateTime.UtcNow);
+                    sessionId = Convert.ToInt32(await sc.ExecuteScalarAsync());
+                }
+
+                // Insert flashcards
+                foreach (var card in req.Cards)
+                {
+                    using var fc = new NpgsqlCommand(
+                        @"INSERT INTO flashcards (chat_id, session_id, front, back, created_at)
+                          VALUES (@cid, @sid, @front, @back, @now)", conn);
+                    fc.Parameters.AddWithValue("cid",   chatId);
+                    fc.Parameters.AddWithValue("sid",   sessionId);
+                    fc.Parameters.AddWithValue("front", card.Front);
+                    fc.Parameters.AddWithValue("back",  card.Back);
+                    fc.Parameters.AddWithValue("now",   DateTime.UtcNow);
+                    await fc.ExecuteNonQueryAsync();
+                }
+
+                return Json(new { success = true, sessionId });
+            }
+            catch (Exception ex) { return Json(new { error = ex.Message }); }
+        }
+
+[HttpGet]
+        public async Task<IActionResult> GetFlashcardsForStudyBuddy(int sessionId)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            var cards = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"SELECT fc.flashcard_id, fc.front, fc.back
+                      FROM flashcards fc
+                      JOIN chat_sessions cs ON cs.session_id = fc.session_id
+                      JOIN chats c ON c.chat_id = cs.chat_id
+                      WHERE fc.session_id = @sid AND c.user_id = @uid
+                      ORDER BY fc.created_at ASC", conn);
+                cmd.Parameters.AddWithValue("sid", sessionId);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    cards.Add(new {
+                        id    = reader.GetInt32(0),
+                        front = reader.GetString(1),
+                        back  = reader.GetString(2)
+                    });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+            return Json(cards);
+        }
+
+[HttpPost]
         public async Task<IActionResult> SaveFlashcardReview([FromBody] SaveFlashcardReviewRequest req)
         {
             if (!IsLoggedIn()) return Unauthorized();
@@ -1853,5 +1986,11 @@ public async Task<IActionResult> CreateManualQuizSession([FromBody] CreateManual
         public string Name { get; set; } = "";
     }
 
+    public class CreateManualFlashcardSessionRequest
+    {
+        public int    ProjectId { get; set; }
+        public string Title     { get; set; } = "";
+        public List<FlashcardItem> Cards { get; set; } = new();
+    }
 
 }

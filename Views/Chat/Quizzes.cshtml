@@ -498,7 +498,7 @@
             );
 
             // Keep only projects that have at least one quiz session
-            const withQuizzes = counts.filter(c => c.count > 0 || c.project.isManual);
+            const withQuizzes = counts.filter(c => c.count > 0);
 
             if (withQuizzes.length === 0) {
     // New Quiz Project card

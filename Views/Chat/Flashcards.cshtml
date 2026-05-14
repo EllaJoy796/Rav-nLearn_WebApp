@@ -86,7 +86,7 @@
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
-        .search-bar { width: 600px; position: relative; }
+        .search-bar { width: 360px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar input::placeholder { color: var(--text-dim); }
@@ -103,9 +103,9 @@
         .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
         .filter-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
-        .filter-select { height: 34px; padding: 0 32px 0 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; transition: border-color .2s, color .2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7490' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
-        .filter-select:focus, .filter-select:hover { border-color: var(--accent); color: var(--text-white); }
-        .filter-select option { background: #1e1a2e; color: var(--text-white); }
+        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; min-width: 110px; }
+        .filter-select:hover { border-color: var(--accent); }
+        .filter-select:focus { border-color: var(--accent); }
         .filter-reset { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: none; border: 1px solid rgba(124,92,191,.3); border-radius: 8px; color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s; }
         .filter-reset:hover { background: var(--accent-soft); border-color: var(--accent); }
         .filter-reset svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -130,6 +130,9 @@
         .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: auto; }
         .card-fc-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
+        .chip-user-made { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: rgba(92,191,124,.15); border: 1px solid rgba(92,191,124,.3); border-radius: 20px; font-size: 10px; font-weight: 700; color: #7debb0; letter-spacing: .5px; text-transform: uppercase; width: fit-content; margin-bottom: 4px; }
+        .chip-user-made svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
         /* ── EMPTY STATE ── */
         .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--text-dim); text-align: center; }
         .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
@@ -149,6 +152,18 @@
         .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
         @@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
+        
+        /* ── PROJECT THREE-DOT MENU ── */
+        .proj-dots { background: none; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; color: var(--text-dim); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2.5px; transition: color .2s, background .2s; flex-shrink: 0; }
+        .proj-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
+        .proj-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
+        .proj-dots-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 6px; z-index: 50; min-width: 130px; box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none; flex-direction: column; gap: 2px; }
+        .proj-dots-menu.open { display: flex; }
+        .proj-menu-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: background .15s, color .15s; white-space: nowrap; }
+        .proj-menu-item:hover { background: var(--accent-soft); color: var(--text-white); }
+        .proj-menu-item.danger:hover { background: rgba(220,60,60,.12); color: #e07070; }
+        .proj-menu-item svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
         @@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
         @@media (max-width: 640px) {
@@ -238,42 +253,42 @@
     <div class="main">
         <header class="topbar">
             <span class="page-title">My Flashcards</span>
-            <div class="search-bar">
-                <span class="search-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </span>
-                <input type="text" placeholder="Search flashcards..." id="searchInput" oninput="filterCards()" />
+            <div style="flex:1;"></div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" placeholder="Search flashcards..." id="searchInput" oninput="filterCards()" />
+                </div>
+                <select class="filter-select" id="filterDate" onchange="filterCards()">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="older">Older</option>
+                </select>
+                <select class="filter-select" id="filterTag" onchange="filterCards()">
+                    <option value="">All Tags</option>
+                </select>
             </div>
         </header>
 
         <div class="content">
 
-            <!-- FILTER BAR -->
-            <div class="filter-bar">
-                <div class="filter-group">
-                    <label class="filter-label">Date</label>
-                    <select class="filter-select" id="filterDate" onchange="filterCards()">
-                        <option value="">All time</option>
-                        <option value="today">Today</option>
-                        <option value="week">This week</option>
-                        <option value="month">This month</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Tag</label>
-                    <select class="filter-select" id="filterTag" onchange="filterCards()">
-                        <option value="">All tags</option>
-                    </select>
-                </div>
-                <button class="filter-reset" id="btnReset" onclick="resetFilters()" style="display:none">
-                    <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
-                    Reset
-                </button>
-            </div>
-
             <div class="section-label">Your collections of flashcards</div>
 
             <div class="cards-grid" id="cardsGrid">
+                @{
+                    // Always show the New Flashcard Project card first
+                }
+                <div class="card-fc new-fc-card" onclick="openCreateFcProjectModal()" style="animation-delay:0s; border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+                    <div style="width:44px; height:44px; border-radius:50%; background:var(--accent-soft); border:1.5px dashed var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted);">New Flashcard Project</span>
+                </div>
+
                 @if (ViewBag.Flashcards != null && ((IEnumerable<dynamic>)ViewBag.Flashcards).Any())
                 {
                     int i = 0;
@@ -293,6 +308,30 @@
                                 </div>
                             </div>
                             <div class="card-fc-body">
+                                @if ((bool)(set.IsManual ?? false))
+                                {
+                                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2px;">
+                                        <div class="chip-user-made" style="margin-bottom:0;">
+                                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                            User Made
+                                        </div>
+                                        <div style="position:relative;" onclick="event.stopPropagation()">
+                                            <button class="proj-dots" onclick="toggleProjMenu(@(set.Id))">
+                                                <span></span><span></span><span></span>
+                                            </button>
+                                            <div class="proj-dots-menu" id="projmenu-@(set.Id)">
+                                                <div class="proj-menu-item" onclick="openProjRename(@(set.Id), '@Html.Raw(((string)(set.Name ?? "")).Replace("'", "\\'"))')">
+                                                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                    Rename
+                                                </div>
+                                                <div class="proj-menu-item danger" onclick="openProjDelete(@(set.Id), '@Html.Raw(((string)(set.Name ?? "")).Replace("'", "\\'"))')">
+                                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                                    Delete
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                                 <div class="fc-name">@set.Name?.ToUpper()</div>
                                 @if (!string.IsNullOrWhiteSpace((string)set.Subject))
                                 {
@@ -307,15 +346,44 @@
                         i++;
                     }
                 }
-                else
-                {
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                        <p>No flashcard sets yet.<br>Go to <strong>My Chats</strong> to create one.</p>
-                    </div>
-                }
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- ── PROJECT RENAME MODAL ── -->
+<div id="projRenameModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif;">
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:6px;">Rename Project</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Enter a new name for this flashcard project.</div>
+        <input id="projRenameInput" type="text" placeholder="Project name…"
+            style="width:100%; height:42px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:13px; font-family:inherit; outline:none; margin-bottom:20px; transition:border-color .2s;"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+            onkeydown="if(event.key==='Enter') submitProjRename(); if(event.key==='Escape') closeProjRename();" />
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeProjRename()" style="flex:1; height:40px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitProjRename()" style="flex:2; height:40px; border-radius:9px; border:none; background:var(--accent); color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── PROJECT DELETE MODAL ── -->
+<div id="projDeleteModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid rgba(220,60,60,.2); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif; text-align:center;">
+        <div style="width:48px; height:48px; border-radius:14px; background:rgba(220,60,60,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Delete Project?</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
+            "<span id="projDeleteName"></span>" and all its flashcard sets will be permanently deleted.
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeProjDelete()" style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitProjDelete()" style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Yes, Delete</button>
         </div>
     </div>
 </div>
@@ -362,6 +430,38 @@
     </div>
 </div>
 
+<!-- ── CREATE FLASHCARD PROJECT MODAL ── -->
+<div id="createFcProjectModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:20px; padding:28px; width:min(460px,92vw); font-family:'DM Sans',sans-serif; box-shadow:0 24px 60px rgba(0,0,0,.5);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div>
+                <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white);">New Flashcard Project</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Create a project to hold your custom flashcard sets</div>
+            </div>
+            <button onclick="closeCreateFcProjectModal()" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">Project Name *</label>
+                <input id="fcpName" type="text" placeholder="e.g. Biology Notes, History Review..."
+                    style="width:100%; height:42px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:13px; font-family:inherit; outline:none; transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">Subject / Tag</label>
+                <input id="fcpSubject" type="text" placeholder="e.g. Biology, Math..."
+                    style="width:100%; height:42px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:13px; font-family:inherit; outline:none; transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+        </div>
+        <div id="fcpError" style="display:none; margin-top:12px; background:rgba(224,112,112,.1); border:1px solid rgba(224,112,112,.25); border-radius:8px; padding:10px 14px; font-size:12px; color:#e07070;"></div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="closeCreateFcProjectModal()" style="flex:1; height:42px; background:none; border:1px solid var(--border); border-radius:10px; color:var(--text-muted); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer;">Cancel</button>
+            <button onclick="submitCreateFcProject()" id="fcpSubmitBtn" style="flex:2; height:42px; background:var(--accent); border:none; border-radius:10px; color:#fff; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;">Create Project</button>
+        </div>
+    </div>
+</div>
+
 <script>
     /* ── THEME INIT ── */
     (function () {
@@ -394,6 +494,9 @@
         const now  = new Date();
 
         document.querySelectorAll('.card-fc').forEach(card => {
+            // Never hide the "New Flashcard Project" dashed card
+            if (card.classList.contains('new-fc-card')) return;
+
             const name    = card.dataset.name ?? '';
             const subject = (card.dataset.subject ?? '').toLowerCase();
             const dateStr = card.dataset.date ?? '';
@@ -404,16 +507,60 @@
                 const cardDate = new Date(dateStr);
                 if (!isNaN(cardDate)) {
                     const diff = (now - cardDate) / (1000 * 60 * 60 * 24);
-                    if (date === 'today')      show = diff < 1;
-                    else if (date === 'week')  show = diff < 7;
-                    else if (date === 'month') show = diff < 30;
+                    if (date === 'today')       show = diff < 1;
+                    else if (date === 'week')   show = diff >= 1 && diff < 7;
+                    else if (date === 'month')  show = diff >= 7 && diff < 30;
+                    else if (date === 'older')  show = diff >= 30;
                 }
             }
             card.style.display = show ? '' : 'none';
         });
 
         const anyFilter = date || tag || document.getElementById('searchInput').value;
-        document.getElementById('btnReset').style.display = anyFilter ? '' : 'none';
+        const btnReset = document.getElementById('btnReset');
+        if (btnReset) btnReset.style.display = anyFilter ? '' : 'none';
+    }
+
+    function openCreateFcProjectModal() {
+        document.getElementById('fcpName').value = '';
+        document.getElementById('fcpSubject').value = '';
+        document.getElementById('fcpError').style.display = 'none';
+        document.getElementById('createFcProjectModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('fcpName').focus(), 100);
+    }
+    function closeCreateFcProjectModal() {
+        document.getElementById('createFcProjectModal').style.display = 'none';
+    }
+    document.getElementById('createFcProjectModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCreateFcProjectModal();
+    });
+    async function submitCreateFcProject() {
+        const name    = document.getElementById('fcpName').value.trim();
+        const subject = document.getElementById('fcpSubject').value.trim();
+        const errEl   = document.getElementById('fcpError');
+        const btn     = document.getElementById('fcpSubmitBtn');
+        if (!name) { errEl.textContent = 'Project name is required.'; errEl.style.display = 'block'; return; }
+        btn.textContent = 'Creating…'; btn.disabled = true; errEl.style.display = 'none';
+        try {
+            const res  = await fetch('/Chat/CreateManualFlashcardProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, subject })
+            });
+            const data = await res.json();
+            if (data.id) {
+                closeCreateFcProjectModal();
+                window.location.href = `/Chat/FlashcardView?id=${data.id}`;
+            } else {
+                errEl.textContent = data.error || 'Something went wrong.';
+                errEl.style.display = 'block';
+            }
+        } catch {
+            errEl.textContent = 'Network error. Please try again.';
+            errEl.style.display = 'block';
+        } finally {
+            btn.textContent = 'Create Project'; btn.disabled = false;
+        }
     }
 
     function resetFilters() {
@@ -423,6 +570,82 @@
         document.getElementById('btnReset').style.display = 'none';
         document.querySelectorAll('.card-fc').forEach(c => c.style.display = '');
     }
+
+    // ── PROJECT THREE-DOT MENU ──
+    let openProjMenuId = null;
+    function toggleProjMenu(pid) {
+        const menu = document.getElementById('projmenu-' + pid);
+        if (openProjMenuId && openProjMenuId !== pid) {
+            const prev = document.getElementById('projmenu-' + openProjMenuId);
+            if (prev) prev.classList.remove('open');
+        }
+        menu.classList.toggle('open');
+        openProjMenuId = menu.classList.contains('open') ? pid : null;
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.proj-dots') && !e.target.closest('.proj-dots-menu')) {
+            document.querySelectorAll('.proj-dots-menu.open').forEach(m => m.classList.remove('open'));
+            openProjMenuId = null;
+        }
+    });
+
+    // ── PROJECT RENAME ──
+    let renameProjId = null;
+    function openProjRename(pid, currentName) {
+        renameProjId = pid;
+        document.getElementById('projRenameInput').value = currentName;
+        document.getElementById('projRenameModal').style.display = 'flex';
+        document.querySelectorAll('.proj-dots-menu.open').forEach(m => m.classList.remove('open'));
+        setTimeout(() => document.getElementById('projRenameInput').focus(), 50);
+    }
+    function closeProjRename() {
+        document.getElementById('projRenameModal').style.display = 'none';
+        renameProjId = null;
+    }
+    async function submitProjRename() {
+        const name = document.getElementById('projRenameInput').value.trim();
+        if (!name) return;
+        try {
+            const res = await fetch('/Chat/RenameProject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: renameProjId, name })
+            });
+            if (res.ok) {
+                const card = document.querySelector(`[data-id="${renameProjId}"]`);
+                if (card) {
+                    const nameEl = card.querySelector('.fc-name');
+                    if (nameEl) nameEl.textContent = name.toUpperCase();
+                    card.dataset.name = name.toLowerCase();
+                }
+                closeProjRename();
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // ── PROJECT DELETE ──
+    let deleteProjId = null;
+    function openProjDelete(pid, name) {
+        deleteProjId = pid;
+        document.getElementById('projDeleteName').textContent = name;
+        document.getElementById('projDeleteModal').style.display = 'flex';
+        document.querySelectorAll('.proj-dots-menu.open').forEach(m => m.classList.remove('open'));
+    }
+    function closeProjDelete() {
+        document.getElementById('projDeleteModal').style.display = 'none';
+        deleteProjId = null;
+    }
+    async function submitProjDelete() {
+        try {
+            const res = await fetch('/Chat/DeleteProject?id=' + deleteProjId, { method: 'DELETE' });
+            if (res.ok) {
+                const card = document.querySelector(`[data-id="${deleteProjId}"]`);
+                if (card) card.remove();
+                closeProjDelete();
+            }
+        } catch (e) { console.error(e); }
+    }
+
 </script>
 </body>
 </html>

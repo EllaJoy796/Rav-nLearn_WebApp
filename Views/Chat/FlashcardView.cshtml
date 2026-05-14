@@ -141,6 +141,41 @@
         .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: 6px; }
         .card-fc-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
+        .chip-user-made { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: rgba(92,191,124,.15); border: 1px solid rgba(92,191,124,.3); border-radius: 20px; font-size: 10px; font-weight: 700; color: #7debb0; letter-spacing: .5px; text-transform: uppercase; }
+        .chip-user-made svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Manual Flashcard Builder Modal */
+        .mfb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); z-index: 600; display: none; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; }
+        .mfb-overlay.open { display: flex; }
+        .mfb-modal { background: #16121f; border: 1px solid rgba(124,92,191,.25); border-radius: 24px; width: min(640px, 96vw); margin: auto; box-shadow: 0 32px 80px rgba(0,0,0,.6); overflow: hidden; display: flex; flex-direction: column; }
+        .mfb-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+        .mfb-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--text-white); }
+        .mfb-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .mfb-close { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: color .2s, background .2s; }
+        .mfb-close:hover { background: var(--accent-soft); color: var(--text-white); }
+        .mfb-name-row { padding: 16px 24px; border-bottom: 1px solid var(--border); }
+        .mfb-name-input { width: 100%; height: 42px; background: var(--bg); border: 1px solid rgba(124,92,191,.2); border-radius: 10px; padding: 0 14px; color: var(--text-white); font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; }
+        .mfb-name-input:focus { border-color: var(--accent); }
+        .mfb-name-input::placeholder { color: var(--text-dim); }
+        .mfb-cards-area { padding: 16px 24px; flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; display: flex; flex-direction: column; gap: 12px; max-height: 50vh; }
+        .mfb-card { background: rgba(124,92,191,.06); border: 1px solid rgba(124,92,191,.15); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .mfb-card-top { display: flex; align-items: center; justify-content: space-between; }
+        .mfb-card-num { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
+        .mfb-card-delete { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; transition: color .2s, background .2s; }
+        .mfb-card-delete:hover { color: #e07070; background: rgba(224,112,112,.1); }
+        .mfb-input { width: 100%; background: var(--bg); border: 1px solid rgba(124,92,191,.2); border-radius: 8px; padding: 10px 12px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; resize: vertical; min-height: 56px; }
+        .mfb-input:focus { border-color: var(--accent); }
+        .mfb-input::placeholder { color: var(--text-dim); }
+        .mfb-input-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; display: block; }
+        .mfb-add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px dashed rgba(124,92,191,.35); border-radius: 12px; padding: 12px; cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 600; font-family: inherit; background: none; width: 100%; transition: border-color .2s, background .2s; }
+        .mfb-add-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .mfb-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .mfb-save-btn { height: 40px; padding: 0 24px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s; }
+        .mfb-save-btn:hover { background: #6b4daa; }
+        .mfb-save-btn:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
+        .mfb-cancel-btn { height: 40px; padding: 0 18px; background: none; border: 1px solid rgba(124,92,191,.2); border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .2s; }
+        .mfb-cancel-btn:hover { border-color: var(--accent); color: var(--text-white); }
+
         /* ── EMPTY ── */
         .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--text-dim); text-align: center; }
         .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: .5; }
@@ -246,13 +281,25 @@
             <div class="cards-grid">
                 @if (sessions == null || !sessions.Any())
                 {
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                        <p>No flashcard sets yet.<br>Generate a quiz in <strong>My Chats</strong> to populate this set.</p>
+                    <!-- New Flashcard Set card always shown -->
+                    <div class="card-fc" onclick="openMfbModal()"
+                         style="border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; animation-delay:0s;">
+                        <div style="width:44px; height:44px; border-radius:50%; background:var(--accent-soft); border:1.5px dashed var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </div>
+                        <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted);">New Flashcard Set</span>
                     </div>
                 }
                 else
                 {
+                    <!-- New Flashcard Set card -->
+                        <div class="card-fc" onclick="openMfbModal()"
+                         style="border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; animation-delay:0s;">
+                        <div style="width:44px; height:44px; border-radius:50%; background:var(--accent-soft); border:1.5px dashed var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </div>
+                        <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted);">New Flashcard Set</span>
+                    </div>
                     int i = 0;
                     foreach (var s in sessions)
                     {
@@ -275,23 +322,32 @@
                             <!-- Chips + three-dot -->
                             <div class="card-fc-top" onclick="event.stopPropagation()">
                                 <div class="chips-row">
-                                    <div class="chip chip-buddy">
+                                    <div class="chip chip-buddy" onclick="event.stopPropagation(); openStudyBuddy(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
                                         <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                                         Study Buddy
                                     </div>
                                 </div>
-                                <div style="position:relative;">
-                                    <button class="btn-dots" onclick="toggleMenu(@(s.SessionId))">
-                                        <span></span><span></span><span></span>
-                                    </button>
-                                    <div class="dots-menu" id="menu-@(s.SessionId)">
-                                        <div class="menu-item" onclick="openRename(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
-                                            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                            Rename
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    @if ((bool)(s.IsManual ?? false))
+                                    {
+                                        <div class="chip-user-made" style="margin-bottom:0;">
+                                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                            User Made
                                         </div>
-                                        <div class="menu-item danger" onclick="openDelete(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
-                                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                                            Delete
+                                    }
+                                    <div style="position:relative;">
+                                        <button class="btn-dots" onclick="toggleMenu(@(s.SessionId))">
+                                            <span></span><span></span><span></span>
+                                        </button>
+                                        <div class="dots-menu" id="menu-@(s.SessionId)">
+                                            <div class="menu-item" onclick="openRename(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
+                                                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                Rename
+                                            </div>
+                                            <div class="menu-item danger" onclick="openDelete(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
+                                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                                Delete
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -318,6 +374,39 @@
                         i++;
                     }
                 }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MANUAL FLASHCARD BUILDER MODAL ── -->
+<div class="mfb-overlay" id="mfbOverlay" onclick="handleMfbOverlayClick(event)">
+    <div class="mfb-modal">
+        <div class="mfb-header">
+            <div>
+                <div class="mfb-title">Create Flashcard Set</div>
+                <div class="mfb-subtitle">Add front/back pairs, then save.</div>
+            </div>
+            <button class="mfb-close" onclick="closeMfbModal()">✕</button>
+        </div>
+        <div class="mfb-name-row">
+            <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; display:block;">Set Title *</span>
+            <input class="mfb-name-input" id="mfbSetTitle" type="text"
+                   placeholder="e.g. Chapter 1 Vocab, Week 3 Terms…"
+                   oninput="mfbUpdateFooter()" />
+        </div>
+        <div class="mfb-cards-area" id="mfbCardsArea"></div>
+        <div style="padding: 0 24px 12px;">
+            <button class="mfb-add-btn" onclick="mfbAddCard()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Card
+            </button>
+        </div>
+        <div class="mfb-footer">
+            <span style="font-size:12px; color:var(--text-muted);" id="mfbCardCount">0 cards</span>
+            <div style="display:flex; gap:10px;">
+                <button class="mfb-cancel-btn" onclick="closeMfbModal()">Cancel</button>
+                <button class="mfb-save-btn" id="mfbSaveBtn" onclick="mfbSaveSet()" disabled>Save Set</button>
             </div>
         </div>
     </div>
@@ -431,10 +520,130 @@
             }
         } catch (e) { console.error(e); }
     }
+
+    // ── MANUAL FLASHCARD BUILDER ──
+    let mfbCards = [];
+    const mfbProjectId = @projectId;
+
+    function openMfbModal() {
+        mfbCards = [];
+        document.getElementById('mfbSetTitle').value = '';
+        document.getElementById('mfbCardsArea').innerHTML = '';
+        mfbUpdateFooter();
+        document.getElementById('mfbOverlay').classList.add('open');
+        setTimeout(() => document.getElementById('mfbSetTitle').focus(), 100);
+    }
+    function closeMfbModal() { document.getElementById('mfbOverlay').classList.remove('open'); }
+    function handleMfbOverlayClick(e) { if (e.target === document.getElementById('mfbOverlay')) closeMfbModal(); }
+
+    function mfbUpdateFooter() {
+        const count = mfbCards.length;
+        document.getElementById('mfbCardCount').textContent = `${count} card${count !== 1 ? 's' : ''}`;
+        const title = document.getElementById('mfbSetTitle').value.trim();
+        document.getElementById('mfbSaveBtn').disabled = count === 0 || !title;
+    }
+
+    function mfbAddCard() {
+        const idx = mfbCards.length;
+        mfbCards.push({ front: '', back: '' });
+        renderMfbCard(idx);
+        mfbUpdateFooter();
+        setTimeout(() => {
+            const area = document.getElementById('mfbCardsArea');
+            area.scrollTop = area.scrollHeight;
+        }, 50);
+    }
+
+    function mfbDeleteCard(idx) {
+        mfbCards.splice(idx, 1);
+        rebuildMfbCards();
+        mfbUpdateFooter();
+    }
+
+    function rebuildMfbCards() {
+        document.getElementById('mfbCardsArea').innerHTML = '';
+        mfbCards.forEach((_, i) => renderMfbCard(i));
+    }
+
+    function renderMfbCard(idx) {
+        const area = document.getElementById('mfbCardsArea');
+        const card = document.createElement('div');
+        card.className = 'mfb-card';
+        card.id = `mfbCard_${idx}`;
+        card.innerHTML = `
+            <div class="mfb-card-top">
+                <span class="mfb-card-num">Card ${idx + 1}</span>
+                <button class="mfb-card-delete" onclick="mfbDeleteCard(${idx})">✕</button>
+            </div>
+            <div>
+                <span class="mfb-input-label">Front (Question)</span>
+                <textarea class="mfb-input" id="mfbFront_${idx}" placeholder="Enter the front of the card…"
+                    oninput="mfbCards[${idx}].front = this.value">${mfbCards[idx].front}</textarea>
+            </div>
+            <div>
+                <span class="mfb-input-label">Back (Answer)</span>
+                <textarea class="mfb-input" id="mfbBack_${idx}" placeholder="Enter the back of the card…"
+                    oninput="mfbCards[${idx}].back = this.value">${mfbCards[idx].back}</textarea>
+            </div>`;
+        area.appendChild(card);
+    }
+
+    async function mfbSaveSet() {
+        const title = document.getElementById('mfbSetTitle').value.trim();
+        if (!title) { alert('Please enter a set title.'); return; }
+        if (mfbCards.length === 0) { alert('Please add at least one card.'); return; }
+        for (let i = 0; i < mfbCards.length; i++) {
+            if (!mfbCards[i].front.trim()) { alert(`Card ${i + 1} is missing its front (question).`); return; }
+            if (!mfbCards[i].back.trim())  { alert(`Card ${i + 1} is missing its back (answer).`); return; }
+        }
+        const btn = document.getElementById('mfbSaveBtn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        try {
+            const res = await fetch('/Chat/CreateManualFlashcardSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    projectId: mfbProjectId,
+                    title,
+                    cards: mfbCards.map(c => ({ front: c.front.trim(), back: c.back.trim() }))
+                })
+            });
+            if (!res.ok) { const t = await res.text(); alert(`Server error ${res.status}: ${t.substring(0,300)}`); return; }
+            const data = await res.json();
+            if (data.error) { alert('Error: ' + data.error); return; }
+            closeMfbModal();
+            location.reload();
+        } catch (err) {
+            alert('Network error: ' + err.message);
+        } finally {
+            btn.disabled = false; btn.textContent = 'Save Set';
+        }
+    }
+    
     document.getElementById('renameInput').addEventListener('keydown', e => {
         if (e.key === 'Enter') submitRename();
         if (e.key === 'Escape') closeRename();
     });
+
+    // ── STUDY BUDDY ──
+    async function openStudyBuddy(sessionId, title) {
+        try {
+            const res = await fetch(`/Chat/GetFlashcardsForStudyBuddy?sessionId=${sessionId}`);
+            const cards = await res.json();
+            if (!cards || !cards.length) { alert('No flashcards found in this set.'); return; }
+            // Convert flashcards into the question format Study Buddy expects
+            const questions = cards.map(c => ({
+                question:     c.front,
+                questionType: 'fillblank',
+                answerText:   c.back,
+                correctAnswer: '',
+                choiceA: '', choiceB: '', choiceC: '', choiceD: ''
+            }));
+            SB.open(title, questions);
+        } catch (e) {
+            console.error('Study Buddy error:', e);
+        }
+    }
 
     // ── DELETE ──
     let deleteSessionId = null;
@@ -462,5 +671,6 @@
         } catch (e) { console.error(e); }
     }
 </script>
+<script src="~/js/StudyBuddy.js"></script>
 </body>
 </html>
