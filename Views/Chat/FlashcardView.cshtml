@@ -256,6 +256,8 @@
                     foreach (var s in sessions)
                     {
                         long cardCount = (long)s.CardCount;
+                        long gotCount  = (long)s.GotCount;
+                        int  pct       = cardCount > 0 ? (int)Math.Round((double)gotCount / cardCount * 100) : 0;
                         <div class="card-fc"
                              onclick="window.location.href='/Chat/FlashcardStudy?sessionId=@(s.SessionId)'"
                              data-sid="@(s.SessionId)"
@@ -300,10 +302,10 @@
                                 <div>
                                     <div class="fc-prog-row">
                                         <span>Progress</span>
-                                        <span>0/@cardCount</span>
+                                        <span>@gotCount/@cardCount</span>
                                     </div>
                                     <div class="fc-prog-bar">
-                                        <div class="fc-prog-fill" style="width:0%"></div>
+                                        <div class="fc-prog-fill" style="width:@(pct)%"></div>
                                     </div>
                                 </div>
                                 <div class="card-fc-meta">

@@ -498,6 +498,22 @@
         });
     }
 
+    function populateTagFilter(projects) {
+        const tagSet = new Set();
+        projects.forEach(p => {
+            if (p.subject && p.subject.trim()) tagSet.add(p.subject.trim());
+        });
+
+        const filterTag = document.getElementById('filterTag');
+        filterTag.innerHTML = '<option value="">All Tags</option>';
+        Array.from(tagSet).sort().forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.toLowerCase();
+            option.textContent = tag;
+            filterTag.appendChild(option);
+        });
+    }
+
     function makeCard(project, index) {
         const card = document.createElement('div');
         card.className = 'card-project';
