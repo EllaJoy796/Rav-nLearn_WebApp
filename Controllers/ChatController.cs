@@ -707,6 +707,31 @@ namespace RavnLearnWeb.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RenameSession([FromBody] RenameSessionRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Title))
+                return BadRequest(new { error = "Title is required" });
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"UPDATE chat_sessions s SET title = @title
+                      FROM chats c
+                      WHERE s.session_id = @sid AND s.chat_id = c.chat_id AND c.user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("title", req.Title);
+                cmd.Parameters.AddWithValue("sid", req.Id);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                int rows = await cmd.ExecuteNonQueryAsync();
+                if (rows == 0) return NotFound(new { error = "Session not found" });
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RenameProject([FromBody] RenameProjectRequest req)
         {
             if (!IsLoggedIn()) return Unauthorized();
@@ -907,52 +932,37 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> QuizzesView(int id)
-        {
-            if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
-
-
-            string projectName = "My Quiz";
-            string projectDate = "";
-
-
-            try
+            [HttpGet]
+            public async Task<IActionResult> QuizzesView(int id)
             {
-                using var conn = RavnLearnWeb.Database.GetConnection();
-                await conn.OpenAsync();
-                using var cmd = new NpgsqlCommand(
-                    "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
-                cmd.Parameters.AddWithValue("pid", id);
-                cmd.Parameters.AddWithValue("uid", UserId);
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
+
+                string projectName = "My Quiz";
+                string projectDate = "";
+
+                try
                 {
-                    projectName = reader.GetString(0);
-                    projectDate = reader.GetDateTime(1).ToString("MMM dd, yyyy");
+                    using var conn = RavnLearnWeb.Database.GetConnection();
+                    await conn.OpenAsync();
+                    using var cmd = new NpgsqlCommand(
+                        "SELECT name, created_at FROM projects WHERE project_id = @pid AND user_id = @uid", conn);
+                    cmd.Parameters.AddWithValue("pid", id);
+                    cmd.Parameters.AddWithValue("uid", UserId);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        projectName = reader.GetString(0);
+                        projectDate = reader.GetDateTime(1).ToString("MMM dd, yyyy");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                return Content($"DB ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
-            }
+                catch { }
 
-
-            ViewBag.SetName  = projectName.ToUpper();
-            ViewBag.SetDate  = projectDate;
-            ViewBag.Username = Username;
-            ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
-
-
-            try
-            {
+                ViewBag.SetName  = projectName.ToUpper();
+                ViewBag.SetDate  = projectDate;
+                ViewBag.Username = Username;
+                ViewBag.Email    = HttpContext.Session.GetString("Email") ?? "";
                 return View();
             }
-            catch (Exception ex)
-            {
-                return Content($"VIEW ERROR: {ex.Message}\n\n{ex.StackTrace}", "text/plain");
-            }
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetQuizzesByProject(int projectId)
@@ -1574,6 +1584,12 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     public class NewSessionRequest
     {
         public int FolderId { get; set; }
+    }
+
+    public class RenameSessionRequest
+    {
+        public int Id       { get; set; }
+        public string Title { get; set; } = "";
     }
 
     public class RenameProjectRequest
