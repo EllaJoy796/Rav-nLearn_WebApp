@@ -6,6 +6,7 @@
     var setDate      = (string)(ViewBag.SetDate  ?? "");
     var sessionCount = (int)(ViewBag.SessionCount ?? 0);
     var sessions     = ViewBag.Sessions as IEnumerable<dynamic>;
+    var projectId    = (int)(ViewBag.ProjectId ?? 0);
 }
 
 <!DOCTYPE html>
@@ -50,6 +51,7 @@
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
         body.light-mode .card-fc-banner { background: linear-gradient(135deg, #ded8f5 0%, #e8e3f8 100%); }
+        body.light-mode .fc-card-img { filter: brightness(0) invert(0) !important; opacity: 0.4 !important; }
 
         html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
@@ -93,25 +95,49 @@
         .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         .content::-webkit-scrollbar { width: 4px; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
         .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: .5px; margin-bottom: 20px; }
 
         /* ── GRID ── */
         .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
         /* ── CARD ── */
-        .card-fc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; cursor: pointer; position: relative; min-height: 200px; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; overflow: hidden; }
+        .card-fc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; cursor: pointer; position: relative; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; overflow: hidden; }
         .card-fc:hover { background: var(--card-hover); border-color: rgba(124,92,191,.3); transform: translateY(-2px); }
 
         .card-fc-banner { width: 100%; height: 110px; background: linear-gradient(135deg, #251f3a 0%, #1a1530 100%); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
-        .fc-stack { position: relative; width: 64px; height: 52px; display: flex; align-items: center; justify-content: center; }
-        .fc-icon-back { width: 64px; height: 52px; }
+        .fc-stack { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+        .fc-card-img { width: 52px; height: 52px; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.85; }
 
         .banner-chip { position: absolute; top: 12px; left: 14px; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: .5px; text-transform: uppercase; }
 
-        .card-fc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        /* chips row */
+        .card-fc-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 0; gap: 8px; }
+        .chips-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+        .chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .chip-buddy { background: var(--accent-soft); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
+
+        /* three-dot menu */
+        .btn-dots { background: none; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; color: var(--text-dim); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; gap: 2.5px; flex-direction: column; transition: color .2s, background .2s; flex-shrink: 0; position: relative; }
+        .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
+        .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
+
+        .dots-menu { position: absolute; top: calc(100% + 6px); right: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 6px; z-index: 50; min-width: 130px; box-shadow: 0 8px 24px rgba(0,0,0,.4); display: none; flex-direction: column; gap: 2px; }
+        .dots-menu.open { display: flex; }
+        .menu-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: background .15s, color .15s; white-space: nowrap; }
+        .menu-item:hover { background: var(--accent-soft); color: var(--text-white); }
+        .menu-item.danger:hover { background: rgba(220,60,60,.12); color: #e07070; }
+        .menu-item svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+        .card-fc-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .fc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: .3px; }
-        .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: auto; }
+
+        /* progress */
+        .fc-prog-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+        .fc-prog-bar { height: 4px; background: rgba(124,92,191,.15); border-radius: 2px; overflow: hidden; margin-top: 5px; }
+        .fc-prog-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
+        .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: 6px; }
         .card-fc-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
         /* ── EMPTY ── */
@@ -167,7 +193,7 @@
         </div>
         <div class="nav-group">
             <div class="nav-group-label">Support</div>
-            <a class="nav-item" href="/Help/Index" data-tip="How to use">
+            <a class="nav-item" href="/Support/HowToUse" data-tip="How to use">
                 <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 <span class="nav-label">How to use</span>
             </a>
@@ -229,20 +255,57 @@
                     int i = 0;
                     foreach (var s in sessions)
                     {
+                        long cardCount = (long)s.CardCount;
                         <div class="card-fc"
                              onclick="window.location.href='/Chat/FlashcardStudy?sessionId=@(s.SessionId)'"
+                             data-sid="@(s.SessionId)"
                              style="animation-delay: @(i * 0.05)s">
+
+                            <!-- Banner with card.png icon -->
                             <div class="card-fc-banner">
                                 <span class="banner-chip">@s.CardCount Flashcards</span>
                                 <div class="fc-stack">
-                                    <svg class="fc-icon-back" viewBox="0 0 48 48" fill="none">
-                                        <rect x="10" y="14" width="30" height="22" rx="3" stroke="rgba(255,255,255,0.35)" stroke-width="2" transform="rotate(-6 10 14)"/>
-                                        <rect x="8" y="12" width="30" height="22" rx="3" fill="rgba(124,92,191,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
-                                    </svg>
+                                    <img class="fc-card-img" src="~/images/card.png" alt="flashcard icon" />
                                 </div>
                             </div>
+
+                            <!-- Chips + three-dot -->
+                            <div class="card-fc-top" onclick="event.stopPropagation()">
+                                <div class="chips-row">
+                                    <div class="chip chip-buddy">
+                                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                                        Study Buddy
+                                    </div>
+                                </div>
+                                <div style="position:relative;">
+                                    <button class="btn-dots" onclick="toggleMenu(@(s.SessionId))">
+                                        <span></span><span></span><span></span>
+                                    </button>
+                                    <div class="dots-menu" id="menu-@(s.SessionId)">
+                                        <div class="menu-item" onclick="openRename(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
+                                            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            Rename
+                                        </div>
+                                        <div class="menu-item danger" onclick="openDelete(@(s.SessionId), '@Html.Raw(s.Title.Replace("'", "\\'"))')">
+                                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                            Delete
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
                             <div class="card-fc-body">
-                                <div class="fc-name">@s.Title</div>
+                                <div class="fc-name" id="title-@(s.SessionId)">@s.Title</div>
+                                <div>
+                                    <div class="fc-prog-row">
+                                        <span>Progress</span>
+                                        <span>0/@cardCount</span>
+                                    </div>
+                                    <div class="fc-prog-bar">
+                                        <div class="fc-prog-fill" style="width:0%"></div>
+                                    </div>
+                                </div>
                                 <div class="card-fc-meta">
                                     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                     @s.Date
@@ -257,44 +320,57 @@
     </div>
 </div>
 
-<!-- ── LOGOUT MODAL ── -->
-<div id="logoutModal" style="
-    display:none; position:fixed; inset:0; z-index:1000;
-    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
-    align-items:center; justify-content:center;">
-    <div style="
-        background:var(--card-bg); border:1px solid var(--border);
-        border-radius:16px; padding:28px 28px 24px;
-        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
-        <div style="width:48px; height:48px; border-radius:14px;
-            background:rgba(220,60,60,.12); display:flex; align-items:center;
-            justify-content:center; margin:0 auto 16px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
+<!-- ── RENAME MODAL ── -->
+<div id="renameModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif;">
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:6px;">Rename Set</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Enter a new name for this flashcard set.</div>
+        <input id="renameInput" type="text" placeholder="Set name…"
+            style="width:100%; height:42px; background:#13101f; border:1px solid var(--border); border-radius:10px; padding:0 14px; color:var(--text-white); font-size:13px; font-family:inherit; outline:none; margin-bottom:20px; transition:border-color .2s;"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+        />
+        <div style="display:flex; gap:10px;">
+            <button onclick="closeRename()" style="flex:1; height:40px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitRename()" style="flex:2; height:40px; border-radius:9px; border:none; background:var(--accent); color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── DELETE MODAL ── -->
+<div id="deleteModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid rgba(220,60,60,.2); border-radius:16px; padding:28px; width:360px; font-family:'DM Sans',sans-serif; text-align:center;">
+        <div style="width:48px; height:48px; border-radius:14px; background:rgba(220,60,60,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
             </svg>
         </div>
-        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
-                    color:var(--text-white); margin-bottom:8px;">Log Out?</div>
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Delete Set?</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
-            Are you sure you want to log out of Rev'nLearn?
+            "<span id="deleteSetName"></span>" will be permanently deleted along with all its flashcards and quizzes.
         </div>
         <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeDelete()" style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+            <button onclick="submitDelete()" style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer;">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── LOGOUT MODAL ── -->
+<div id="logoutModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:28px 28px 24px; width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+        <div style="width:48px; height:48px; border-radius:14px; background:rgba(220,60,60,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white); margin-bottom:8px;">Log Out?</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Are you sure you want to log out of Rev'nLearn?</div>
+        <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="document.getElementById('logoutModal').style.display='none'"
-                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
-                       background:transparent; color:var(--text-white);
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
-                Cancel
-            </button>
+                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--text-white); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
             <a href="/Account/Logout"
-                style="flex:1; height:38px; border-radius:9px; border:none;
-                       background:#c0392b; color:#fff; text-decoration:none;
-                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
-                       cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                Yes, Log Out
-            </a>
+                style="flex:1; height:38px; border-radius:9px; border:none; background:#c0392b; color:#fff; text-decoration:none; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;">Yes, Log Out</a>
         </div>
     </div>
 </div>
@@ -304,6 +380,84 @@
         if (localStorage.getItem('lightMode') === 'true')
             document.body.classList.add('light-mode');
     })();
+
+    // ── THREE-DOT MENU ──
+    let openMenuId = null;
+    function toggleMenu(sid) {
+        const menu = document.getElementById('menu-' + sid);
+        if (openMenuId && openMenuId !== sid) {
+            const prev = document.getElementById('menu-' + openMenuId);
+            if (prev) prev.classList.remove('open');
+        }
+        menu.classList.toggle('open');
+        openMenuId = menu.classList.contains('open') ? sid : null;
+    }
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.btn-dots') && !e.target.closest('.dots-menu')) {
+            document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
+            openMenuId = null;
+        }
+    });
+
+    // ── RENAME ──
+    let renameSessionId = null;
+    function openRename(sid, currentTitle) {
+        renameSessionId = sid;
+        document.getElementById('renameInput').value = currentTitle;
+        document.getElementById('renameModal').style.display = 'flex';
+        document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
+        setTimeout(() => document.getElementById('renameInput').focus(), 50);
+    }
+    function closeRename() {
+        document.getElementById('renameModal').style.display = 'none';
+        renameSessionId = null;
+    }
+    async function submitRename() {
+        const title = document.getElementById('renameInput').value.trim();
+        if (!title) return;
+        try {
+            const res = await fetch('/Chat/RenameSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: renameSessionId, title })
+            });
+            if (res.ok) {
+                const el = document.getElementById('title-' + renameSessionId);
+                if (el) el.textContent = title;
+                closeRename();
+            }
+        } catch (e) { console.error(e); }
+    }
+    document.getElementById('renameInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitRename();
+        if (e.key === 'Escape') closeRename();
+    });
+
+    // ── DELETE ──
+    let deleteSessionId = null;
+    function openDelete(sid, title) {
+        deleteSessionId = sid;
+        document.getElementById('deleteSetName').textContent = title;
+        document.getElementById('deleteModal').style.display = 'flex';
+        document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
+    }
+    function closeDelete() {
+        document.getElementById('deleteModal').style.display = 'none';
+        deleteSessionId = null;
+    }
+    async function submitDelete() {
+        try {
+            const res = await fetch('/Chat/DeleteSession?id=' + deleteSessionId, { method: 'DELETE' });
+            if (res.ok) {
+                // Remove the card from the DOM
+                const card = document.querySelector(`[data-sid="${deleteSessionId}"]`);
+                if (card) card.remove();
+                closeDelete();
+                // Reload to refresh count in topbar
+                location.reload();
+            }
+        } catch (e) { console.error(e); }
+    }
 </script>
 </body>
 </html>

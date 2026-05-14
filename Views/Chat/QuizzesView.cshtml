@@ -431,7 +431,7 @@
 
         <div class="nav-group">
             <div class="nav-group-label">Support</div>
-            <a class="nav-item" href="/Help/Index" data-tip="How to use">
+            <a class="nav-item" href="/Support/HowToUse" data-tip="How to use"> 
                 <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 <span class="nav-label">How to use</span>
             </a>
@@ -771,6 +771,11 @@
         div.querySelector('.chip-download').addEventListener('click', (e) => {
             e.stopPropagation();
             openDownloadModal(sid, label);
+        });
+
+        div.querySelector('.chip-buddy').addEventListener('click', (e) => {
+            e.stopPropagation();
+            SB.open(label, questions);
         });
 
         /* Three-dots → context menu */
@@ -1219,6 +1224,9 @@
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    
 </script>
+<script src="~/js/StudyBuddy.js"></script>
 </body>
 </html>

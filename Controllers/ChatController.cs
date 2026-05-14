@@ -775,6 +775,31 @@ namespace RavnLearnWeb.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RenameSession([FromBody] RenameSessionRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(req.Title))
+                return BadRequest(new { error = "Title is required" });
+
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"UPDATE chat_sessions s SET title = @title
+                      FROM chats c
+                      WHERE s.session_id = @sid AND s.chat_id = c.chat_id AND c.user_id = @uid", conn);
+                cmd.Parameters.AddWithValue("title", req.Title);
+                cmd.Parameters.AddWithValue("sid", req.Id);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                int rows = await cmd.ExecuteNonQueryAsync();
+                if (rows == 0) return NotFound(new { error = "Session not found" });
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RenameProject([FromBody] RenameProjectRequest req)
         {
             if (!IsLoggedIn()) return Unauthorized();
@@ -1514,6 +1539,45 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     return ms.ToArray();
 }
 
+[HttpPost]
+        public async Task<IActionResult> SaveFlashcardReview([FromBody] SaveFlashcardReviewRequest req)
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+
+                // Get the flashcard_id at this index within the session
+                using var idCmd = new NpgsqlCommand(
+                    @"SELECT flashcard_id FROM flashcards
+                      WHERE session_id = @sid
+                      ORDER BY created_at ASC
+                      LIMIT 1 OFFSET @offset", conn);
+                idCmd.Parameters.AddWithValue("sid",    int.Parse(req.SessionId.ToString()));
+                idCmd.Parameters.AddWithValue("offset", req.CardIndex);
+                var idResult = await idCmd.ExecuteScalarAsync();
+                if (idResult == null) return Ok(); // card not found, skip silently
+
+                int flashcardId = Convert.ToInt32(idResult);
+
+                // Upsert into flashcard_reviews
+                using var cmd = new NpgsqlCommand(
+                    @"INSERT INTO flashcard_reviews (user_id, flashcard_id, status, last_reviewed)
+                      VALUES (@uid, @fid, @status, @now)
+                      ON CONFLICT (user_id, flashcard_id)
+                      DO UPDATE SET status = @status, last_reviewed = @now", conn);
+                cmd.Parameters.AddWithValue("uid",    UserId);
+                cmd.Parameters.AddWithValue("fid",    flashcardId);
+                cmd.Parameters.AddWithValue("status", req.Status);
+                cmd.Parameters.AddWithValue("now",    DateTime.UtcNow);
+                await cmd.ExecuteNonQueryAsync();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+        }
+
         public class CreateChatRequest
         {
             public string Name    { get; set; } = "";
@@ -1633,6 +1697,19 @@ private static byte[] BuildQuizDocx(string title, List<dynamic> questions)
     public class NewSessionRequest
     {
         public int FolderId { get; set; }
+    }
+
+    public class RenameSessionRequest
+    {
+        public int Id       { get; set; }
+        public string Title { get; set; } = "";
+    }
+
+    public class SaveFlashcardReviewRequest
+    {
+        public object SessionId { get; set; } = 0;
+        public int    CardIndex { get; set; }
+        public string Status    { get; set; } = "";
     }
 
     public class RenameProjectRequest

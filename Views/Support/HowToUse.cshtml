@@ -1,0 +1,523 @@
+@{
+    ViewData["Title"] = "How to Use";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rev'nLearn – How to Use</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:            #0d0d12;
+            --sidebar-bg:    #111118;
+            --sidebar-width: 72px;
+            --sidebar-expanded: 220px;
+            --card-bg:       #1e1a2e;
+            --card-hover:    #251f3a;
+            --accent:        #7c5cbf;
+            --accent-soft:   rgba(124, 92, 191, 0.18);
+            --accent-chip:   #5a3f9e;
+            --text-white:    #f0eeff;
+            --text-muted:    #7a7490;
+            --text-dim:      #4e4868;
+            --border:        rgba(124, 92, 191, 0.12);
+            --icon-bg:       rgba(124, 92, 191, 0.22);
+            --topbar-h:      64px;
+        }
+
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            --bg:          #f4f3ff;
+            --sidebar-bg:  #ede9fa;
+            --card-bg:     #ffffff;
+            --card-hover:  #ede9fa;
+            --text-white:  #1a1535;
+            --text-muted:  #5a5278;
+            --text-dim:    #9590b0;
+            --border:      rgba(124,92,191,.2);
+            --accent-soft: rgba(124,92,191,.12);
+            --icon-bg:     rgba(124,92,191,.15);
+        }
+        body.light-mode .nav-item     { color: #2d1f5e; }
+        body.light-mode .nav-item.active { color: var(--accent); }
+        body.light-mode .nav-group-label { color: #6b5fa0; }
+
+        html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        .shell { display: flex; height: 100vh; width: 100vw; }
+
+        /* ── SIDEBAR (exact copy from MyChats) ── */
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; padding: 16px 0; flex-shrink: 0; z-index: 100; overflow: hidden; transition: width 0.25s ease; position: relative; }
+        .sidebar:hover { width: var(--sidebar-expanded); }
+        .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; flex-shrink: 0; overflow: hidden; }
+        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
+        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
+        .sidebar:hover .logo-text { opacity: 1; }
+        .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
+        .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .nav-group-label { font-size: 10px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.8px; text-transform: uppercase; padding: 0 4px; margin-bottom: 6px; white-space: nowrap; opacity: 0; max-height: 0; overflow: hidden; transition: opacity 0.2s ease, max-height 0.2s ease; }
+        .sidebar:hover .nav-group-label { opacity: 1; max-height: 20px; }
+        .nav-item { width: 100%; height: 44px; border-radius: 10px; display: flex; align-items: center; gap: 12px; padding: 0 11px; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; color: white; text-decoration: none; overflow: hidden; white-space: nowrap; }
+        .nav-item:hover { background: var(--accent-soft); color: var(--text-white); }
+        .nav-item.active { background: var(--accent-soft); color: var(--accent); }
+        .nav-item svg { width: 20px; height: 20px; min-width: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-label { font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.2s ease 0.05s; overflow: hidden; }
+        .sidebar:hover .nav-label { opacity: 1; }
+        .nav-item::after { content: attr(data-tip); position: absolute; left: 82px; background: #1e1e2e; color: var(--text-white); font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; border: 1px solid var(--border); z-index: 200; }
+        .sidebar:not(:hover) .nav-item:hover::after { opacity: 1; }
+        .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
+
+        /* ── MAIN ── */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; flex: 1; }
+        .topbar-badge {
+            background: var(--accent-soft);
+            color: #a78ee0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(124,92,191,.3);
+        }
+
+        /* ── CONTENT ── */
+        .content { flex: 1; overflow-y: auto; padding: 32px 36px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        .content::-webkit-scrollbar { width: 4px; }
+        .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .section-label {
+            font-size: 11px; font-weight: 700;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin: 0 0 14px;
+        }
+        .section-title  { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text-white); margin: 0 0 8px; line-height: 1.25; }
+        .section-sub    { font-size: 14px; color: var(--text-muted); margin: 0 0 36px; line-height: 1.7; max-width: 680px; }
+
+        /* ── STEP CARDS ── */
+        .steps-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 18px;
+            display: flex; flex-direction: column; gap: 12px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .step-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--accent);
+            opacity: 0; transition: opacity .2s;
+        }
+        .step-card:hover,
+        .step-card.active { background: var(--card-hover); border-color: rgba(124,92,191,.4); }
+        .step-card:hover::before,
+        .step-card.active::before { opacity: 1; }
+        .step-num {
+            width: 28px; height: 28px;
+            background: var(--icon-bg);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: var(--accent);
+        }
+        .step-icon { color: #a78ee0; }
+        .step-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .step-card h3 { font-size: 14px; font-weight: 600; color: var(--text-white); line-height: 1.3; }
+        .step-card p  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+        /* ── DETAIL PANEL ── */
+        .detail-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 36px;
+            display: none;
+        }
+        .detail-panel.visible { display: block; }
+        .detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+        .detail-icon {
+            width: 48px; height: 48px;
+            background: var(--icon-bg);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .detail-icon svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .detail-header-text h2 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--text-white); }
+        .detail-header-text p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+        .steps-list { display: flex; flex-direction: column; }
+        .step-item {
+            display: flex; gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-dot {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: var(--accent);
+            flex-shrink: 0; margin-top: 2px;
+        }
+        .step-item-body h4 { font-size: 14px; font-weight: 600; color: var(--text-white); margin-bottom: 4px; }
+        .step-item-body p  { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+        .step-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: var(--icon-bg); color: #a78ee0;
+            font-size: 11px; padding: 3px 10px;
+            border-radius: 20px; margin-top: 8px; font-weight: 500;
+        }
+        .step-tag svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* ── FEATURES GRID ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+        .feat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            display: flex; gap: 16px;
+        }
+        .feat-icon {
+            width: 42px; height: 42px;
+            background: var(--icon-bg);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .feat-icon svg { width: 20px; height: 20px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .feat-body h3 { font-size: 14px; font-weight: 600; color: var(--text-white); margin-bottom: 6px; }
+        .feat-body p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+        /* ── LOGOUT MODAL ── */
+        #logoutModal { display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); align-items:center; justify-content:center; }
+
+        @@media (max-width: 640px) {
+            html, body { overflow: auto; }
+            .shell { flex-direction: column; height: auto; min-height: 100vh; }
+            .sidebar { width: 100% !important; flex-direction: row; height: 56px; padding: 0 16px; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar-logo { margin-bottom: 0; margin-right: 8px; }
+            .nav-group { flex-direction: row; padding: 0 4px; }
+            .nav-group + .nav-group { margin-top: 0; padding-top: 0; border-top: none; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
+            .nav-group-label { display: none; }
+            .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; padding: 0 4px; }
+            .nav-item::after { display: none; }
+            .nav-label { display: none; }
+            .steps-row { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: 1fr; }
+            .content { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <!-- SIDEBAR (identical structure to MyChats) -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <img src="~/images/Untitled_design__4_-removebg-preview (1).png" alt="Rev'nLearn"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='🐦';" />
+            </div>
+            <span class="logo-text">Rev'nLearn</span>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-label">Main</div>
+            <a class="nav-item" href="/Chat/MyChats" data-tip="My Chats">
+                <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+                <span class="nav-label">My Chats</span>
+            </a>
+            <a class="nav-item" href="/Chat/Flashcards" data-tip="Flashcards">
+                <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <span class="nav-label">Flashcards</span>
+            </a>
+            <a class="nav-item" href="/Chat/Quizzes" data-tip="Quizzes">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <span class="nav-label">Quizzes</span>
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-label">Support</div>
+            <a class="nav-item active" href="/Support/HowToUse" data-tip="How to use">
+                <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span class="nav-label">How to use</span>
+            </a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <a class="nav-item" href="/Account/Profile" data-tip="Profile"
+               style="height:auto; padding:8px 11px; align-items:flex-start;">
+                <svg viewBox="0 0 24 24" style="margin-top:2px; flex-shrink:0;">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span class="nav-label" style="display:flex; flex-direction:column; gap:1px; overflow:hidden;">
+                    <span style="font-size:13px; font-weight:700; color:var(--text-white);
+                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @(ViewBag.Username ?? "Profile")
+                    </span>
+                    <span style="font-size:11px; font-weight:400; color:var(--text-muted);
+                                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        @(ViewBag.Email ?? "")
+                    </span>
+                </span>
+            </a>
+            <a class="nav-item" href="#" data-tip="Log Out"
+               onclick="event.preventDefault(); document.getElementById('logoutModal').style.display='flex';">
+                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span class="nav-label">Log Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <header class="topbar">
+            <span class="page-title">How to Use Rev'nLearn</span>
+            <div class="topbar-badge">Quick Guide</div>
+        </header>
+
+        <div class="content">
+
+            <!-- HERO -->
+            <div class="section-label">Getting started</div>
+            <div class="section-title">Learn smarter, not harder</div>
+            <div class="section-sub">
+                Rev'nLearn turns your documents and notes into quizzes, flashcards, and AI-powered study sessions.
+                Click any step below to see how it works.
+            </div>
+
+            <!-- STEP CARDS -->
+            <div class="section-label">4 simple steps</div>
+            <div class="steps-row" id="stepsRow"></div>
+            <div class="detail-panel" id="detailPanel"></div>
+
+            <!-- FEATURES -->
+            <div class="section-label">Key features</div>
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </div>
+                    <div class="feat-body">
+                        <h3>Study Buddy (AI)</h3>
+                        <p>An AI-powered voice companion that quizzes you out loud, asks follow-up questions, and adapts to your pace — like having a personal tutor on demand.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <div class="feat-body">
+                        <h3>Download your sets</h3>
+                        <p>Export any quiz or flashcard set to study offline, share with classmates, or print for review sessions.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <div class="feat-body">
+                        <h3>Progress tracking</h3>
+                        <p>Every quiz and flashcard set shows a per-card progress bar so you always know how much of a set you've reviewed.</p>
+                    </div>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </div>
+                    <div class="feat-body">
+                        <h3>Light &amp; dark mode</h3>
+                        <p>Switch themes anytime in Profile Settings. Your preference is saved and applied across all pages automatically.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- LOGOUT MODAL (identical to MyChats) -->
+<div id="logoutModal" style="
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:var(--card-bg); border:1px solid var(--border);
+        border-radius:16px; padding:28px 28px 24px;
+        width:340px; text-align:center; font-family:'DM Sans',sans-serif;">
+        <div style="width:48px; height:48px; border-radius:14px;
+            background:rgba(220,60,60,.12); display:flex; align-items:center;
+            justify-content:center; margin:0 auto 16px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="#e05555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </div>
+        <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+                    color:var(--text-white); margin-bottom:8px;">Log Out?</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">
+            Are you sure you want to log out of Rev'nLearn?
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'"
+                style="flex:1; height:38px; border-radius:9px; border:1px solid var(--border);
+                       background:transparent; color:var(--text-white);
+                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
+                Cancel
+            </button>
+            <a href="/Account/Logout"
+                style="flex:1; height:38px; border-radius:9px; border:none;
+                       background:#c0392b; color:#fff; text-decoration:none;
+                       font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+                       cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                Yes, Log Out
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ── THEME INIT ── */
+    (function () {
+        if (localStorage.getItem('lightMode') === 'true')
+            document.body.classList.add('light-mode');
+    })();
+
+    /* ── STEP DATA ── */
+    var steps = [
+        {
+            iconPath: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+            title: 'Upload your material',
+            short: 'Add documents or notes to a chat',
+            detail: {
+                desc: 'Start by creating a new chat and uploading your study materials.',
+                steps: [
+                    { n: 1, h: 'Go to My Chats', p: 'Click the chat icon in the sidebar to open My Chats, then click "New Chat".', tag: 'My Chats' },
+                    { n: 2, h: 'Add a document', p: 'Use the "Add new document" button in the left panel to upload a PDF, Word file, or paste your notes as text.', tag: 'Supported: PDF, DOCX, TXT' },
+                    { n: 3, h: 'Describe your topic', p: 'Type a message to describe what you want to review. The AI reads your document and prepares to help.', tag: '' }
+                ]
+            }
+        },
+        {
+            iconPath: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+            title: 'Generate a quiz',
+            short: 'Turn your content into quiz questions',
+            detail: {
+                desc: 'Let the AI create a quiz from your uploaded material in seconds.',
+                steps: [
+                    { n: 1, h: 'Ask for a quiz', p: 'Type something like "Make a 10-question quiz from this document" in the chat.', tag: 'Try: "Make a quiz with 15 questions"' },
+                    { n: 2, h: 'Find it in My Quizzes', p: 'Your quiz is saved under My Quizzes. Open the folder matching your chat and find the quiz set.', tag: 'My Quizzes' },
+                    { n: 3, h: 'Take the quiz', p: 'Click "Take the Quiz" on the set card to start answering. Progress is tracked per set.', tag: 'Progress saved automatically' }
+                ]
+            }
+        },
+        {
+            iconPath: '<rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+            title: 'Study with flashcards',
+            short: 'Review terms and definitions',
+            detail: {
+                desc: 'Flashcards are great for memorizing key terms, definitions, and concepts.',
+                steps: [
+                    { n: 1, h: 'Request flashcards', p: 'Type "Create flashcards for the key terms in this document" in your chat.', tag: 'Try: "Make 20 flashcards"' },
+                    { n: 2, h: 'Open My Flashcards', p: 'Your flashcard sets are saved per chat. Go to My Flashcards, open the folder, and click "Study the Flashcard".', tag: 'My Flashcards' },
+                    { n: 3, h: 'Use Study Buddy', p: 'Click the Study Buddy button on any set card to have the AI quiz you on the flashcard content by voice.', tag: 'Needs microphone' }
+                ]
+            }
+        },
+        {
+            iconPath: '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
+            title: 'Use Study Buddy',
+            short: 'Get quizzed by your AI tutor',
+            detail: {
+                desc: 'Study Buddy is an interactive AI voice session that reviews material with you by asking questions.',
+                steps: [
+                    { n: 1, h: 'Open a quiz or flashcard set', p: 'Navigate to any set inside My Quizzes or My Flashcards.', tag: '' },
+                    { n: 2, h: 'Click Study Buddy', p: 'The Study Buddy button sits at the top of each set card. Click it to open the session.', tag: 'Top of each set card' },
+                    { n: 3, h: 'Start the session', p: 'The AI asks a question. Respond by voice or text. It will follow up, give feedback, and track your progress.', tag: 'Say "skip" to move on' }
+                ]
+            }
+        }
+    ];
+
+    var activeIndex = -1;
+    var stepsRow    = document.getElementById('stepsRow');
+    var panel       = document.getElementById('detailPanel');
+
+    steps.forEach(function (s, i) {
+        var card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML =
+            '<div class="step-num">' + (i + 1) + '</div>' +
+            '<div class="step-icon"><svg viewBox="0 0 24 24">' + s.iconPath + '</svg></div>' +
+            '<h3>' + s.title + '</h3>' +
+            '<p>' + s.short + '</p>';
+
+        card.addEventListener('click', function () {
+            if (activeIndex === i) {
+                activeIndex = -1;
+                panel.classList.remove('visible');
+                stepsRow.querySelectorAll('.step-card').forEach(function (x) { x.classList.remove('active'); });
+                return;
+            }
+            activeIndex = i;
+            stepsRow.querySelectorAll('.step-card').forEach(function (x, j) {
+                x.classList.toggle('active', j === i);
+            });
+
+            var d = s.detail;
+            panel.innerHTML =
+                '<div class="detail-header">' +
+                    '<div class="detail-icon"><svg viewBox="0 0 24 24">' + s.iconPath + '</svg></div>' +
+                    '<div class="detail-header-text"><h2>' + s.title + '</h2><p>' + d.desc + '</p></div>' +
+                '</div>' +
+                '<div class="steps-list">' +
+                d.steps.map(function (st) {
+                    return '<div class="step-item">' +
+                        '<div class="step-dot">' + st.n + '</div>' +
+                        '<div class="step-item-body">' +
+                            '<h4>' + st.h + '</h4>' +
+                            '<p>' + st.p + '</p>' +
+                            (st.tag ? '<div class="step-tag"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>' + st.tag + '</div>' : '') +
+                        '</div>' +
+                    '</div>';
+                }).join('') +
+                '</div>';
+
+            panel.classList.add('visible');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        stepsRow.appendChild(card);
+    });
+</script>
+</body>
+</html>

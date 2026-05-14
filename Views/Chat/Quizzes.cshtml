@@ -50,6 +50,8 @@
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
         body.light-mode .ctx-menu { background: #f4f3ff; }
+        body.light-mode .filter-select { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
+        body.light-mode .filter-select:hover { border-color: var(--accent); }
 
         html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
         .shell { display: flex; height: 100vh; width: 100vw; }
@@ -79,13 +81,19 @@
         /* ── MAIN ── */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
-        .search-bar { width: 600px; position: relative; }
+        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; }
+
+        .filters-group { display: flex; align-items: center; gap: 12px; min-width: 600px; }
+        .search-bar { width: 360px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar input::placeholder { color: var(--text-dim); }
         .search-bar .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
         .search-bar .search-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; min-width: 110px; }
+        .filter-select:hover { border-color: var(--accent); }
+        .filter-select:focus { border-color: var(--accent); }
 
         /* ── CONTENT ── */
         .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -112,11 +120,6 @@
             animation: fadeUp 0.4s ease both;
         }
         .card-project:hover { background: var(--card-hover); border-color: rgba(124,92,191,0.3); transform: translateY(-2px); }
-        .card-project:nth-child(2) { animation-delay: 0.05s; }
-        .card-project:nth-child(3) { animation-delay: 0.10s; }
-        .card-project:nth-child(4) { animation-delay: 0.15s; }
-        .card-project:nth-child(5) { animation-delay: 0.20s; }
-        .card-project:nth-child(6) { animation-delay: 0.25s; }
 
         .card-top-row { display: flex; align-items: flex-start; justify-content: space-between; }
 
@@ -128,7 +131,6 @@
             color: var(--accent); flex-shrink: 0;
         }
         .project-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
 
         .card-body { flex: 1; }
         .project-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; margin-bottom: 8px; }
@@ -167,7 +169,9 @@
             .nav-label { display: none; }
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 20px 16px; }
-            .search-bar { width: 100%; }
+            .filters-group { flex-wrap: wrap; }
+            .search-bar { max-width: 100%; flex: 1 1 100%; }
+            .filter-select { flex: 1; min-width: 120px; }
         }
     </style>
 </head>
@@ -200,7 +204,7 @@
         </div>
         <div class="nav-group">
             <div class="nav-group-label">Support</div>
-            <a class="nav-item" href="/Help/Index" data-tip="How to use">
+            <a class="nav-item" href="/Support/HowToUse" data-tip="How to use"> 
                 <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 <span class="nav-label">How to use</span>
             </a>
@@ -235,11 +239,24 @@
     <div class="main">
         <header class="topbar">
             <span class="page-title">My Quizzes</span>
-            <div class="search-bar">
-                <span class="search-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </span>
-                <input type="text" placeholder="Search projects..." id="searchInput" oninput="filterCards()" />
+            <div style="flex:1;"></div>
+            <div class="filters-group" style="flex:0; justify-content:flex-end;">
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" placeholder="Search projects..." id="searchInput" oninput="applyFilters()" />
+                </div>
+                <select class="filter-select" id="filterDate" onchange="applyFilters()">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="older">Older</option>
+                </select>
+                <select class="filter-select" id="filterTag" onchange="applyFilters()">
+                    <option value="">All Tags</option>
+                </select>
             </div>
         </header>
 
@@ -249,8 +266,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- ── LOGOUT MODAL ── -->
 <div id="logoutModal" style="
@@ -300,7 +315,6 @@
             document.body.classList.add('light-mode');
     })();
 
-
     document.addEventListener('DOMContentLoaded', loadProjects);
 
     async function loadProjects() {
@@ -319,15 +333,54 @@
                 return;
             }
 
+            populateTagFilter(projects);
             projects.forEach((p, i) => grid.appendChild(makeCard(p, i)));
+            // Fetch quiz counts for each project
+                projects.forEach(async (p) => {
+                    try {
+                        const res   = await fetch(`/Chat/GetQuizzesByProject?projectId=${p.id}`);
+                        const quizzes = await res.json();
+
+                        // Group by sessionId (same logic as QuizzesView)
+                        const sessions = new Set(quizzes.map(q => q.sessionId || q.quizId));
+                        const count = sessions.size;
+
+                        const el = document.getElementById(`quiz-count-${p.id}`);
+                        if (el) {
+                            const span = el.querySelector('span');
+                            if (span) span.textContent = `${count} Quiz${count !== 1 ? 'zes' : ''}`;
+                        }
+                    } catch {
+                        const el = document.getElementById(`quiz-count-${p.id}`);
+                        if (el) { const s = el.querySelector('span'); if (s) s.textContent = 'Quizzes'; }
+                    }
+                });
         } catch (err) { console.error('Failed to load projects:', err); }
+    }
+
+    function populateTagFilter(projects) {
+        const tagSet = new Set();
+        projects.forEach(p => {
+            if (p.subject && p.subject.trim()) tagSet.add(p.subject.trim());
+        });
+
+        const filterTag = document.getElementById('filterTag');
+        filterTag.innerHTML = '<option value="">All Tags</option>';
+        Array.from(tagSet).sort().forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.toLowerCase();
+            option.textContent = tag;
+            filterTag.appendChild(option);
+        });
     }
 
     function makeCard(project, index) {
         const card = document.createElement('div');
         card.className = 'card-project';
-        card.dataset.id   = project.id;
-        card.dataset.name = project.name.toLowerCase();
+        card.dataset.id      = project.id;
+        card.dataset.name    = project.name.toLowerCase();
+        card.dataset.subject = (project.subject || '').toLowerCase();
+        card.dataset.timestamp = parseDateToTimestamp(project.date);
         card.style.animationDelay = `${index * 0.05}s`;
         card.onclick = () => openProject(project.id);
 
@@ -346,34 +399,79 @@
                     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     ${escHtml(project.date)}
                 </div>
-                <div class="meta-item">
+                <div class="meta-item" id="quiz-count-${project.id}">
                     <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    View Quizzes
+                    <span>—</span>
                 </div>
             </div>`;
 
-
         return card;
+    }
+
+    function parseDateToTimestamp(dateStr) {
+        return new Date(dateStr).getTime();
+    }
+
+    function getDateCategory(timestamp) {
+        const now = new Date();
+        const chatDate = new Date(timestamp);
+        now.setHours(0, 0, 0, 0);
+        chatDate.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((now - chatDate) / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'today';
+        if (diffDays <= 7) return 'week';
+        if (diffDays <= 30) return 'month';
+        return 'older';
+    }
+
+    function applyFilters() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const dateFilter  = document.getElementById('filterDate').value;
+        const tagFilter   = document.getElementById('filterTag').value;
+
+        let visibleCount = 0;
+
+        document.querySelectorAll('.card-project').forEach(card => {
+            const name         = card.dataset.name;
+            const subject      = card.dataset.subject;
+            const timestamp    = parseInt(card.dataset.timestamp);
+            const dateCategory = getDateCategory(timestamp);
+
+            const searchMatch = !searchQuery || name.includes(searchQuery) || subject.includes(searchQuery);
+            const dateMatch   = !dateFilter  || dateCategory === dateFilter;
+            const tagMatch    = !tagFilter   || subject === tagFilter;
+
+            if (searchMatch && dateMatch && tagMatch) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide no-results message
+        const existing = document.getElementById('noResults');
+        if (visibleCount === 0) {
+            if (!existing) {
+                const msg = document.createElement('div');
+                msg.className = 'empty-state';
+                msg.id = 'noResults';
+                msg.style.gridColumn = '1/-1';
+                msg.innerHTML = `
+                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <p>No projects match your filters.</p>`;
+                document.getElementById('cardsGrid').appendChild(msg);
+            }
+        } else if (existing) {
+            existing.remove();
+        }
     }
 
     function openProject(id) {
         window.location.href = `/Chat/QuizzesView?id=${id}`;
     }
 
-
-    function hideContextMenu() { document.getElementById('ctxMenu').classList.remove('visible'); }
-    document.addEventListener('click', hideContextMenu);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') hideContextMenu(); });
-
-    function ctxOpen()     { hideContextMenu(); openProject(ctxProjectId); }
-    function ctxGoToChat() { hideContextMenu(); window.location.href = `/Chat/Open/${ctxProjectId}`; }
-
-    function filterCards() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('.card-project').forEach(card => {
-            card.style.display = card.dataset.name.includes(q) ? '' : 'none';
-        });
-    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') {} });
 
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

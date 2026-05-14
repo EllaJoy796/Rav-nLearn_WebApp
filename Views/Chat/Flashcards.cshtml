@@ -11,11 +11,7 @@
     <title>Rev'nLearn - My Flashcards</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg:            #0d0d12;
@@ -53,580 +49,111 @@
         body.light-mode .search-bar input { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
         body.light-mode .search-bar .search-icon svg { stroke: var(--text-muted); }
         body.light-mode .card-fc-banner { background: linear-gradient(135deg, #ded8f5 0%, #e8e3f8 100%); }
+        body.light-mode .card-fc-banner .fc-card-img { filter: brightness(0) invert(0) !important; opacity: 0.5 !important; }
         body.light-mode .nav-item     { color: #2d1f5e; }
         body.light-mode .nav-item.active { color: var(--accent); }
         body.light-mode .nav-group-label { color: #6b5fa0; }
-        body.light-mode .ctx-menu { background: #f4f3ff; }
+        body.light-mode .filter-select { background-color: #fff; color: #1a1535; }
+        body.light-mode .filter-select option { background: #fff; color: #1a1535; }
 
-        html, body {
-            height: 100%;
-            background-color: var(--bg);
-            font-family: 'DM Sans', sans-serif;
-            color: var(--text-white);
-            overflow: hidden;
-        }
+        html, body { height: 100%; background-color: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-white); overflow: hidden; }
+        .shell { display: flex; height: 100vh; width: 100vw; }
 
-        .shell {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        /* ═══════════════════════════════════════
-           SIDEBAR
-        ═══════════════════════════════════════ */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 16px 0;
-            gap: 0;
-            flex-shrink: 0;
-            z-index: 100;
-            overflow: hidden;
-            transition: width 0.25s ease;
-            position: relative;
-        }
-
-        .sidebar:hover {
-            width: var(--sidebar-expanded);
-        }
-
-        .sidebar-logo {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 15px;
-            margin-bottom: 28px;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .logo-icon img {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        .logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--text-white);
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.05s;
-        }
-
+        /* ══ SIDEBAR ══ */
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; padding: 16px 0; flex-shrink: 0; z-index: 100; overflow: hidden; transition: width 0.25s ease; position: relative; }
+        .sidebar:hover { width: var(--sidebar-expanded); }
+        .sidebar-logo { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 15px; margin-bottom: 28px; flex-shrink: 0; overflow: hidden; }
+        .logo-icon { width: 42px; height: 42px; min-width: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo-icon img { width: 38px; height: 38px; object-fit: contain; border-radius: 10px; }
+        .logo-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--text-white); white-space: nowrap; opacity: 0; transition: opacity 0.2s ease 0.05s; }
         .sidebar:hover .logo-text { opacity: 1; }
-
-        .nav-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 2px;
-            width: 100%;
-            padding: 0 12px;
-        }
-
-        .nav-group + .nav-group {
-            margin-top: 8px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .nav-group-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--text-dim);
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            padding: 0 4px;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            opacity: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: opacity 0.2s ease, max-height 0.2s ease;
-        }
-
-        .sidebar:hover .nav-group-label {
-            opacity: 1;
-            max-height: 20px;
-        }
-
-        .nav-item {
-            width: 100%;
-            height: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 11px;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease;
-            color: white;
-            text-decoration: none;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
+        .nav-group { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
+        .nav-group + .nav-group { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .nav-group-label { font-size: 10px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.8px; text-transform: uppercase; padding: 0 4px; margin-bottom: 6px; white-space: nowrap; opacity: 0; max-height: 0; overflow: hidden; transition: opacity 0.2s ease, max-height 0.2s ease; }
+        .sidebar:hover .nav-group-label { opacity: 1; max-height: 20px; }
+        .nav-item { width: 100%; height: 44px; border-radius: 10px; display: flex; align-items: center; gap: 12px; padding: 0 11px; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; color: white; text-decoration: none; overflow: hidden; white-space: nowrap; }
         .nav-item:hover { background: var(--accent-soft); color: var(--text-white); }
         .nav-item.active { background: var(--accent-soft); color: var(--accent); }
-
-        .nav-item svg {
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .nav-label {
-            font-size: 13px;
-            font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.2s ease 0.05s;
-            overflow: hidden;
-        }
-
+        .nav-item svg { width: 20px; height: 20px; min-width: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-label { font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.2s ease 0.05s; overflow: hidden; }
         .sidebar:hover .nav-label { opacity: 1; }
-
-        .nav-item::after {
-            content: attr(data-tip);
-            position: absolute;
-            left: 82px;
-            top: auto;
-            background: #1e1e2e;
-            color: var(--text-white);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 6px;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            border: 1px solid var(--border);
-            z-index: 200;
-        }
-
+        .nav-item::after { content: attr(data-tip); position: absolute; left: 82px; background: #1e1e2e; color: var(--text-white); font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; border: 1px solid var(--border); z-index: 200; }
         .sidebar:not(:hover) .nav-item:hover::after { opacity: 1; }
+        .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 0 12px; }
 
-        .sidebar-bottom {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 2px;
-            width: 100%;
-            padding: 0 12px;
-        }
-
-        /* ═══════════════════════════════════════
-           MAIN
-        ═══════════════════════════════════════ */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        .topbar {
-            height: var(--topbar-h);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 0 28px;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-
-        .page-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 20px;
-            font-weight: 900;
-            color: var(--text-white);
-            letter-spacing: -0.3px;
-            white-space: nowrap;
-            flex: 1;
-        }
-
-        .search-bar {
-            width: 600px;
-            position: relative;
-        }
-
-        .search-bar input {
-            width: 100%;
-            height: 40px;
-            background: #1a1726;
-            border: 1px solid white;
-            border-radius: 10px;
-            padding: 0 16px 0 40px;
-            color: var(--text-white);
-            font-size: 13px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-
+        /* ══ MAIN ══ */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
+        .search-bar { width: 600px; position: relative; }
+        .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar input::placeholder { color: var(--text-dim); }
+        .search-bar .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+        .search-bar .search-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .search-bar .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .search-bar .search-icon svg {
-            width: 16px;
-            height: 16px;
-            stroke: white;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ─── CONTENT ─── */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 32px 28px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
-        }
-
+        /* ── CONTENT ── */
+        .content { flex: 1; overflow-y: auto; padding: 32px 28px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
         .content::-webkit-scrollbar { width: 4px; }
-        .content::-webkit-scrollbar-track { background: transparent; }
         .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 20px; }
 
-        .section-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            margin-bottom: 20px;
-        }
+        /* ── FILTER BAR ── */
+        .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
+        .filter-select { height: 34px; padding: 0 32px 0 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; transition: border-color .2s, color .2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7490' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+        .filter-select:focus, .filter-select:hover { border-color: var(--accent); color: var(--text-white); }
+        .filter-select option { background: #1e1a2e; color: var(--text-white); }
+        .filter-reset { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: none; border: 1px solid rgba(124,92,191,.3); border-radius: 8px; color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s; }
+        .filter-reset:hover { background: var(--accent-soft); border-color: var(--accent); }
+        .filter-reset svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* ─── GRID ─── */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
+        /* ── GRID ── */
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-        /* ─── FLASHCARD CARD ─── */
-        .card-fc {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            position: relative;
-            min-height: 200px;
-            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-            animation: fadeUp 0.4s ease both;
-            overflow: hidden;
-        }
+        /* ── FLASHCARD CARD ── */
+        .card-fc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; cursor: pointer; position: relative; min-height: 200px; transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease; animation: fadeUp 0.4s ease both; overflow: hidden; }
+        .card-fc:hover { background: var(--card-hover); border-color: rgba(124,92,191,0.3); transform: translateY(-2px); }
 
-        .card-fc:hover {
-            background: var(--card-hover);
-            border-color: rgba(124, 92, 191, 0.3);
-            transform: translateY(-2px);
-        }
+        .card-fc-banner { width: 100%; height: 110px; background: linear-gradient(135deg, #251f3a 0%, #1a1530 100%); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+        .fc-stack { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+        .fc-card-img { width: 52px; height: 52px; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.85; }
 
-        /* Coloured top banner */
-        .card-fc-banner {
-            width: 100%;
-            height: 110px;
-            background: linear-gradient(135deg, #251f3a 0%, #1a1530 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            flex-shrink: 0;
-        }
+        .banner-chip { position: absolute; top: 12px; left: 14px; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        /* Stacked cards illustration */
-        .fc-stack {
-            position: relative;
-            width: 64px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .card-fc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .fc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-white); letter-spacing: 0.3px; }
+        .fc-subject { display: inline-block; padding: 3px 10px; background: var(--accent-chip); border-radius: 20px; font-size: 10px; font-weight: 700; color: #c8b8f0; letter-spacing: 0.5px; text-transform: uppercase; width: fit-content; }
 
-        .fc-icon-back {
-            width: 64px;
-            height: 52px;
-        }
+        .card-fc-meta { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 11px; margin-top: auto; }
+        .card-fc-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-        /* Chip on banner */
-        .banner-chip {
-            position: absolute;
-            top: 12px;
-            left: 14px;
-            padding: 3px 10px;
-            background: var(--accent-chip);
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #c8b8f0;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        /* Three-dot menu */
-        .btn-more {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-dim);
-            padding: 4px 5px;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            align-items: center;
-            transition: color 0.2s ease, background 0.2s ease;
-        }
-
-        .btn-more:hover {
-            color: var(--text-muted);
-            background: var(--accent-soft);
-        }
-
-        .btn-more span {
-            width: 3px;
-            height: 3px;
-            background: currentColor;
-            border-radius: 50%;
-            display: block;
-        }
-
-        /* Card body */
-        .card-fc-body {
-            padding: 14px 16px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .fc-name {
-            font-family: 'Syne', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-white);
-            letter-spacing: 0.3px;
-        }
-
-        .fc-subject {
-            display: inline-block;
-            padding: 3px 10px;
-            background: var(--accent-chip);
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #c8b8f0;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            width: fit-content;
-        }
-
-        .fc-subject.hidden { display: none; }
-
-        .card-fc-meta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-dim);
-            font-size: 11px;
-            margin-top: auto;
-        }
-
-        .card-fc-meta svg {
-            width: 12px;
-            height: 12px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            flex-shrink: 0;
-        }
-
-        .meta-files {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-dim);
-            font-size: 11px;
-        }
-
-        .meta-files svg {
-            width: 12px;
-            height: 12px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ─── EMPTY STATE ─── */
-        .empty-state {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 60px 20px;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
-        .empty-state svg {
-            width: 48px;
-            height: 48px;
-            stroke: var(--text-dim);
-            fill: none;
-            stroke-width: 1.2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            opacity: 0.5;
-        }
-
+        /* ── EMPTY STATE ── */
+        .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--text-dim); text-align: center; }
+        .empty-state svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
         .empty-state p { font-size: 14px; }
 
-        /* ── CONTEXT MENU ── */
-        .ctx-menu {
-            position: fixed;
-            background: #1e1a2e;
-            border: 1px solid rgba(124,92,191,0.25);
-            border-radius: 10px;
-            padding: 6px;
-            min-width: 150px;
-            z-index: 999;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            display: none;
-        }
-        .ctx-menu.visible { display: block; }
-        .ctx-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: background 0.15s, color 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .ctx-item:hover { background: var(--accent-soft); color: var(--text-white); }
-        .ctx-item.danger { color: #e07070; }
-        .ctx-item.danger:hover { background: rgba(224,112,112,0.12); }
-
         /* ── MODALS ── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 500;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
-        .modal {
-            background: #1a1626;
-            border: 1px solid rgba(124,92,191,0.25);
-            border-radius: 20px;
-            padding: 32px;
-            width: min(420px, 90vw);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-            animation: modalIn 0.2s ease;
-        }
-        @@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
-        .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-white); margin-bottom: 6px; }
+        .delete-modal { background: #1a1626; border: 1px solid rgba(224,112,112,0.2); border-radius: 20px; padding: 32px; width: min(380px, 90vw); box-shadow: 0 24px 60px rgba(0,0,0,0.5); animation: modalIn 0.2s ease; }
+        .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #e07070; margin-bottom: 6px; }
         .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-        .field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 7px; display: block; }
-        .field-input { width: 100%; height: 44px; background: #0f0d1a; border: 1px solid rgba(124,92,191,0.2); border-radius: 10px; padding: 0 14px; color: var(--text-white); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; margin-bottom: 16px; }
-        .field-input:focus { border-color: var(--accent); }
-        .field-input::placeholder { color: var(--text-dim); }
         .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
         .btn-cancel { flex: 1; height: 44px; background: none; border: 1px solid rgba(124,92,191,0.2); border-radius: 10px; color: var(--text-muted); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
         .btn-cancel:hover { border-color: var(--accent); color: var(--text-white); }
-        .btn-create { flex: 2; height: 44px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; }
-        .btn-create:hover { background: #6b4daa; }
-        .btn-create:disabled { background: #3a3050; color: var(--text-dim); cursor: not-allowed; }
-        .error-msg { font-size: 12px; color: #e07070; margin-top: -10px; margin-bottom: 12px; display: none; }
-        .error-msg.visible { display: block; }
-
-        .delete-modal {
-            background: #1a1626;
-            border: 1px solid rgba(224,112,112,0.2);
-            border-radius: 20px;
-            padding: 32px;
-            width: min(380px, 90vw);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-            animation: modalIn 0.2s ease;
-        }
-        .delete-modal .modal-title { color: #e07070; }
         .btn-delete-confirm { flex: 2; height: 44px; background: #c0392b; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; }
         .btn-delete-confirm:hover { background: #a93226; }
         .btn-delete-confirm:disabled { background: #5a2a2a; color: #888; cursor: not-allowed; }
 
-        @@keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        @@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: none; } }
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
         @@media (max-width: 640px) {
             html, body { overflow: auto; }
             .shell { flex-direction: column; height: auto; min-height: 100vh; }
-            .sidebar {
-                width: 100% !important;
-                flex-direction: row;
-                height: 56px;
-                padding: 0 16px;
-                gap: 8px;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
+            .sidebar { width: 100% !important; flex-direction: row; height: 56px; padding: 0 16px; gap: 8px; border-right: none; border-bottom: 1px solid var(--border); }
             .sidebar-logo { margin-bottom: 0; margin-right: 8px; }
             .logo-icon { width: 34px; height: 34px; min-width: 34px; }
             .logo-text { opacity: 1; }
@@ -645,9 +172,8 @@
 <body>
 <div class="shell">
 
-    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <!-- ══ SIDEBAR ══ -->
     <aside class="sidebar">
-
         <div class="sidebar-logo">
             <div class="logo-icon">
                 <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
@@ -675,7 +201,7 @@
 
         <div class="nav-group">
             <div class="nav-group-label">Support</div>
-            <a class="nav-item" href="/Help/Index" data-tip="How to use">
+            <a class="nav-item" href="/Support/HowToUse" data-tip="How to use">
                 <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 <span class="nav-label">How to use</span>
             </a>
@@ -705,50 +231,65 @@
                 <span class="nav-label">Log Out</span>
             </a>
         </div>
-
     </aside>
 
-    <!-- ══════════════ MAIN ══════════════ -->
+    <!-- ══ MAIN ══ -->
     <div class="main">
-
-        <!-- TOP BAR -->
         <header class="topbar">
             <span class="page-title">My Flashcards</span>
-
             <div class="search-bar">
                 <span class="search-icon">
                     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </span>
                 <input type="text" placeholder="Search flashcards..." id="searchInput" oninput="filterCards()" />
             </div>
-
         </header>
 
-        <!-- CONTENT -->
         <div class="content">
+
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Date</label>
+                    <select class="filter-select" id="filterDate" onchange="filterCards()">
+                        <option value="">All time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This week</option>
+                        <option value="month">This month</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Tag</label>
+                    <select class="filter-select" id="filterTag" onchange="filterCards()">
+                        <option value="">All tags</option>
+                    </select>
+                </div>
+                <button class="filter-reset" id="btnReset" onclick="resetFilters()" style="display:none">
+                    <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
+                    Reset
+                </button>
+            </div>
+
             <div class="section-label">Your collections of flashcards</div>
 
             <div class="cards-grid" id="cardsGrid">
-
                 @if (ViewBag.Flashcards != null && ((IEnumerable<dynamic>)ViewBag.Flashcards).Any())
                 {
                     int i = 0;
                     foreach (var set in ViewBag.Flashcards)
                     {
-                        <div class="card-fc" data-id="@set.Id" data-name="@set.Name?.ToLower()"
+                        <div class="card-fc"
+                             data-id="@set.Id"
+                             data-name="@set.Name?.ToLower()"
+                             data-subject="@(set.Subject?.ToLower() ?? "")"
+                             data-date="@(set.Date?.ToString("yyyy-MM-dd") ?? "")"
                              onclick="window.location.href='/Chat/FlashcardView?id=@(set.Id)'"
                              style="animation-delay: @(i * 0.05)s">
                             <div class="card-fc-banner">
                                 <span class="banner-chip">@set.CardCount Flashcards</span>
                                 <div class="fc-stack">
-                                    <svg class="fc-icon-back" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect x="10" y="14" width="30" height="22" rx="3" stroke="rgba(255,255,255,0.35)" stroke-width="2" transform="rotate(-6 10 14)"/>
-                                        <rect x="8" y="12" width="30" height="22" rx="3" fill="rgba(124,92,191,0.3)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
-                                    </svg>
+                                    <img class="fc-card-img" src="~/images/card.png" alt="flashcard icon" />
                                 </div>
-                                <button class="btn-more" onclick="event.stopPropagation(); showContextMenu(event, @(set.Id), '@(set.Name?.Replace("'", "\\'"))')">
-                                    <span></span><span></span><span></span>
-                                </button>
                             </div>
                             <div class="card-fc-body">
                                 <div class="fc-name">@set.Name?.ToUpper()</div>
@@ -757,7 +298,7 @@
                                     <span class="fc-subject">@set.Subject</span>
                                 }
                                 <div class="card-fc-meta">
-                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                     @set.Date?.ToString("MMM dd, yyyy")
                                 </div>
                             </div>
@@ -772,61 +313,9 @@
                         <p>No flashcard sets yet.<br>Go to <strong>My Chats</strong> to create one.</p>
                     </div>
                 }
-
             </div>
+
         </div>
-
-    </div>
-</div>
-
-<!-- ── RENAME MODAL ── -->
-<div class="modal-overlay" id="renameOverlay" onclick="handleRenameOverlayClick(event)">
-    <div class="modal">
-        <div class="modal-title">Rename Flashcard Set</div>
-        <div class="modal-sub">Enter a new name for this flashcard set.</div>
-
-        <label class="field-label" for="renameInput">New name</label>
-        <input class="field-input" id="renameInput" type="text"
-               placeholder="e.g. Linux Reviewer" maxlength="100"
-               oninput="validateRenameForm()" onkeydown="handleRenameKey(event)" />
-        <div class="error-msg" id="renameError">Please enter a name.</div>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeRenameModal()">Cancel</button>
-            <button class="btn-create" id="btnRename" onclick="submitRename()" disabled>Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- ── DELETE CONFIRM MODAL ── -->
-<div class="modal-overlay" id="deleteOverlay" onclick="handleDeleteOverlayClick(event)">
-    <div class="delete-modal">
-        <div class="modal-title">Delete Flashcard Set?</div>
-        <div class="modal-sub" id="deleteModalSub">This will permanently delete this set and all its flashcards. This cannot be undone.</div>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-            <button class="btn-delete-confirm" id="btnDeleteConfirm" onclick="submitDelete()">Delete</button>
-        </div>
-    </div>
-</div>
-
-<!-- ── CONTEXT MENU ── -->
-<div class="ctx-menu" id="ctxMenu">
-    <div class="ctx-item" onclick="ctxRename()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-        Rename
-    </div>
-    <div class="ctx-item danger" onclick="ctxDelete()">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14H6L5 6"/>
-            <path d="M10 11v6M14 11v6"/>
-        </svg>
-        Delete
     </div>
 </div>
 
@@ -879,123 +368,60 @@
             document.body.classList.add('light-mode');
     })();
 
-    let ctxSetId   = null;
-    let ctxSetName = '';
-
-    // ── SEARCH ────────────────────────────────────────────
-    function filterCards() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
+    /* ── BUILD TAG FILTER FROM EXISTING CARDS ── */
+    document.addEventListener('DOMContentLoaded', function () {
+        const tags = new Set();
         document.querySelectorAll('.card-fc').forEach(card => {
-            const name = card.dataset.name ?? '';
-            card.style.display = name.includes(q) ? '' : 'none';
+            const tag = card.dataset.subject;
+            if (tag) tags.add(tag);
         });
-    }
-
-    // ── CONTEXT MENU ──────────────────────────────────────
-    function showContextMenu(e, setId, setName) {
-        ctxSetId   = setId;
-        ctxSetName = setName;
-        const menu = document.getElementById('ctxMenu');
-        menu.classList.add('visible');
-        const x = Math.min(e.clientX, window.innerWidth - 170);
-        const y = Math.min(e.clientY + 4, window.innerHeight - 100);
-        menu.style.left = x + 'px';
-        menu.style.top  = y + 'px';
-    }
-
-    function hideContextMenu() { document.getElementById('ctxMenu').classList.remove('visible'); }
-
-    document.addEventListener('click', hideContextMenu);
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { hideContextMenu(); closeRenameModal(); closeDeleteModal(); }
+        const sel = document.getElementById('filterTag');
+        tags.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t.toLowerCase();
+            opt.textContent = t;
+            sel.appendChild(opt);
+        });
     });
 
-    function ctxRename() { hideContextMenu(); openRenameModal(ctxSetId, ctxSetName); }
-    function ctxDelete() { hideContextMenu(); openDeleteModal(ctxSetId, ctxSetName); }
+/* ── FILTER ── */
+    /* ── FILTER ── */
+    function filterCards() {
+        const q    = document.getElementById('searchInput').value.toLowerCase();
+        const date = document.getElementById('filterDate').value;
+        const tag  = document.getElementById('filterTag').value;
+        const now  = new Date();
 
-    // ── RENAME MODAL ──────────────────────────────────────
-    function openRenameModal(id, currentName) {
-        ctxSetId = id;
-        const input = document.getElementById('renameInput');
-        input.value = currentName;
-        document.getElementById('renameError').classList.remove('visible');
-        document.getElementById('btnRename').disabled = false;
-        document.getElementById('renameOverlay').classList.add('open');
-        setTimeout(() => { input.focus(); input.select(); }, 100);
-    }
-    function closeRenameModal() { document.getElementById('renameOverlay').classList.remove('open'); }
-    function handleRenameOverlayClick(e) { if (e.target === document.getElementById('renameOverlay')) closeRenameModal(); }
-    function handleRenameKey(e) {
-        if (e.key === 'Escape') closeRenameModal();
-        if (e.key === 'Enter' && !document.getElementById('btnRename').disabled) submitRename();
-    }
-    function validateRenameForm() {
-        const val = document.getElementById('renameInput').value.trim();
-        document.getElementById('btnRename').disabled = val.length === 0;
-        document.getElementById('renameError').classList.remove('visible');
-    }
+        document.querySelectorAll('.card-fc').forEach(card => {
+            const name    = card.dataset.name ?? '';
+            const subject = (card.dataset.subject ?? '').toLowerCase();
+            const dateStr = card.dataset.date ?? '';
 
-    async function submitRename() {
-        const newName = document.getElementById('renameInput').value.trim();
-        if (!newName) { document.getElementById('renameError').classList.add('visible'); return; }
-
-        const btn = document.getElementById('btnRename');
-        btn.disabled = true; btn.textContent = 'Saving…';
-        try {
-            const res  = await fetch('/Chat/RenameProject', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: ctxSetId, name: newName })
-            });
-            const data = await res.json();
-            if (data.error) { alert('Error: ' + data.error); return; }
-
-            const card = document.querySelector(`.card-fc[data-id="${ctxSetId}"]`);
-            if (card) {
-                card.dataset.name = newName.toLowerCase();
-                const nameEl = card.querySelector('.fc-name');
-                if (nameEl) nameEl.textContent = newName.toUpperCase();
+            let show = name.includes(q);
+            if (show && tag)  show = subject === tag;
+            if (show && date) {
+                const cardDate = new Date(dateStr);
+                if (!isNaN(cardDate)) {
+                    const diff = (now - cardDate) / (1000 * 60 * 60 * 24);
+                    if (date === 'today')      show = diff < 1;
+                    else if (date === 'week')  show = diff < 7;
+                    else if (date === 'month') show = diff < 30;
+                }
             }
-            closeRenameModal();
-        } catch (err) { alert('Network error: ' + err.message); }
-        finally { btn.disabled = false; btn.textContent = 'Save'; }
+            card.style.display = show ? '' : 'none';
+        });
+
+        const anyFilter = date || tag || document.getElementById('searchInput').value;
+        document.getElementById('btnReset').style.display = anyFilter ? '' : 'none';
     }
 
-    // ── DELETE CONFIRM MODAL ──────────────────────────────
-    function openDeleteModal(id, name) {
-        ctxSetId = id;
-        document.getElementById('deleteModalSub').textContent =
-            `"${name}" and all its flashcards will be permanently deleted. This cannot be undone.`;
-        document.getElementById('deleteOverlay').classList.add('open');
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('filterDate').value  = '';
+        document.getElementById('filterTag').value   = '';
+        document.getElementById('btnReset').style.display = 'none';
+        document.querySelectorAll('.card-fc').forEach(c => c.style.display = '');
     }
-    function closeDeleteModal() { document.getElementById('deleteOverlay').classList.remove('open'); }
-    function handleDeleteOverlayClick(e) { if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal(); }
-
-    async function submitDelete() {
-        if (!ctxSetId) return;
-        const btn = document.getElementById('btnDeleteConfirm');
-        btn.disabled = true; btn.textContent = 'Deleting…';
-        try {
-            const res  = await fetch(`/Chat/DeleteProject/${ctxSetId}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (data.error) { alert('Error: ' + data.error); return; }
-
-            document.querySelector(`.card-fc[data-id="${ctxSetId}"]`)?.remove();
-            ctxSetId = null;
-            closeDeleteModal();
-
-            if (document.querySelectorAll('.card-fc').length === 0) {
-                document.getElementById('cardsGrid').innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                        <p>No flashcard sets yet.<br>Go to <strong>My Chats</strong> to create one.</p>
-                    </div>`;
-            }
-        } catch (err) { alert('Network error: ' + err.message); }
-        finally { btn.disabled = false; btn.textContent = 'Delete'; }
-    }
-
-
 </script>
 </body>
 </html>
