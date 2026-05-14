@@ -240,6 +240,20 @@
         <header class="topbar">
             <span class="page-title">My Quizzes</span>
             <div style="flex:1;"></div>
+            <button onclick="openCreateModal()" style="
+                height: 40px; padding: 0 20px;
+                background: var(--accent); border: none;
+                border-radius: 10px; color: #fff;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px; font-weight: 700;
+                cursor: pointer; display: flex;
+                align-items: center; gap: 8px;
+                transition: background 0.2s;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Quiz Project
+            </button>
             <div class="filters-group" style="flex:0; justify-content:flex-end;">
                 <div class="search-bar">
                     <span class="search-icon">
@@ -309,6 +323,96 @@
     </div>
 </div>
 
+<!-- ── CREATE PROJECT MODAL ── -->
+<div id="createProjectModal" style="
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:var(--card-bg); border:1px solid var(--border);
+        border-radius:20px; padding:28px;
+        width:min(460px,92vw); font-family:'DM Sans',sans-serif;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.5);">
+
+        <!-- Header -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div>
+                <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text-white);">
+                    New Quiz Project
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                    Create a project to hold your custom quizzes
+                </div>
+            </div>
+            <button onclick="closeCreateModal()" style="
+                background:none; border:1px solid var(--border);
+                border-radius:8px; color:var(--text-dim);
+                width:30px; height:30px; cursor:pointer;
+                display:flex; align-items:center; justify-content:center;
+                font-size:16px;">✕</button>
+        </div>
+
+        <!-- Fields -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted);
+                              text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">
+                    Project Name *
+                </label>
+                <input id="cpName" type="text" placeholder="e.g. Science Quiz, Math Review..."
+                    style="width:100%; height:42px; background:var(--bg);
+                           border:1px solid var(--border); border-radius:10px;
+                           padding:0 14px; color:var(--text-white);
+                           font-size:13px; font-family:inherit; outline:none;
+                           transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'" />
+            </div>
+            <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-muted);
+                              text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:6px;">
+                    Subject / Tag
+                </label>
+                <input id="cpSubject" type="text" placeholder="e.g. Biology, History..."
+                    style="width:100%; height:42px; background:var(--bg);
+                           border:1px solid var(--border); border-radius:10px;
+                           padding:0 14px; color:var(--text-white);
+                           font-size:13px; font-family:inherit; outline:none;
+                           transition:border-color .2s;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'" />
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="cpError" style="display:none; margin-top:12px;
+            background:rgba(224,112,112,.1); border:1px solid rgba(224,112,112,.25);
+            border-radius:8px; padding:10px 14px;
+            font-size:12px; color:#e07070;"></div>
+
+        <!-- Actions -->
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="closeCreateModal()" style="
+                flex:1; height:42px; background:none;
+                border:1px solid var(--border); border-radius:10px;
+                color:var(--text-muted); font-size:13px; font-weight:600;
+                font-family:inherit; cursor:pointer;
+                transition:border-color .2s, color .2s;"
+                onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--text-white)'"
+                onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-muted)'">
+                Cancel
+            </button>
+            <button onclick="submitCreateProject()" id="cpSubmitBtn" style="
+                flex:2; height:42px; background:var(--accent);
+                border:none; border-radius:10px; color:#fff;
+                font-size:13px; font-weight:700; font-family:inherit;
+                cursor:pointer; transition:background .2s;">
+                Create Project
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     (function () {
         if (localStorage.getItem('lightMode') === 'true')
@@ -333,31 +437,51 @@
                 return;
             }
 
-            populateTagFilter(projects);
-            projects.forEach((p, i) => grid.appendChild(makeCard(p, i)));
-            // Fetch quiz counts for each project
-                projects.forEach(async (p) => {
+            // Fetch quiz counts for ALL projects in parallel first
+            const counts = await Promise.all(
+                projects.map(async (p) => {
                     try {
-                        const res   = await fetch(`/Chat/GetQuizzesByProject?projectId=${p.id}`);
-                        const quizzes = await res.json();
-
-                        // Group by sessionId (same logic as QuizzesView)
+                        const r       = await fetch(`/Chat/GetQuizzesByProject?projectId=${p.id}`);
+                        const quizzes = await r.json();
                         const sessions = new Set(quizzes.map(q => q.sessionId || q.quizId));
-                        const count = sessions.size;
-
-                        const el = document.getElementById(`quiz-count-${p.id}`);
-                        if (el) {
-                            const span = el.querySelector('span');
-                            if (span) span.textContent = `${count} Quiz${count !== 1 ? 'zes' : ''}`;
-                        }
+                        return { project: p, count: sessions.size };
                     } catch {
-                        const el = document.getElementById(`quiz-count-${p.id}`);
-                        if (el) { const s = el.querySelector('span'); if (s) s.textContent = 'Quizzes'; }
+                        return { project: p, count: 0 };
                     }
-                });
+                })
+            );
+
+            // Keep only projects that have at least one quiz session
+            const withQuizzes = counts.filter(c => c.count > 0);
+
+            if (withQuizzes.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1">
+                        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        <p>No quizzes yet.<br>Open a chat and generate a quiz first.</p>
+                    </div>`;
+                return;
+            }
+
+            // Populate tag filter and render only qualifying cards
+            populateTagFilter(withQuizzes.map(c => c.project));
+
+            withQuizzes.forEach(({ project, count }, i) => {
+                const card = makeCard(project, i);
+                grid.appendChild(card);
+
+                // Fill in the quiz count badge immediately (no second fetch needed)
+                const el = document.getElementById(`quiz-count-${project.id}`);
+                if (el) {
+                    const span = el.querySelector('span');
+                    if (span) span.textContent = `${count} Quiz${count !== 1 ? 'zes' : ''}`;
+                }
+            });
+
         } catch (err) { console.error('Failed to load projects:', err); }
     }
-
+        
+    
     function populateTagFilter(projects) {
         const tagSet = new Set();
         projects.forEach(p => {
@@ -476,6 +600,64 @@
     function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    function openCreateModal() {
+    document.getElementById('cpName').value = '';
+    document.getElementById('cpSubject').value = '';
+    document.getElementById('cpError').style.display = 'none';
+    document.getElementById('createProjectModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('cpName').focus(), 100);
+}
+
+function closeCreateModal() {
+    document.getElementById('createProjectModal').style.display = 'none';
+}
+
+async function submitCreateProject() {
+    const name    = document.getElementById('cpName').value.trim();
+    const subject = document.getElementById('cpSubject').value.trim();
+    const errEl   = document.getElementById('cpError');
+    const btn     = document.getElementById('cpSubmitBtn');
+
+    if (!name) {
+        errEl.textContent = 'Project name is required.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    btn.textContent = 'Creating…';
+    btn.disabled = true;
+    errEl.style.display = 'none';
+
+    try {
+        const res  = await fetch('/Chat/CreateManualProject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, subject })
+        });
+        const data = await res.json();
+
+        if (data.id) {
+            closeCreateModal();
+            // Redirect straight into the new project
+            window.location.href = `/Chat/QuizzesView?id=${data.id}`;
+        } else {
+            errEl.textContent = data.error || 'Something went wrong.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Network error. Please try again.';
+        errEl.style.display = 'block';
+    } finally {
+        btn.textContent = 'Create Project';
+        btn.disabled = false;
+    }
+}
+
+    // Close modal on backdrop click
+    document.getElementById('createProjectModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCreateModal();
+    });
 </script>
 </body>
 </html>
