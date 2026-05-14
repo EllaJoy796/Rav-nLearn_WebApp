@@ -135,24 +135,26 @@
         .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
         /* ── QUIZ CARD ── */
-        .qz-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; padding: 16px; gap: 12px; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; position: relative; }
+        .qz-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; padding: 20px; gap: 14px; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .15s ease; animation: fadeUp .4s ease both; position: relative; min-height: 220px; }
         .qz-item:hover { background: var(--card-hover); border-color: rgba(124,92,191,.35); transform: translateY(-2px); }
-        .qz-toprow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .qz-chips { display: flex; align-items: center; gap: 6px; }
-        .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+        .qz-toprow { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .qz-chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; white-space: nowrap; }
         .chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .chip-download { background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
-        .chip-user-made-qz { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; background: rgba(92,191,124,.15); border: 1px solid rgba(92,191,124,.3); color: #7debb0; }
+        .chip-buddy { background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
+        .chip-user-made-qz { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; background: rgba(92,191,124,.15); border: 1px solid rgba(92,191,124,.3); color: #7debb0; white-space: nowrap; flex-shrink: 0; }
         .chip-user-made-qz svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .qz-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
         .btn-dots { background: none; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; color: var(--text-dim); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; gap: 2.5px; flex-direction: column; transition: color .2s ease, background .2s ease; flex-shrink: 0; }
         .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
 
         .qz-name {
-            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800;
-            color: var(--text-white); letter-spacing: .3px;
+            font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 800;
+            color: var(--text-white); letter-spacing: .3px; line-height: 1.4;
         }
-        .qz-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .qz-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
         .qz-prog-row {
             display: flex; align-items: center;
@@ -160,7 +162,7 @@
         }
         .qz-prog-bar {
             height: 4px; background: rgba(124,92,191,.15);
-            border-radius: 2px; overflow: hidden; margin-top: 6px;
+            border-radius: 2px; overflow: hidden; margin-top: 8px;
         }
         .qz-prog-fill {
             height: 100%; background: var(--accent);
@@ -168,7 +170,7 @@
         }
 
         .btn-take {
-            width: 100%; height: 38px; background: transparent;
+            width: 100%; height: 40px; background: transparent;
             border: 1px solid rgba(124,92,191,.35); border-radius: 10px;
             color: var(--text-white); font-family: 'Poppins', sans-serif;
             font-size: 13px; font-weight: 600;
@@ -724,51 +726,49 @@
         const grid = document.getElementById('cardsGrid');
         grid.innerHTML = '';
 
-        /* ── Always-first: New Quiz card ── */
+        /* ── Always-first: New Quiz card (shown for ALL projects) ── */
         const isManual = @(isManual ? "true" : "false");
-        if (isManual) {
-    const newCard = document.createElement('div');
-    newCard.className = 'qz-new-card';
-    newCard.style.animationDelay = '0s';
-    newCard.onclick = openMqModal;
-    newCard.style.cssText = `
-        background: transparent;
-        border: 1.5px dashed rgba(124,92,191,.4);
-        border-radius: 16px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 24px;
-        cursor: pointer;
-        min-height: 200px;
-        transition: border-color .2s ease, background .2s ease;
-    `;
-    newCard.innerHTML = `
-        <div style="
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(124,92,191,.15);
-            border: 1.5px dashed rgba(124,92,191,.6);
-            display: flex; align-items: center; justify-content: center;
-            color: #7c5cbf; font-size: 24px; font-weight: 300; line-height: 1;
-        ">+</div>
-        <span style="
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px; font-weight: 600;
-            color: var(--text-muted);
-        ">New Quiz</span>
-    `;
-    newCard.onmouseenter = () => {
-        newCard.style.borderColor = 'rgba(124,92,191,.9)';
-        newCard.style.background = 'rgba(124,92,191,.07)';
-    };
-    newCard.onmouseleave = () => {
-        newCard.style.borderColor = 'rgba(124,92,191,.4)';
-        newCard.style.background = 'transparent';
-    };
-    grid.appendChild(newCard);
-}
+        const newCard = document.createElement('div');
+        newCard.className = 'qz-new-card';
+        newCard.style.animationDelay = '0s';
+        newCard.onclick = openMqModal;
+        newCard.style.cssText = `
+            background: transparent;
+            border: 1.5px dashed rgba(124,92,191,.4);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 24px;
+            cursor: pointer;
+            min-height: 200px;
+            transition: border-color .2s ease, background .2s ease;
+        `;
+        newCard.innerHTML = `
+            <div style="
+                width: 44px; height: 44px; border-radius: 50%;
+                background: rgba(124,92,191,.15);
+                border: 1.5px dashed rgba(124,92,191,.6);
+                display: flex; align-items: center; justify-content: center;
+                color: #7c5cbf; font-size: 24px; font-weight: 300; line-height: 1;
+            ">+</div>
+            <span style="
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px; font-weight: 600;
+                color: var(--text-muted);
+            ">New Quiz</span>
+        `;
+        newCard.onmouseenter = () => {
+            newCard.style.borderColor = 'rgba(124,92,191,.9)';
+            newCard.style.background = 'rgba(124,92,191,.07)';
+        };
+        newCard.onmouseleave = () => {
+            newCard.style.borderColor = 'rgba(124,92,191,.4)';
+            newCard.style.background = 'transparent';
+        };
+        grid.appendChild(newCard);
 
         if (!data.length) {
             updateMeta(0);
@@ -826,19 +826,22 @@
                         <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                         Study Buddy
                     </div>
-                    ${projectIsManual ? `
-                    <div class="chip-user-made-qz">
-                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                        User Made
-                    </div>` : ''}
                 </div>
                 <button class="btn-dots" title="Options"><span></span><span></span><span></span></button>
             </div>
 
-            <div>
-                <div class="qz-name">${escHtml(label)}</div>
-                <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${escHtml(date)}</div>
+            <div class="qz-name-row">
+                <div>
+                    <div class="qz-name">${escHtml(label)}</div>
+                    <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${escHtml(date)}</div>
+                </div>
+                ${projectIsManual ? `
+                <div class="chip-user-made-qz">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    User Made
+                </div>` : ''}
             </div>
+
             <div>
                 <div class="qz-prog-row">
                     <span>Progress</span>

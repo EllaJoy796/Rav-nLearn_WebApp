@@ -32,6 +32,7 @@ namespace RavnLearnWeb.Controllers
 {
     if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
     ViewBag.Username    = Username;
+    ViewBag.Email       = HttpContext.Session.GetString("Email") ?? "";
     ViewBag.UserInitial = Username.Length > 0 ? Username[0].ToString().ToUpper() : "?";
 
     var projects = new List<dynamic>();
@@ -1223,6 +1224,8 @@ namespace RavnLearnWeb.Controllers
             ViewBag.CardCount    = cards.Count;
             ViewBag.CardsJson    = cardsJson;
             ViewBag.Cards        = cards;
+            ViewBag.Username     = Username;
+            ViewBag.Email        = HttpContext.Session.GetString("Email") ?? "";
             return View();
         }
                 

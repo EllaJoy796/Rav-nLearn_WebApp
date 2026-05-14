@@ -503,22 +503,17 @@
             // New Quiz Project card
                const newCard = document.createElement('div');
                newCard.className = 'card-project';
-               newCard.style.cssText = 'border-style: dashed; cursor: pointer; align-items: center; justify-content: center; min-height: 180px;';
+               newCard.style.cssText = 'border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:20px; text-align:center; transition:border-color .2s ease, background .2s ease;';
                newCard.onclick = openCreateModal;
+               newCard.onmouseenter = () => { newCard.style.borderColor='rgba(124,92,191,.9)'; newCard.style.background='rgba(124,92,191,.07)'; };
+               newCard.onmouseleave = () => { newCard.style.borderColor='rgba(124,92,191,.4)'; newCard.style.background='transparent'; };
                newCard.innerHTML = `
-                   <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;
-                               gap:10px; height:100%; padding:20px; text-align:center;">
-                       <div style="width:44px; height:44px; border-radius:50%;
-                                   background:var(--accent-soft); border:1.5px dashed var(--accent);
-                                   display:flex; align-items:center; justify-content:center; color:var(--accent);">
-                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                           </svg>
-                       </div>
-                       <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
-                                    color:var(--text-muted);">New Quiz Project</span>
-                   </div>`;
+                   <div style="width:44px; height:44px; border-radius:50%;
+                               background:rgba(124,92,191,.18); border:1.5px dashed #7c5cbf;
+                               display:flex; align-items:center; justify-content:center;
+                               color:#7c5cbf; font-size:24px; font-weight:300; line-height:1;">+</div>
+                   <span style="font-family:'Poppins',sans-serif; font-size:13px; font-weight:600;
+                                color:var(--text-muted);">New Quiz Project</span>`;
                grid.appendChild(newCard);
 
     const emptyMsg = document.createElement('div');
@@ -538,22 +533,17 @@
                 // ── New Quiz Project card (always first) ──
                 const newCard = document.createElement('div');
                 newCard.className = 'card-project';
-                newCard.style.cssText = 'border-style: dashed; cursor: pointer; align-items: center; justify-content: center; min-height: 180px;';
+                newCard.style.cssText = 'border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:20px; text-align:center; transition:border-color .2s ease, background .2s ease;';
                 newCard.onclick = openCreateModal;
+                newCard.onmouseenter = () => { newCard.style.borderColor='rgba(124,92,191,.9)'; newCard.style.background='rgba(124,92,191,.07)'; };
+                newCard.onmouseleave = () => { newCard.style.borderColor='rgba(124,92,191,.4)'; newCard.style.background='transparent'; };
                 newCard.innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;
-                                gap:10px; height:100%; padding:20px; text-align:center;">
-                        <div style="width:44px; height:44px; border-radius:50%;
-                                    background:var(--accent-soft); border:1.5px dashed var(--accent);
-                                    display:flex; align-items:center; justify-content:center; color:var(--accent);">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                        </div>
-                        <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
-                                    color:var(--text-muted);">New Quiz Project</span>
-                    </div>`;
+                    <div style="width:44px; height:44px; border-radius:50%;
+                                background:rgba(124,92,191,.18); border:1.5px dashed #7c5cbf;
+                                display:flex; align-items:center; justify-content:center;
+                                color:#7c5cbf; font-size:24px; font-weight:300; line-height:1;">+</div>
+                    <span style="font-family:'Poppins',sans-serif; font-size:13px; font-weight:600;
+                                color:var(--text-muted);">New Quiz Project</span>`;
                 grid.appendChild(newCard);
 
                 withQuizzes.forEach(({ project, count }, i) => {
@@ -629,12 +619,12 @@
         </div>
         <div class="card-body">
             ${project.isManual ? `
-            <div class="chip-user-made" style="margin-bottom:6px;">
+            <div class="chip-user-made">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                 User Made
             </div>` : ''}
             <div class="project-name">${escHtml(project.name.toUpperCase())}</div>
-            <span class="chip ${!project.subject ? 'empty' : ''}">${escHtml(project.subject || '')}</span>
+            ${project.subject ? `<span class="chip">${escHtml(project.subject)}</span>` : ''}
         </div>
         <div class="card-footer">
             <div class="meta-item">
@@ -697,17 +687,16 @@
             }
         });
 
-        // Show/hide no-results message
+        // Show/hide no-results message (placed inline beside New Quiz Project card)
         const existing = document.getElementById('noResults');
         if (visibleCount === 0) {
             if (!existing) {
                 const msg = document.createElement('div');
-                msg.className = 'empty-state';
                 msg.id = 'noResults';
-                msg.style.gridColumn = '1/-1';
+                msg.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:60px 20px; color:var(--text-dim); text-align:center;';
                 msg.innerHTML = `
-                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    <p>No projects match your filters.</p>`;
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <p style="font-size:14px;">No projects match your filters.</p>`;
                 document.getElementById('cardsGrid').appendChild(msg);
             }
         } else if (existing) {

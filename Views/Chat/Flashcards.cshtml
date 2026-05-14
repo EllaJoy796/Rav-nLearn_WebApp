@@ -85,6 +85,7 @@
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .page-title { font-family: 'Poppins', sans-serif; font-size: 25px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
+        .filters-group { display: flex; align-items: center; gap: 12px; }
         .search-bar { width: 360px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
@@ -102,9 +103,11 @@
         .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
         .filter-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
-        .filter-select { height: 34px; padding: 0 32px 0 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; transition: border-color .2s, color .2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7490' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
-        .filter-select:focus, .filter-select:hover { border-color: var(--accent); color: var(--text-white); }
+        .filter-select { height: 40px; background: #1a1726; border: 1px solid rgba(124,92,191,0.25); border-radius: 10px; padding: 0 36px 0 14px; color: var(--text-white); font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; transition: border-color 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%237a7490' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; min-width: 110px; }
+        .filter-select:hover { border-color: var(--accent); }
+        .filter-select:focus { border-color: var(--accent); }
         .filter-select option { background: #1e1a2e; color: var(--text-white); }
+        body.light-mode .filter-select { background: #edeaf8; border-color: rgba(124,92,191,.3); color: var(--text-white); }
         .filter-reset { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: none; border: 1px solid rgba(124,92,191,.3); border-radius: 8px; color: var(--accent); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, border-color .2s; }
         .filter-reset:hover { background: var(--accent-soft); border-color: var(--accent); }
         .filter-reset svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -253,7 +256,7 @@
         <header class="topbar">
             <span class="page-title">My Flashcards</span>
             <div style="flex:1;"></div>
-            <div style="display:flex; align-items:center; gap:12px;">
+            <div class="filters-group" style="flex:0; justify-content:flex-end;">
                 <div class="search-bar">
                     <span class="search-icon">
                         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -499,6 +502,7 @@
         const date = document.getElementById('filterDate').value;
         const tag  = document.getElementById('filterTag').value;
         const now  = new Date();
+        let visibleCount = 0;
 
         document.querySelectorAll('.card-fc').forEach(card => {
             // Never hide the "New Flashcard Project" dashed card
@@ -521,11 +525,24 @@
                 }
             }
             card.style.display = show ? '' : 'none';
+            if (show) visibleCount++;
         });
 
-        const anyFilter = date || tag || document.getElementById('searchInput').value;
-        const btnReset = document.getElementById('btnReset');
-        if (btnReset) btnReset.style.display = anyFilter ? '' : 'none';
+        // Show/hide empty state
+        const existing = document.getElementById('fcEmptyState');
+        if (visibleCount === 0) {
+            if (!existing) {
+                const msg = document.createElement('div');
+                msg.id = 'fcEmptyState';
+                msg.style.cssText = 'display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:60px 20px; color:var(--text-dim); text-align:center;';
+                msg.innerHTML = `
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <p style="font-size:14px;">No flashcards match your filters.</p>`;
+                document.getElementById('cardsGrid').appendChild(msg);
+            }
+        } else if (existing) {
+            existing.remove();
+        }
     }
 
     function openCreateFcProjectModal() {
