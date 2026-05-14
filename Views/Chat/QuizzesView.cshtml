@@ -142,7 +142,8 @@
         .chip { display: flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
         .chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .chip-download { background: rgba(124,92,191,.15); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
-        .chip-buddy { background: var(--accent-soft); border: 1px solid rgba(124,92,191,.25); color: #c8b8f0; }
+        .chip-user-made-qz { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px 4px 8px; font-size: 11px; font-weight: 700; letter-spacing: .3px; background: rgba(92,191,124,.15); border: 1px solid rgba(92,191,124,.3); color: #7debb0; }
+        .chip-user-made-qz svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .btn-dots { background: none; border: 1px solid var(--border); border-radius: 7px; cursor: pointer; color: var(--text-dim); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; gap: 2.5px; flex-direction: column; transition: color .2s ease, background .2s ease; flex-shrink: 0; }
         .btn-dots:hover { color: var(--text-muted); background: var(--accent-soft); }
         .btn-dots span { width: 3px; height: 3px; background: currentColor; border-radius: 50%; display: block; }
@@ -699,18 +700,15 @@
     })();
 
     const projectId = new URLSearchParams(window.location.search).get('id');
+    const projectIsManual = @(ViewBag.IsManual == true ? "true" : "false");
 
-    /* ────────────────────────────────────────────────
-       PROGRESS PERSISTENCE
-    ──────────────────────────────────────────────── */
+    /* PROGRESS PERSISTENCE */
     function progressKey(sid) { return `quiz_progress_${sid}`; }
     function loadProgress(sid) { try { const r = localStorage.getItem(progressKey(sid)); return r ? JSON.parse(r) : null; } catch { return null; } }
     function saveProgress(sid, data) { try { localStorage.setItem(progressKey(sid), JSON.stringify(data)); } catch {} }
     function clearProgress(sid) { localStorage.removeItem(progressKey(sid)); }
 
-    /* ────────────────────────────────────────────────
-       LOAD & RENDER
-    ──────────────────────────────────────────────── */
+    /* LOAD & RENDER */
     document.addEventListener('DOMContentLoaded', loadQuizzes);
     let allSessions = [];
 
@@ -828,9 +826,15 @@
                         <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                         Study Buddy
                     </div>
+                    ${projectIsManual ? `
+                    <div class="chip-user-made-qz">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        User Made
+                    </div>` : ''}
                 </div>
                 <button class="btn-dots" title="Options"><span></span><span></span><span></span></button>
             </div>
+
             <div>
                 <div class="qz-name">${escHtml(label)}</div>
                 <div class="qz-sub">${total} Question${total !== 1 ? 's' : ''} · ${escHtml(date)}</div>

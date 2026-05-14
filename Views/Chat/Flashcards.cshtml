@@ -85,7 +85,7 @@
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .topbar { height: var(--topbar-h); display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .page-title { font-family: 'Poppins', sans-serif; font-size: 25px; font-weight: 900; color: var(--text-white); letter-spacing: -0.3px; white-space: nowrap; flex: 1; }
-        .search-bar { width: 600px; position: relative; }
+        .search-bar { width: 360px; position: relative; }
         .search-bar input { width: 100%; height: 40px; background: #1a1726; border: 1px solid white; border-radius: 10px; padding: 0 16px 0 40px; color: var(--text-white); font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.2s ease; }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar input::placeholder { color: var(--text-dim); }
@@ -279,13 +279,21 @@
 
             <div class="cards-grid" id="cardsGrid">
                 @{
-                    // Always show the New Flashcard Project card first
+                // Always show the New Flashcard Project card first
                 }
-                <div class="card-fc new-fc-card" onclick="openCreateFcProjectModal()" style="animation-delay:0s; border-style:dashed; border-color:rgba(124,92,191,.4); background:transparent; cursor:pointer; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
-                    <div style="width:44px; height:44px; border-radius:50%; background:var(--accent-soft); border:1.5px dashed var(--accent); display:flex; align-items:center; justify-content:center; color:var(--accent);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    </div>
-                    <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted);">New Flashcard Project</span>
+                <div class="card-fc new-fc-card" onclick="openCreateFcProjectModal()"
+                     style="animation-delay:0s; border-style:dashed; border-color:rgba(124,92,191,.4);
+                            background:transparent; cursor:pointer; min-height:180px;
+                            display:flex; flex-direction:column; align-items:center;
+                            justify-content:center; gap:10px; padding:20px; text-align:center;
+                            transition:border-color .2s ease, background .2s ease;"
+                     onmouseenter="this.style.borderColor='rgba(124,92,191,.9)'; this.style.background='rgba(124,92,191,.07)'"
+                     onmouseleave="this.style.borderColor='rgba(124,92,191,.4)'; this.style.background='transparent'">
+                    <div style="width:44px; height:44px; border-radius:50%;
+                                background:var(--accent-soft); border:1.5px dashed var(--accent);
+                                display:flex; align-items:center; justify-content:center;
+                                color:var(--accent); font-size:24px; font-weight:300; line-height:1;">+</div>
+                    <span style="font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted);">New Flashcard Project</span>
                 </div>
 
                 @if (ViewBag.Flashcards != null && ((IEnumerable<dynamic>)ViewBag.Flashcards).Any())
