@@ -1933,7 +1933,41 @@ function speakModuleContent(content, btn) {
         const btnStudy = document.createElement('button');
         btnStudy.className = 'btn-reviewer-action';
         btnStudy.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg> Study Buddy`;
-        btnStudy.addEventListener('click', (e) => { e.stopPropagation(); openQuizModal(label, parsed, card); });
+        btnStudy.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const letters = ['A','B','C','D'];
+    const sbQuestions = parsed.questions.map(q => {
+        if (q.type === 'fillblank') {
+            return {
+                question: q.question,
+                questionType: 'fillblank',
+                answerText: q.answer,
+                correctAnswer: '',
+                choiceA: '', choiceB: '', choiceC: '', choiceD: ''
+            };
+        } else if (q.type === 'truefalse') {
+            return {
+                question: q.question,
+                questionType: 'truefalse',
+                answerText: '',
+                correctAnswer: q.answerIndex === 0 ? 'A' : 'B',
+                choiceA: 'True', choiceB: 'False', choiceC: '', choiceD: ''
+            };
+        } else {
+            return {
+                question: q.question,
+                questionType: 'mcq',
+                answerText: '',
+                correctAnswer: letters[q.answerIndex] || 'A',
+                choiceA: q.options[0] || '',
+                choiceB: q.options[1] || '',
+                choiceC: q.options[2] || '',
+                choiceD: q.options[3] || ''
+            };
+        }
+    });
+    SB.open(label, sbQuestions);
+});
 
         const btnSecondary = document.createElement('button');
         btnSecondary.className = 'btn-reviewer-action';
@@ -2556,5 +2590,6 @@ function speakModuleContent(content, btn) {
     });
 })();
 </script>
+<script src="~/js/StudyBuddy.js"></script>
 </body>
 </html>
