@@ -1209,8 +1209,10 @@ body.dark-mode .btn-still-learning {
     function setSpeakIdle(btn)   { btn.innerHTML = speakerSVG() + 'Speak'; btn.style.color = ''; if (speakingBtn === btn) speakingBtn = null; }
     function applyPreferredFemaleVoice(utter) {
     const voices = speechSynthesis.getVoices();
+    const savedVoiceName = localStorage.getItem('sbVoiceName');
     const preferred =
-        voices.find(v => /google uk english female|zira|aria|samantha|victoria|jenny|ana/i.test(`${v.name} ${v.voiceURI}`))
+        (savedVoiceName && voices.find(v => v.name === savedVoiceName))
+        || voices.find(v => /google uk english female|zira|aria|samantha|victoria|jenny|ana/i.test(`${v.name} ${v.voiceURI}`))
         || voices.find(v => /female/i.test(v.name) && /en/i.test(v.lang))
         || voices.find(v => /en(-|_)?(US|GB)/i.test(v.lang))
         || voices[0];
