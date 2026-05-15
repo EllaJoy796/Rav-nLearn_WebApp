@@ -1402,6 +1402,89 @@ namespace RavnLearnWeb.Controllers
             catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetMyProjectsAll()
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            var projects = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"SELECT p.project_id,
+                            p.name,
+                            COALESCE(p.subject, '')      AS subject,
+                            p.created_at,
+                            COUNT(DISTINCT f.file_id)    AS file_count,
+                            COALESCE(p.is_manual, false) AS is_manual
+                    FROM projects p
+                    LEFT JOIN chats c ON c.project_id = p.project_id
+                    LEFT JOIN files f ON f.chat_id = c.chat_id
+                    WHERE p.user_id = @uid
+                        AND COALESCE(p.is_manual, false) = false
+                    GROUP BY p.project_id
+                    ORDER BY p.created_at DESC", conn);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    projects.Add(new
+                    {
+                        id        = reader.GetInt32(0),
+                        name      = reader.GetString(1),
+                        subject   = reader.GetString(2),
+                        date      = reader.GetDateTime(3).ToString("MMM dd, yyyy"),
+                        fileCount = reader.GetInt64(4),
+                        isManual  = reader.GetBoolean(5),
+                    });
+                }
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+            return Json(projects);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyProjectsForQuizzes()
+        {
+            if (!IsLoggedIn()) return Unauthorized();
+            var projects = new List<object>();
+            try
+            {
+                using var conn = RavnLearnWeb.Database.GetConnection();
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(
+                    @"SELECT p.project_id,
+                            p.name,
+                            COALESCE(p.subject, '')      AS subject,
+                            p.created_at,
+                            COUNT(DISTINCT f.file_id)    AS file_count,
+                            COALESCE(p.is_manual, false) AS is_manual
+                    FROM projects p
+                    LEFT JOIN chats c ON c.project_id = p.project_id
+                    LEFT JOIN files f ON f.chat_id = c.chat_id
+                    WHERE p.user_id = @uid
+                    GROUP BY p.project_id
+                    ORDER BY p.created_at DESC", conn);
+                cmd.Parameters.AddWithValue("uid", UserId);
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    projects.Add(new
+                    {
+                        id        = reader.GetInt32(0),
+                        name      = reader.GetString(1),
+                        subject   = reader.GetString(2),
+                        date      = reader.GetDateTime(3).ToString("MMM dd, yyyy"),
+                        fileCount = reader.GetInt64(4),
+                        isManual  = reader.GetBoolean(5),
+                    });
+                }
+            }
+            catch (Exception ex) { return StatusCode(500, new { error = ex.Message }); }
+            return Json(projects);
+        }
 
 // ── PDF (using UglyToad.PdfPig.Writer) ───────────────────────────────────────
 private static byte[] BuildQuizPdf(string title, List<dynamic> questions)
