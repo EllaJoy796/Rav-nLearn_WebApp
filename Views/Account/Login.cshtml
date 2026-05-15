@@ -339,7 +339,7 @@
                             <button type="button"
                                     class="btn-eye"
                                     onclick="togglePassword('password', this)"
-                                    title="Show/Hide password">👁</button>
+                                    title="Show/Hide password"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="2" y1="2" x2="22" y2="22" class="slash"/></svg></button>
                         </div>
                     </div>
 
@@ -358,12 +358,13 @@
     <script>
         function togglePassword(inputId, btn) {
             const input = document.getElementById(inputId);
+            const slash = btn.querySelector('.slash');
             if (input.type === 'password') {
                 input.type = 'text';
-                btn.textContent = '👁';
+                slash.style.display = 'none';
             } else {
                 input.type = 'password';
-                btn.textContent = '👁';
+                slash.style.display = '';
             }
         }
     </script>
