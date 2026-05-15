@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "RavnLearn";
+    ViewData["Title"] = "RevnLearn";
     Layout = null;
 }
 
@@ -8,9 +8,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rev'nLearn</title>
-    <link rel="icon" type="image/png" href="/images/logo sa taas.png?v=999&t=@DateTime.Now.Ticks" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>RevnLearn</title>
+    <link rel="icon" type="image/png" href="~/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -240,7 +240,35 @@ body.dark-mode .btn-still-learning {
             background: var(--left-bg);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: visible;
+        }
+        .left-logo { padding: 16px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--panel-border); display: flex; align-items: center; gap: 8px; }
+        .btn-new-chat { margin: 14px 12px 8px; padding: 10px 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background 0.18s; }
+        .btn-new-chat:hover { background: var(--accent-hover); }
+        .section-label { padding: 10px 16px 6px; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+        .chat-list { flex: 1; overflow-y: auto; padding: 4px 8px; }
+        .chat-list::-webkit-scrollbar { width: 4px; }
+        .chat-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .chat-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px; transition: background 0.15s, color 0.15s; gap: 6px; }
+        .chat-item:hover { background: #242424; color: var(--text); }
+        .chat-item.active { background: rgba(124,92,191,0.18); color: var(--text); }
+        .chat-item-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-del-chat { opacity: 0; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 4px; transition: opacity 0.15s, color 0.15s; flex-shrink: 0; }
+        .chat-item:hover .btn-del-chat { opacity: 1; }
+        .btn-del-chat:hover { color: #e74c3c; }
+        .user-area { border-top: 1px solid var(--panel-border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .user-name { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-logout { background: none; border: 1px solid #3a3a3a; color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: 500; font-family: inherit; padding: 4px 10px; border-radius: 6px; transition: all 0.15s; flex-shrink: 0; }
+        .btn-logout:hover { border-color: #e74c3c; color: #e74c3c; background: rgba(231,76,60,0.08); }
+
+        /* ── HORIZONTAL RESIZE HANDLES (left/right panels) ── */
+        .resize-handle {
+            width: 8px;
+            min-width: 8px;
+            cursor: col-resize;
+            background: var(--panel-border);
+            flex-shrink: 0;
             position: relative;
             transition: none;
         }
@@ -449,174 +477,29 @@ body.dark-mode .btn-still-learning {
             flex-shrink: 0;
             cursor: row-resize;
             transition: background 0.15s;
-        }
-.left-divider:hover, .left-divider.dragging { background: var(--accent); }
-
-        /* ── DOCUMENTS SECTION (in left panel) ── */
-        .docs-section {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            flex: 1;
-            min-height: 120px;
-        }
-        .btn-add-doc {
-            margin: 4px 10px 6px;
-            padding: 8px 12px;
-            background: var(--btn-flat);
-            border: 1px dashed #3a3a3a;
-            border-radius: var(--radius);
-            color: var(--text-muted);
-            font-size: 12px;
-            font-family: inherit;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
-            flex-shrink: 0;
-        }
-        .btn-add-doc:hover { background: var(--btn-flat); border-color: var(--accent); color: var(--text); }
-        .doc-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 8px 8px;
-        }
-        .doc-list::-webkit-scrollbar { width: 3px; }
-        .doc-list::-webkit-scrollbar-thumb { background: #d3c3eb; border-radius: 4px; }
-        .doc-item {
-            background: #ffffff;
-            border: 1px solid #ddd1ef;
-            border-radius: 8px;
-            padding: 7px 10px;
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            min-width: 0;
-            margin-bottom: 5px;
-            transition: border-color 0.15s, background 0.15s;
-        }
-        .doc-item:hover { background: #f7f2fd; border-color: #cdb8ea; }
-        .doc-item-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: #f4eefc;
-            border: 1px solid #d7caeb;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            color: var(--icon-color);
         }
-        .doc-item-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; text-align: left; min-width: 0; }
-        .doc-item-spinner {
-            width: 11px; height: 11px;
-            border: 2px solid #d2c5e6;
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            flex-shrink: 0;
+        .resize-handle::before {
+            content: '⋮';
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            pointer-events: none;
+            line-height: 1;
+            transition: color 0.15s;
         }
-        @@keyframes spin { to { transform: rotate(360deg); } }
-        .btn-del-doc {
-            background: none; border: none; color: var(--text-dim);
-            cursor: pointer; border-radius: 4px; flex-shrink: 0; opacity: 0;
-            transition: opacity 0.15s, color 0.15s, background 0.15s; line-height: 1;
-            width: 28px;
-            height: 28px;
-        }
-        .doc-item:hover .btn-del-doc { opacity: 1; }
-        .btn-del-doc:hover { color: #e74c3c; background: #2a2a2a; }
-        .btn-del-doc svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .doc-drag-handle {
-            color: var(--text-dim); font-size: 10px; cursor: grab;
-            flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
-            padding: 0 2px; user-select: none; line-height: 1;
-        }
-        .doc-item:hover .doc-drag-handle { opacity: 1; }
-        .doc-drag-handle:active { cursor: grabbing; }
-        .doc-item.dragging-source { opacity: 0.4; border: 1px dashed var(--accent); }
-        .doc-item.drag-over-source { border-color: var(--accent); background: #efe6fb; }
+        .resize-handle:hover::before,
+        .resize-handle.dragging::before { color: #fff; }
 
-        /* ── USER AREA ── */
-        .user-area {
-            border-top: 1px solid var(--panel-border);
-            padding: 11px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-            position: sticky;
-            bottom: 0;
-            background: var(--left-bg);
-            z-index: 2;
-        }
-        .user-avatar {
-            width: 30px; height: 30px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
-        }
-        .user-name { font-size: 12.5px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .left-rail,
-        .right-rail {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            background: linear-gradient(180deg, #faf6ff, #f2eafb);
-        }
-        
-        .rail-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-            width: 100%;
-        }
-        .rail-icon-btn {
-            width: 42px;
-            height: 42px;
-            border: 1px solid #d7caeb;
-            border-radius: 12px;
-            background: #ffffff;
-            color: var(--text-muted);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: color 0.15s, border-color 0.15s, background 0.15s;
-        }
-        .rail-icon-btn:hover {
-            color: var(--text);
-            border-color: #c7b3e7;
-            background: #f5effc;
-        }
-        .rail-icon-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: currentColor;
-            fill: none;
-        }
-
-        /* ── HORIZONTAL RESIZE HANDLES ── */
-        .resize-handle {
-            width: 6px; min-width: 6px;
-            cursor: col-resize;
-            background: rgba(124,92,191,0.15);
-            flex-shrink: 0; position: relative; z-index: 10;
-            transition: background 0.15s;
-        }
-        .resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
+        .resize-handle:hover,
+        .resize-handle.dragging { background: var(--accent); }
         .resize-handle::after {
-            content: ''; position: absolute;
-            top: 0; bottom: 0; left: -12px; right: -12px;
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            left: -8px; right: -8px;
             cursor: col-resize;
         }
         body.resizing { user-select: none; cursor: col-resize; }
@@ -815,166 +698,277 @@ body.dark-mode .btn-still-learning {
         .quiz-score { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
 
         #fileInput { display: none; }
-        #quizModal.open { display: flex !important; }
 
-        .btn-modal-open {
-            background: none;
-            border: 1px solid #3a3a3a;
-            border-radius: 5px;
-            color: var(--accent);
-            font-size: 10px;
-            padding: 2px 7px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background .15s, border-color .15s;
-            flex-shrink: 0;
-            line-height: 1.6;
+        /* ── COLLAPSIBLE PANELS ── */
+        .panel-left,
+        .panel-right {
+            transition: width 0.25s cubic-bezier(.4,0,.2,1),
+                        min-width 0.25s cubic-bezier(.4,0,.2,1);
         }
-        .btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
-    
-        .btn-mic {
-        background: none; border: none; border-radius: 8px;
-        width: 34px; height: 34px; display: flex; align-items: center;
-        justify-content: center; cursor: pointer; flex-shrink: 0;
-        color: var(--text-dim); transition: color 0.18s, background 0.18s;
+        .panel-left.resizing,
+        .panel-right.resizing {
+            transition: none !important;
         }
-        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
-        .btn-mic.recording { color: #e74c3c; animation: micPulse 1.2s ease-in-out infinite; }
-        @@keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .voice-status-bar {
-            display: none; align-items: center; justify-content: space-between;
-            padding: 5px 14px 0; font-size: 11px; gap: 8px;
-        }
-        .voice-status-bar.visible { display: flex; }
-        .voice-status-text { color: #e74c3c; display: flex; align-items: center; gap: 5px; font-weight: 500; }
-        .voice-status-text .mic-dot {
-            width: 7px; height: 7px; background: #e74c3c; border-radius: 50%;
-            animation: micPulse 1.2s ease-in-out infinite; flex-shrink: 0;
-        }
-        .voice-countdown { color: var(--text-dim); font-size: 11px; flex-shrink: 0; transition: color 0.3s; }
-        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
-        .voice-cancel-btn {
-            background: none; border: 1px solid #3a3a3a; border-radius: 5px;
-            color: var(--text-dim); font-size: 10px; padding: 2px 8px;
-            cursor: pointer; font-family: inherit; transition: all 0.15s; flex-shrink: 0;
-        }
-        .voice-cancel-btn:hover { border-color: #e74c3c; color: #e74c3c; }
-        .side-toggle {
-            position: fixed;
-            top: 50%;
-            width: 34px;
-            height: 54px;
-            border-radius: 14px;
-            border: 1px solid #ccb7e8;
-            background: #ffffff;
-            color: #222;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 12px 22px rgba(87,57,138,0.14);
-            cursor: pointer;
-            z-index: 40;
-            transform: translateY(-50%);
-            transition: background 0.15s ease, top 0.15s ease, left 0.22s ease, right 0.22s ease;
-        }
-        .side-toggle:hover { background: #f5effc; }
-        .side-toggle svg {
-            width: 15px;
-            height: 15px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2.4;
-        }
-        .modal-shell {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 1100;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-shell.open { display: flex; }
-        .modal-card {
-            width: min(440px, 92vw);
-            background: #ffffff;
-            border: 1px solid #ddd1ef;
-            border-radius: 16px;
-            box-shadow: 0 24px 60px rgba(87,57,138,0.16);
+        .panel-left.collapsed {
+            width: 52px !important;
+            min-width: 52px !important;
             overflow: hidden;
         }
-        .modal-head {
-            padding: 16px 18px;
-            border-bottom: 1px solid #ece2f7;
+        .panel-right.collapsed {
+            width: 52px !important;
+            min-width: 52px !important;
+            overflow: hidden;
+        }
+
+        /* Also ensure uncollapsed panels clip properly */
+        .panel-left, .panel-right { overflow: hidden; }
+        .panel-left .chat-list { overflow-y: auto; overflow-x: visible; }
+        .panel-left .left-content { overflow: visible; }
+
+        /* Collapse toggle buttons */
+        .btn-collapse {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.15s, background 0.15s;
+        }
+        .btn-collapse:hover { color: var(--text); background: #2a2a2a; }
+
+        /* Hide panel content when collapsed, show icon strip */
+        .panel-left .left-content,
+        .panel-right .right-content { 
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .panel-left.collapsed .left-content,
+        .panel-right.collapsed .right-content { display: none; }
+
+        /* Keep header row visible when collapsed, just hide the logo text */
+        .panel-left.collapsed .left-header-row { 
+            justify-content: center; 
+            padding: 10px 0;
+            border-bottom: 1px solid var(--panel-border);
+            min-width: 0;
+        }
+        .panel-left.collapsed .left-logo-inner { display: none; }
+        .panel-left.collapsed .btn-collapse { margin: 0 auto; }
+
+        /* Keep right header row visible when collapsed, hide the label text */
+        .panel-right.collapsed .right-header-row {
+            justify-content: center;
+            padding: 10px 0;
+            min-width: 0;
+        }
+        .panel-right.collapsed .right-header-row span { display: none; }
+        .panel-right.collapsed .btn-collapse { margin: 0 auto; }
+
+        /* Icon strips shown when collapsed */
+        .collapsed-icons {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            flex: 1;
+        }
+        .panel-left.collapsed .collapsed-icons,
+        .panel-right.collapsed .collapsed-icons { display: flex; }
+
+        .collapsed-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 6px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
+            line-height: 1;
+            title: attr(title);
+        }
+        .collapsed-icon-btn:hover { color: var(--text); background: #2a2a2a; }
+
+        /* Left panel header row */
+        .left-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 12px 10px 12px 16px;
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
         }
-        .modal-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-        }
-        .modal-close {
-            border: none;
-            background: transparent;
-            color: var(--text-dim);
-            cursor: pointer;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-        }
-        .modal-close:hover { color: var(--text); background: #f5effc; }
-        .modal-body { padding: 18px; }
-        .modal-copy {
-            color: var(--text-muted);
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 14px;
-        }
-        .modal-input {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid #d7caeb;
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 13px;
-            padding: 12px 14px;
-            outline: none;
-            font-family: inherit;
-        }
-        .modal-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(124,92,191,0.14);
-        }
-        .modal-actions {
+        .left-logo-inner {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 0 18px 18px;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 700;
         }
-        .modal-btn {
-            border: 1px solid #d7caeb;
-            background: #ffffff;
-            color: var(--text);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 12px;
-            font-family: inherit;
+
+        /* Right panel header row */
+        .right-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px 10px 14px;
+            border-bottom: 1px solid var(--panel-border);
+            flex-shrink: 0;
+        }
+
+        /* VOICE INPUT */
+        .btn-mic {
+            background: none;
+            border: none;
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            flex-shrink: 0;
+            color: var(--text-dim);
+            transition: color 0.18s, background 0.18s;
         }
-        .modal-btn.primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
+        .btn-mic:hover { background: #2e2e2e; color: var(--text-muted); }
+        .btn-mic.recording {
+            color: #e74c3c;
+            animation: micPulse 1.2s ease-in-out infinite;
         }
-        .modal-btn.danger {
-            background: #8f2d2d;
-            border-color: #8f2d2d;
-            color: #fff;
+        @@keyframes micPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
-     </style>
+        .voice-status-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 14px 0;
+            font-size: 11px;
+            gap: 8px;
+        }
+        .voice-status-bar.visible { display: flex; }
+        .voice-status-text {
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        .voice-status-text .mic-dot {
+            width: 7px;
+            height: 7px;
+            background: #e74c3c;
+            border-radius: 50%;
+            animation: micPulse 1.2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .voice-countdown {
+            color: var(--text-dim);
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: color 0.3s;
+        }
+        .voice-countdown.urgent { color: #e0a040; font-weight: 600; }
+        .voice-cancel-btn {
+            background: none;
+            border: 1px solid #3a3a3a;
+            border-radius: 5px;
+            color: var(--text-dim);
+            font-size: 10px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .voice-cancel-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+        #quizModal.open { display: flex !important; }
+.btn-modal-open {
+    background: none;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 7px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, border-color .15s;
+    flex-shrink: 0;
+    line-height: 1.6;
+}
+.btn-modal-open:hover { background: rgba(124,92,191,0.15); border-color: var(--accent); }
+
+.btn-more-chat {
+    opacity: 0;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.chat-item:hover .btn-more-chat { opacity: 1; }
+.btn-more-chat:hover { color: var(--text); }
+
+.chat-context-menu {
+    position: absolute;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    right: 8px;
+    min-width: 130px;
+}
+.ctx-menu-item {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+.ctx-menu-item:hover { background: #333; color: var(--text); }
+.ctx-delete:hover { color: #e74c3c !important; }
+
+.rename-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 2px 6px;
+    outline: none;
+    width: 100%;
+}
+
+.chat-item { position: relative; }
+
+    </style>
 </head>
 <body>
 
@@ -984,82 +978,43 @@ body.dark-mode .btn-still-learning {
 
     <!-- ══ LEFT PANEL ══ -->
     <aside class="panel-left" id="panelLeft">
-
-        <!-- Logo -->
-        <div class="left-logo">
-            <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
-                 alt="Logo" style="width:26px;height:26px;object-fit:contain;"
-                 onerror="this.style.display='none'" />
-            <span class="left-logo-text">Rev'nLearn</span>
+        <!-- Header row: logo+chevron always visible, logo hidden when collapsed -->
+        <div class="left-header-row">
+            <div class="left-logo-inner" id="leftLogoInner">
+                <img src="~/images/Untitled_design__4_-removebg-preview (1).png"
+                     alt="Logo" style="width:28px;height:28px;object-fit:contain;"
+                     onerror="this.style.display='none'" />
+                Rev'nLearn
+            </div>
+            <button class="btn-collapse" id="btnCollapseLeft" title="Collapse sidebar">‹</button>
         </div>
 
-        <!-- Back + New Chat -->
-        <div class="left-actions">
-            <button class="btn-back" onclick="window.history.back()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-                Back
-            </button>
+        <!-- Main content (hidden when collapsed) -->
+        <div class="left-content">
             <button class="btn-new-chat" id="btnNewChat">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
                 New Chat
             </button>
+            <div class="section-label">Recents</div>
+            <div class="chat-list" id="chatList"></div>
+            <div class="user-area">
+                <div class="user-avatar">@ViewBag.UserInitial</div>
+                <span class="user-name">@ViewBag.Username</span>
+                <button class="btn-logout" id="btnLogout" title="Logout">Log out</button>
+            </div>
         </div>
 
-        <!-- Chat List -->
-        <div class="left-section-label">Chats</div>
-        <div class="chat-list" id="chatList"></div>
-
-        <!-- Divider -->
-        <div class="left-divider" id="vertResizeLeft"></div>
-
-        <!-- Documents Section -->
-        <div class="docs-section">
-            <div class="left-section-label">Documents</div>
-            <button class="btn-add-doc" id="btnAddSource">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <!-- Icon strip (shown when collapsed) -->
+        <div class="collapsed-icons">
+            <button class="collapsed-icon-btn" title="New Chat" id="btnNewChatCollapsed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
-                Add a Document
             </button>
-            <div id="sourceList" class="doc-list"></div>
-        </div>
-
-        <!-- User Area -->
-        <div class="user-area">
-            <div class="user-avatar">@ViewBag.UserInitial</div>
-            <span class="user-name">@ViewBag.Username</span>
-        </div>
-        <div class="left-rail">
-            <div class="rail-stack" style="flex:1;overflow-y:auto;overflow-x:hidden;width:100%;align-items:center;">
-                <button class="rail-icon-btn" id="btnRailBack" title="Back">
-                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 18l-6-6 6-6"></path>
-                    </svg>
-                </button>
-                <button class="rail-icon-btn" id="btnRailNewChat" title="New Chat">
-                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                        <path d="M12 5v14"></path>
-                        <path d="M5 12h14"></path>
-                    </svg>
-                </button>
-                <div class="rail-stack" id="collapsedChatRail"></div>
-                <div style="width:36px;height:1px;background:var(--panel-border);margin:4px 0;flex-shrink:0;"></div>
-                <button class="rail-icon-btn" id="btnRailAddDoc" title="Add Document" style="position:relative;">
-                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M7 3h7l5 5v13H7z"></path>
-                        <path d="M14 3v5h5"></path>
-                    </svg>
-                    <span style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;line-height:1;">+</span>
-                </button>
-                <div class="rail-stack" id="collapsedDocRail"></div>
-            </div>
-            <div class="rail-stack">
-                <div class="user-avatar">@ViewBag.UserInitial</div>
-            </div>
+            <button class="collapsed-icon-btn" title="Chat History">💬</button>
+            <button class="collapsed-icon-btn" title="Logout" id="btnLogoutCollapsed">⏻</button>
         </div>
     </aside>
 
@@ -1081,27 +1036,27 @@ body.dark-mode .btn-still-learning {
             </div>
         </div>
         <div class="input-bar">
-        <div class="input-row">
-            <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
-            <button class="btn-mic" id="btnMic" title="Voice input">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
-                </svg>
-            </button>
-            <button class="btn-send" id="btnSend" title="Send">
-                <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-            </button>
-        </div>
-        <div class="voice-status-bar" id="voiceStatusBar">
-            <div class="voice-status-text">
-                <span class="mic-dot"></span>
-                <span id="voiceStatusText">Listening…</span>
+            <div class="input-row">
+                <textarea id="txtInput" rows="1" placeholder="Ask anything…" oninput="autoResize(this)"></textarea>
+                <button class="btn-mic" id="btnMic" title="Voice input">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+                    </svg>
+                </button>
+                <button class="btn-send" id="btnSend" title="Send">
+                    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+                </button>
             </div>
-            <span class="voice-countdown" id="voiceCountdown"></span>
-            <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
-        </div>
-        <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
+            <div class="voice-status-bar" id="voiceStatusBar">
+                <div class="voice-status-text">
+                    <span class="mic-dot"></span>
+                    <span id="voiceStatusText">Listening…</span>
+                </div>
+                <span class="voice-countdown" id="voiceCountdown"></span>
+                <button class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
+            </div>
+            <div class="input-hint" id="inputHint">Enter to send · Shift+Enter for new line</div>
         </div>
     </main>
 
@@ -1110,19 +1065,37 @@ body.dark-mode .btn-still-learning {
 
     <!-- ══ RIGHT PANEL — STUDY GUIDE ══ -->
     <aside class="panel-right" id="panelRight">
-        <div class="right-header">
-            <div class="right-header-title">Study Guide</div>
-            <div class="right-header-sub">Generated from this chat</div>
+        <!-- Header row with title + collapse button -->
+        <div class="right-header-row">
+            <button class="btn-collapse" id="btnCollapseRight" title="Collapse panel">›</button>
+            <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);flex:1;text-align:right;">Study Tools</span>
         </div>
-        <div class="quiz-list" id="quizList"></div>
-        <div class="right-rail">
-            <div class="rail-stack">
-                <button class="rail-icon-btn" id="btnRailStudyGuide" title="Study Guide">
-                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 4h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2z"></path>
-                    </svg>
-                </button>
+
+        <!-- Main content (hidden when collapsed) -->
+        <div class="right-content">
+            <!-- SOURCES SECTION (resizable height) -->
+            <div class="sources-section" id="sourcesSection">
+                <div class="right-section">
+                    <div class="right-section-title">📎 Sources</div>
+                    <button class="btn-add-source" id="btnAddSource"><span>＋</span> Add Document</button>
+                </div>
+                <div id="sourceList" class="source-list"></div>
             </div>
+
+            <!-- VERTICAL DRAG HANDLE -->
+            <div class="resize-handle-vertical" id="resizeVertical"></div>
+
+            <!-- QUIZZES SECTION (takes remaining space) -->
+            <div class="quizzes-section" id="quizzesSection">
+                <div class="quiz-section-header">🧠 Quizzes</div>
+                <div class="quiz-list" id="quizList"></div>
+            </div>
+        </div>
+
+        <!-- Icon strip (shown when collapsed) -->
+        <div class="collapsed-icons">
+            <button class="collapsed-icon-btn" title="Add Document" id="btnAddSourceCollapsed">📎</button>
+            <button class="collapsed-icon-btn" title="Quizzes">🧠</button>
         </div>
     </aside>
     <button class="side-toggle" id="rightPanelToggle" title="Collapse right panel">
@@ -1130,29 +1103,37 @@ body.dark-mode .btn-still-learning {
     </button>
 </div>
 
-<!-- ══ QUIZ MODAL ══ -->
-<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(106,78,170,0.18);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:#ffffff;border:1px solid #ddd1ef;border-radius:14px;width:min(560px,90vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(87,57,138,0.16);">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #ece2f7;flex-shrink:0;">
+<!-- QUIZ MODAL -->
+<div id="quizModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(560px,90vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2a2a2a;flex-shrink:0;">
             <span id="modalQuizLabel" style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)"></span>
             <button onclick="closeQuizModal()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" title="Close">✕</button>
         </div>
         <div id="modalQuizBody" style="flex:1;overflow-y:auto;padding:20px;"></div>
     </div>
 </div>
-<div class="modal-shell" id="actionModal">
-    <div class="modal-card">
-        <div class="modal-head">
-            <div class="modal-title" id="actionModalTitle">Rename</div>
-            <button class="modal-close" type="button" onclick="closeActionModal()">X</button>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Delete Chat</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">This chat and all its messages will be permanently deleted. This cannot be undone.</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="deleteCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
+            <button id="deleteConfirmBtn" style="background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Delete</button>
         </div>
-        <div class="modal-body">
-            <div class="modal-copy" id="actionModalCopy"></div>
-            <input class="modal-input" id="actionModalInput" type="text" />
-        </div>
-        <div class="modal-actions">
-            <button class="modal-btn" type="button" onclick="closeActionModal()">Cancel</button>
-            <button class="modal-btn primary" type="button" id="actionModalConfirm">Save</button>
+    </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;width:min(360px,90vw);padding:24px;box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">Log Out</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Are you sure you want to log out of RavnLearn?</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button id="logoutCancelBtn" style="background:none;border:1px solid #3a3a3a;border-radius:8px;color:var(--text-muted);font-size:13px;padding:8px 18px;cursor:pointer;font-family:inherit;transition:all .15s;">Cancel</button>
+            <button id="logoutConfirmBtn" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;font-family:inherit;transition:background .15s;">Log Out</button>
         </div>
     </div>
 </div>
@@ -1292,43 +1273,98 @@ if (_lm === 'true') {
 
     function makeResizable(handle, onDrag) {
         let startX = 0, dragging = false;
-        handle.addEventListener('mousedown', (e) => { e.preventDefault(); dragging = true; startX = e.clientX; handle.classList.add('dragging'); document.body.classList.add('resizing'); });
-        document.addEventListener('mousemove', (e) => { if (!dragging) return; const dx = e.clientX - startX; startX = e.clientX; onDrag(dx); syncPanelToggles(); });
-        document.addEventListener('mouseup', () => { if (!dragging) return; dragging = false; handle.classList.remove('dragging'); document.body.classList.remove('resizing'); syncPanelToggles(); });
-        handle.addEventListener('touchstart', (e) => { dragging = true; startX = e.touches[0].clientX; handle.classList.add('dragging'); }, { passive: true });
-        document.addEventListener('touchmove', (e) => { if (!dragging) return; const dx = e.touches[0].clientX - startX; startX = e.touches[0].clientX; onDrag(dx); syncPanelToggles(); }, { passive: true });
-        document.addEventListener('touchend', () => { dragging = false; handle.classList.remove('dragging'); syncPanelToggles(); });
+
+        handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            dragging = true;
+            startX = e.clientX;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing');
+            document.getElementById('panelLeft').classList.add('resizing');
+            document.getElementById('panelRight').classList.add('resizing');
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            startX = e.clientX;
+            onDrag(dx);
+        });
+        document.addEventListener('mouseup', () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+            document.getElementById('panelLeft').classList.remove('resizing');
+            document.getElementById('panelRight').classList.remove('resizing');
+        });
+        handle.addEventListener('touchstart', (e) => {
+            dragging = true; startX = e.touches[0].clientX;
+            handle.classList.add('dragging');
+        }, { passive: true });
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            const dx = e.touches[0].clientX - startX;
+            startX = e.touches[0].clientX;
+            onDrag(dx);
+        }, { passive: true });
+        document.addEventListener('touchend', () => {
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing');
+        });
     }
 
     function syncPanelToggles() {
         const panelLeft = document.getElementById('panelLeft');
         const panelRight = document.getElementById('panelRight');
-        const leftBtn = document.getElementById('leftPanelToggle');
-        const rightBtn = document.getElementById('rightPanelToggle');
-        const leftRect = panelLeft.getBoundingClientRect();
-        const rightRect = panelRight.getBoundingClientRect();
-        const viewportCenter = Math.round(window.innerHeight / 2);
-        const btnWidth = 34;
-
-       leftBtn.style.top = `${viewportCenter}px`;
-        rightBtn.style.top = `${viewportCenter}px`;
-        leftBtn.style.left = `${Math.round(leftRect.right - btnWidth / 2)}px`;
-        leftBtn.style.right = 'auto';
-        rightBtn.style.left = `${Math.round(rightRect.left - btnWidth / 2)}px`;
-        rightBtn.style.right = 'auto';
-        leftBtn.innerHTML = panelLeft.classList.contains('collapsed')
-            ? `<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>`
-            : `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>`;
-        rightBtn.innerHTML = panelRight.classList.contains('collapsed')
-            ? `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>`
-            : `<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>`;
+        const header = panelRight.querySelector('.right-header-row');
+        const handle = document.getElementById('resizeVertical');
+        const available = panelRight.offsetHeight - (header?.offsetHeight || 0) - handle.offsetHeight;
+        document.getElementById('sourcesSection').style.height = Math.round(available * 0.4) + 'px';
     }
 
-    function togglePanel(side, forceState = null) {
-        const panel = document.getElementById(side === 'left' ? 'panelLeft' : 'panelRight');
-        const collapsed = forceState === null ? !panel.classList.contains('collapsed') : forceState;
-        panel.classList.toggle('collapsed', collapsed);
-        syncPanelToggles();
+    function setupVerticalResize() {
+        const handle          = document.getElementById('resizeVertical');
+        const sourcesSection  = document.getElementById('sourcesSection');
+        const panelRight      = document.getElementById('panelRight');
+
+        let startY = 0, startH = 0, dragging = false;
+
+        const getMinMax = () => {
+            const header  = panelRight.querySelector('.right-header-row');
+            const handleH = handle.offsetHeight;
+            const totalAvailable = panelRight.offsetHeight - (header?.offsetHeight || 0) - handleH;
+            return { min: 60, max: totalAvailable - 60 };
+        };
+
+        const startDrag = (y) => {
+            dragging = true;
+            startY = y;
+            startH = sourcesSection.offsetHeight;
+            handle.classList.add('dragging');
+            document.body.classList.add('resizing-vertical');
+        };
+        const doDrag = (y) => {
+            if (!dragging) return;
+            const dy = y - startY;
+            const { min, max } = getMinMax();
+            const newH = Math.min(Math.max(startH + dy, min), max);
+            sourcesSection.style.height = newH + 'px';
+        };
+        const endDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            handle.classList.remove('dragging');
+            document.body.classList.remove('resizing-vertical');
+        };
+
+        handle.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientY); });
+        document.addEventListener('mousemove', (e) => doDrag(e.clientY));
+        document.addEventListener('mouseup', endDrag);
+
+        handle.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchmove', (e) => { doDrag(e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchend', endDrag);
     }
 
     // ══ CHAT LIST ════════════════════════════════════════
@@ -1350,23 +1386,78 @@ if (_lm === 'true') {
         el.className = 'chat-item';
         el.dataset.id = String(id);
         el.innerHTML = `
-            <div class="chat-item-main">
-                ${chatIconSVG()}
-                <span class="chat-item-title">${escHtml(title)}</span>
-            </div>
-            <div class="menu-anchor" style="position:relative;">
-                <button class="btn-more-chat" type="button" title="More options">${dotsSVG()}</button>
-            </div>
+            <span class="chat-item-title">💬 ${escHtml(title)}</span>
+            <button class="btn-more-chat" title="More options" data-id="${id}">⋯</button>
         `;
         el.addEventListener('click', () => loadChat(id));
-        el.querySelector('.btn-more-chat').addEventListener('click', (e) => {
+
+        const moreBtn = el.querySelector('.btn-more-chat');
+        moreBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            toggleContextMenu(el.querySelector('.menu-anchor'), [
-                { label: 'Rename', icon: pencilSVG(), onClick: () => openRenameChatModal(id, el.querySelector('.chat-item-title')?.textContent || title) },
-                { label: 'Delete', icon: trashSVG(), danger: true, onClick: () => confirmDeleteChat(id, el.querySelector('.chat-item-title')?.textContent || title) }
-            ]);
+            closeAllMenus();
+            const menu = document.createElement('div');
+            menu.className = 'chat-context-menu';
+            menu.innerHTML = `
+                <button class="ctx-menu-item" id="ctxRename">✏️ Rename</button>
+                <button class="ctx-menu-item ctx-delete" id="ctxDelete">🗑️ Delete</button>
+            `;
+            menu.querySelector('#ctxRename').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllMenus();
+                startRename(id, el);
+            });
+            menu.querySelector('#ctxDelete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllMenus();
+                deleteChat(e, id);
+            });
+            el.appendChild(menu);
+            setTimeout(() => document.addEventListener('click', closeAllMenus, { once: true }), 0);
         });
+
         return el;
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.chat-context-menu').forEach(m => m.remove());
+    }
+
+    function startRename(id, el) {
+        const titleEl = el.querySelector('.chat-item-title');
+        const oldTitle = titleEl.textContent.replace('💬 ', '').trim();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldTitle;
+        input.className = 'rename-input';
+        input.onclick = e => e.stopPropagation();
+        titleEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const finish = async () => {
+            const newTitle = input.value.trim();
+            if (!newTitle || newTitle === oldTitle) {
+                input.replaceWith(titleEl);
+                return;
+            }
+            try {
+                const res = await fetch('/Chat/RenameChat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId: id, title: newTitle })
+                });
+                if (res.ok) {
+                    titleEl.textContent = '💬 ' + newTitle;
+                }
+            } catch (err) { console.error(err); }
+            input.replaceWith(titleEl);
+        };
+
+        input.addEventListener('blur', finish);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+            if (e.key === 'Escape') { input.replaceWith(titleEl); }
+        });
     }
 
     function addChatItemToTop(id, title) {
@@ -1424,93 +1515,29 @@ if (_lm === 'true') {
         } catch (err) { alert('Error: ' + err.message); }
     }
 
-    function closeAllMenus() {
-        document.querySelectorAll('.context-menu').forEach(menu => menu.remove());
-    }
+    function deleteChat(e, id) {
+        e.stopPropagation();
+        const modal = document.getElementById('deleteModal');
+        modal.style.display = 'flex';
 
-    function toggleContextMenu(anchor, items) {
-        closeAllMenus();
-        const menu = document.createElement('div');
-        menu.className = 'context-menu';
-        items.forEach(item => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = `ctx-menu-item${item.danger ? ' delete-item' : ''}`;
-            btn.innerHTML = `${item.icon}${item.label}`;
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeAllMenus();
-                item.onClick();
-            });
-            menu.appendChild(btn);
-        });
-        anchor.appendChild(menu);
-    }
+        const confirmBtn = document.getElementById('deleteConfirmBtn');
+        const cancelBtn  = document.getElementById('deleteCancelBtn');
 
-    function openActionModal({ title, copy, value = '', confirmLabel = 'Save', confirmClass = 'primary', hideInput = false, onConfirm }) {
-        const modal = document.getElementById('actionModal');
-        const titleEl = document.getElementById('actionModalTitle');
-        const copyEl = document.getElementById('actionModalCopy');
-        const input = document.getElementById('actionModalInput');
-        const confirmBtn = document.getElementById('actionModalConfirm');
-
-        titleEl.textContent = title;
-        copyEl.textContent = copy;
-        input.value = value;
-        input.style.display = hideInput ? 'none' : '';
-        confirmBtn.textContent = confirmLabel;
-        confirmBtn.className = `modal-btn ${confirmClass}`;
-        actionModalHandler = onConfirm;
-        confirmBtn.onclick = async () => {
-            const nextValue = input.value.trim();
-            const shouldClose = await actionModalHandler?.(nextValue);
-            if (shouldClose !== false) closeActionModal();
+        const cleanup = () => {
+            modal.style.display = 'none';
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
         };
-        modal.classList.add('open');
-        if (!hideInput) setTimeout(() => input.focus(), 0);
-    }
 
-    function closeActionModal() {
-        document.getElementById('actionModal').classList.remove('open');
-        actionModalHandler = null;
-    }
-
-    function openRenameChatModal(id, oldTitle) {
-        openActionModal({
-            title: 'Rename Chat',
-            copy: 'Enter a new chat name.',
-            value: oldTitle,
-            confirmLabel: 'Save',
-            confirmClass: 'primary',
-            onConfirm: async (newTitle) => {
-                if (!newTitle) return false;
-                const res = await fetch('/Chat/RenameChat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chatId: id, title: newTitle })
-                });
-                if (!res.ok) return false;
-                updateChatItemTitle(id, newTitle);
-                return true;
-            }
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => {
+            cleanup();
+            await fetch(`/Chat/DeleteChat/${id}`, { method: 'DELETE' });
+            document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
+            if (activeChatId === id) resetUI();
         });
-    }
 
-    function confirmDeleteChat(id, title) {
-        openActionModal({
-            title: 'Delete Chat',
-            copy: `Delete "${title}" permanently?`,
-            confirmLabel: 'Delete',
-            confirmClass: 'danger',
-            hideInput: true,
-            onConfirm: async () => {
-                const res = await fetch(`/Chat/DeleteChat/${id}`, { method: 'DELETE' });
-                if (!res.ok) return false;
-                document.querySelector(`.chat-item[data-id="${id}"]`)?.remove();
-                if (activeChatId === id) resetUI();
-                return true;
-            }
-        });
+        document.getElementById('deleteCancelBtn').addEventListener('click', cleanup);
+        modal.addEventListener('click', (ev) => { if (ev.target === modal) cleanup(); }, { once: true });
     }
 
     // ══ LOAD CHAT ════════════════════════════════════════
@@ -2276,8 +2303,372 @@ function speakModuleContent(content, btn) {
             card.replaceChild(fresh, body); body = fresh;
         });
         retryRow.appendChild(btnRetry);
-        body.appendChild(retryRow);
-        return body;
+        b.appendChild(retryRow);
+        return b;
+    }
+    // ── end buildBody ──
+
+    let body = buildBody(); // ← must be `let`, not `const`, so retry can reassign it
+
+    header.addEventListener('click', () => {
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+        arrow.textContent = body.classList.contains('open') ? '▼' : '▶';
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    list.appendChild(card);
+
+    if (save && activeChatId > 0) {
+        fetch('/Chat/SaveQuiz', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: activeChatId, quizText: text })
+        }).catch(err => console.error('Quiz save error:', err));
+    }
+}
+function parseQuizFromText(text) {
+    const result = { title: '', questions: [] };
+
+    // ── 1. Split off Answer Key before doing anything ──────────────
+    const keyMatch = text.search(/answer\s+key/i);
+    const mainText  = keyMatch > -1 ? text.slice(0, keyMatch) : text;
+    const keyText   = keyMatch > -1 ? text.slice(keyMatch)    : '';
+
+    // ── 2. Extract answers from key into a map { qNum → answerStr } ─
+    const answerMap = {};
+    if (keyText) {
+        keyText.split('\n').forEach(line => {
+            const m = line.trim().match(/^(\d+)[).:\s]+(.+)/);
+            if (m) {
+                // Strip leading "a) b) c)" letter labels from MCQ answers in key
+                const raw = m[2].trim().replace(/^[a-e][).:\s]/i, '').trim();
+                answerMap[parseInt(m[1])] = raw;
+            }
+        });
+    }
+
+    // ── 3. Clean markdown from main text ───────────────────────────
+    const clean = mainText
+        .replace(/\\_/g, '_')  
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/^---+$/gm, '')
+        .replace(/^#+\s*/gm, '');
+
+    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // ── 4. Extract title ───────────────────────────────────────────
+    let startIdx = 0;
+    for (let i = 0; i < Math.min(5, lines.length); i++) {
+        if (lines[i].match(/^(instructions?|answer the|directions?|section)/i)) continue;
+        if (!lines[i].match(/^(\d+[).:\s]|Q\d|question\s*\d)/i)) {
+            result.title = lines[i].slice(0, 60);
+            startIdx = i + 1;
+            break;
+        }
+    }
+
+    let currentQ  = null;
+    let currentNum = 0;
+
+    const pushQ = () => {
+        if (!currentQ || !currentQ.question) return;
+        // Fill answer from key map if not already set
+        if (answerMap[currentNum] !== undefined) {
+            const keyAns = answerMap[currentNum];
+            if (currentQ.options.length > 0) {
+                // Match key answer letter (e.g. "b)") to option index
+                const letterM = keyAns.match(/^([a-e])[).:\s]/i);
+                if (letterM) {
+                    currentQ.answerIndex = letterM[1].toUpperCase().charCodeAt(0) - 65;
+                } else {
+                    // Try to match by answer text content
+                    const lc = keyAns.toLowerCase();
+                    const found = currentQ.options.findIndex(o => lc.includes(o.toLowerCase().slice(0,10)));
+                    if (found > -1) currentQ.answerIndex = found;
+                }
+            } else {
+                // Fill-in-the-blank — take just the first meaningful word/phrase
+                // Strip parenthetical notes like "(The document mentions...)"
+                currentQ.answer = keyAns.replace(/\(.*?\)/g, '').split('/')[0].trim();
+                currentQ.type   = 'fillblank';
+            }
+        }
+        // Determine type
+        if (currentQ.type !== 'fillblank') {
+            if (currentQ.options.length === 2 &&
+                currentQ.options.map(o => o.toLowerCase()).some(o => o === 'true' || o === 'false')) {
+                currentQ.type = 'truefalse';
+            } else if (currentQ.options.length > 0) {
+                currentQ.type = 'mcq';
+            } else {
+                // No options and no answer from key → short answer, skip
+                currentQ = null;
+                return;
+            }
+        }
+        result.questions.push(currentQ);
+        currentQ = null;
+    };
+
+    const fillRegex    = /_{2,}|\.{3,}/;
+    const optRegex     = /^([A-Ea-e])[).:\s]\s*(.+)/;
+    const qNumRegex    = /^(\d+)[).:\s]\s*(.+)/;
+    const qLabelRegex  = /^Q(?:uestion)?\s*(\d+)[).:]\s*(.+)/i;
+    const sectionRegex = /^section\s*\d/i;
+
+    for (let i = startIdx; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Skip section headers like "Section 1: Multiple Choice"
+        if (sectionRegex.test(line)) continue;
+
+        // Q-label format "Q1. text" or "Question 1. text"
+        const qLabelMatch = line.match(qLabelRegex);
+        if (qLabelMatch) {
+            pushQ();
+            currentNum = parseInt(qLabelMatch[1]);
+            currentQ = { question: qLabelMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Numbered question "1. text" — only if not an option letter
+        const qNumMatch = line.match(qNumRegex);
+        if (qNumMatch && !optRegex.test(line) && line.length > 8) {
+            pushQ();
+            currentNum = parseInt(qNumMatch[1]);
+            currentQ = { question: qNumMatch[2], options: [], answerIndex: 0, answer: '', type: 'mcq' };
+            if (fillRegex.test(currentQ.question)) currentQ.type = 'fillblank';
+            continue;
+        }
+
+        // Option line "a) ..." / "A. ..."
+        const optMatch = line.match(optRegex);
+        if (optMatch && currentQ) {
+            currentQ.options.push(optMatch[2]);
+            continue;
+        }
+
+        // True/False inline
+        if (currentQ && currentQ.options.length === 0 &&
+            line.toLowerCase().match(/^(true or false|true\/false)/)) {
+            currentQ.options = ['True', 'False'];
+            continue;
+        }
+
+        // Continuation of question text (before any options)
+        if (currentQ && currentQ.options.length === 0 && line.length > 2) {
+            currentQ.question += ' ' + line;
+            if (fillRegex.test(line)) currentQ.type = 'fillblank';
+        }
+    }
+
+    pushQ();
+    return result;
+}
+    function clearQuizList() {
+        document.getElementById('quizList').innerHTML = '';
+        quizCount = 0;
+    }
+
+    // ══ UI STATE ══════════════════════════════════════════
+    function showChatUI() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('messagesArea').classList.add('visible');
+    }
+
+    function resetUI() {
+        activeChatId = -1;
+        document.getElementById('welcomeScreen').style.display = '';
+        document.getElementById('messagesArea').classList.remove('visible');
+        clearMessages();
+        clearQuizList();
+        clearSourceList();
+        document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+    }
+
+    function clearSourceList() { document.getElementById('sourceList').innerHTML = ''; }
+    function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function logout() {
+    const modal = document.getElementById('logoutModal');
+    modal.style.display = 'flex';
+
+    const confirmBtn = document.getElementById('logoutConfirmBtn');
+    const cancelBtn  = document.getElementById('logoutCancelBtn');
+
+    const cleanup = () => {
+        modal.style.display = 'none';
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    };
+
+    document.getElementById('logoutConfirmBtn').addEventListener('click', () => {
+        cleanup();
+        window.location.href = '/Account/Logout';
+    });
+
+    document.getElementById('logoutCancelBtn').addEventListener('click', cleanup);
+    modal.addEventListener('click', (ev) => { if (ev.target === modal) cleanup(); }, { once: true });
+}
+
+    function openQuizModal(label, parsed, card) {
+    document.getElementById('modalQuizLabel').textContent = label;
+    const body = document.getElementById('modalQuizBody');
+    body.innerHTML = '';
+
+    // Re-use buildBody logic but rendered fresh inside the modal
+    const tempCard = document.createElement('div');
+    // Clone a fresh quiz card body by calling a standalone builder
+    const freshBody = buildQuizBody(parsed, tempCard);
+    freshBody.classList.add('open');
+    freshBody.style.cssText = 'display:block;padding:0;border:none;';
+    body.appendChild(freshBody);
+    document.getElementById('quizModal').classList.add('open');
+}
+
+    function closeQuizModal() {
+        document.getElementById('quizModal').classList.remove('open');
+        document.getElementById('modalQuizBody').innerHTML = '';
+    }
+
+    // Close on backdrop click
+    document.getElementById('quizModal').addEventListener('click', function(e) {
+        if (e.target === this) closeQuizModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeQuizModal();
+    });
+
+    function buildQuizBody(parsed, card) {
+        let body = document.createElement('div');
+        body.className = 'quiz-card-body';
+
+        if (parsed.questions.length === 0) {
+            const raw = document.createElement('div');
+            raw.style.cssText = 'font-size:12px;color:#888;padding:8px 0;';
+            raw.textContent = 'Could not parse quiz questions.';
+            body.appendChild(raw);
+            return body;
+        }
+
+        let score = 0, answered = 0;
+        const scoreEl = document.createElement('div');
+        scoreEl.className = 'quiz-score';
+
+    parsed.questions.forEach((q, idx) => {
+        const qwrap = document.createElement('div');
+        qwrap.style.marginBottom = '12px';
+
+        const qtext = document.createElement('div');
+        qtext.className = 'quiz-q-text';
+        qtext.innerHTML = `<strong style="color:var(--accent)">Q${idx + 1}.</strong> ${escHtml(q.question)}`;
+        qwrap.appendChild(qtext);
+
+        if (q.type === 'mcq' || q.type === 'truefalse') {
+            const letters = ['A','B','C','D','E'];
+            let picked = false;
+
+            q.options.forEach((opt, oi) => {
+                const ob = document.createElement('div');
+                ob.className = 'quiz-opt';
+                const letter = q.type === 'truefalse' ? (oi === 0 ? 'T' : 'F') : letters[oi];
+                ob.innerHTML = `<span class="quiz-opt-letter">${letter}</span><span class="quiz-opt-text">${escHtml(opt)}</span>`;
+                ob.addEventListener('click', () => {
+                    if (picked) return;
+                    picked = true; answered++;
+                    const fb = qwrap.querySelector('.quiz-feedback');
+                    if (oi === q.answerIndex) {
+                        score++;
+                        ob.classList.add('correct');
+                        fb.className = 'quiz-feedback show correct';
+                        fb.textContent = '✓ Correct!';
+                    } else {
+                        ob.classList.add('wrong');
+                        const allOpts = qwrap.querySelectorAll('.quiz-opt');
+                        if (allOpts[q.answerIndex]) allOpts[q.answerIndex].classList.add('correct');
+                        fb.className = 'quiz-feedback show wrong';
+                        fb.textContent = `✗ Correct: ${q.type === 'truefalse' ? (q.answerIndex === 0 ? 'True' : 'False') : letters[q.answerIndex]}`;
+                    }
+                    scoreEl.textContent = `${score}/${answered} correct`;
+                });
+                qwrap.appendChild(ob);
+            });
+
+            const fb = document.createElement('div');
+            fb.className = 'quiz-feedback';
+            qwrap.appendChild(fb);
+
+        } else if (q.type === 'fillblank') {
+            const inputRow = document.createElement('div');
+            inputRow.style.cssText = 'display:flex;gap:6px;margin-top:4px;';
+
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.placeholder = 'Type your answer…';
+            inp.style.cssText = 'flex:1;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:5px 8px;color:#ccc;font-size:12px;font-family:inherit;outline:none;';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.textContent = 'Check';
+            submitBtn.style.cssText = 'background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;';
+
+            const fb = document.createElement('div');
+            fb.className = 'quiz-feedback';
+            let picked = false;
+
+            submitBtn.addEventListener('click', () => {
+                if (picked) return;
+                const userAnswer = inp.value.trim().toLowerCase();
+                const correct = q.answer.toLowerCase();
+                if (userAnswer === correct || (correct.includes(userAnswer) && userAnswer.length > 2)) {
+                    picked = true; answered++; score++;
+                    fb.className = 'quiz-feedback show correct';
+                    fb.textContent = '✓ Correct!';
+                    inp.style.borderColor = '#2d522d';
+                } else {
+                    picked = true; answered++;
+                    fb.className = 'quiz-feedback show wrong';
+                    fb.textContent = `✗ Answer: ${q.answer}`;
+                    inp.style.borderColor = '#52302d';
+                }
+                scoreEl.textContent = `${score}/${answered} correct`;
+            });
+
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitBtn.click(); });
+            inputRow.appendChild(inp);
+            inputRow.appendChild(submitBtn);
+            qwrap.appendChild(inputRow);
+            qwrap.appendChild(fb);
+        }
+
+        body.appendChild(qwrap);
+    });
+
+    const retryRow = document.createElement('div');
+    retryRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px;';
+    retryRow.appendChild(scoreEl);
+
+    const btnRetry = document.createElement('button');
+    btnRetry.textContent = '↺ Retry';
+    btnRetry.style.cssText = 'background:none;border:1px solid #3a3a3a;border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex-shrink:0;';
+    btnRetry.onmouseenter = () => { btnRetry.style.background = 'rgba(124,92,191,0.12)'; btnRetry.style.borderColor = 'var(--accent)'; };
+    btnRetry.onmouseleave = () => { btnRetry.style.background = 'none'; btnRetry.style.borderColor = '#3a3a3a'; };
+    btnRetry.addEventListener('click', () => {
+        const wasOpen = body.classList.contains('open');
+        const fresh = buildQuizBody(parsed, card);
+        if (wasOpen) fresh.classList.add('open');
+        card.replaceChild(fresh, body);
+        body = fresh;
+    });
+
+    retryRow.appendChild(btnRetry);
+    body.appendChild(retryRow);
+    return body;
     }
 
     function openFlashcardModal(label, questions) {
@@ -2409,10 +2800,211 @@ function speakModuleContent(content, btn) {
         return body;
     }
 
-    function makeVerticalResizable(handle) {
-    const chatList = document.getElementById('chatList');
-    const docsSection = document.querySelector('.docs-section');
-    let startY = 0, startChatH = 0, dragging = false;
+// COLLAPSIBLE PANELS 
+    (function () {
+        const panelLeft         = document.getElementById('panelLeft');
+        const panelRight        = document.getElementById('panelRight');
+        const btnCollapseLeft   = document.getElementById('btnCollapseLeft');
+        const btnCollapseRight  = document.getElementById('btnCollapseRight');
+
+        // Restore saved state
+        const leftCollapsed  = localStorage.getItem('panelLeftCollapsed')  === 'true';
+        const rightCollapsed = localStorage.getItem('panelRightCollapsed') === 'true';
+        if (leftCollapsed)  setLeft(true,  false);
+        if (rightCollapsed) setRight(true, false);
+
+        btnCollapseLeft.addEventListener('click',  () => setLeft(!panelLeft.classList.contains('collapsed')));
+        btnCollapseRight.addEventListener('click', () => setRight(!panelRight.classList.contains('collapsed')));
+
+        // Collapsed icon buttons expand the panel when clicked
+        document.getElementById('btnNewChatCollapsed').addEventListener('click', () => {
+            setLeft(false);
+            setTimeout(() => document.getElementById('btnNewChat').click(), 260);
+        });
+        document.getElementById('btnLogoutCollapsed').addEventListener('click', () => {
+            document.getElementById('btnLogout').click();
+        });
+        document.getElementById('btnAddSourceCollapsed').addEventListener('click', () => {
+            setRight(false);
+            setTimeout(() => document.getElementById('btnAddSource').click(), 260);
+        });
+
+        function setLeft(collapse, save = true) {
+            panelLeft.classList.toggle('collapsed', collapse);
+            btnCollapseLeft.textContent = collapse ? '›' : '‹';
+            btnCollapseLeft.title = collapse ? 'Expand sidebar' : 'Collapse sidebar';
+            // Disable resize handle when collapsed
+            document.getElementById('resizeLeft').style.pointerEvents = collapse ? 'none' : '';
+            document.getElementById('resizeLeft').style.opacity = collapse ? '0' : '';
+            if (save) localStorage.setItem('panelLeftCollapsed', collapse);
+        }
+
+        function setRight(collapse, save = true) {
+            panelRight.classList.toggle('collapsed', collapse);
+            btnCollapseRight.textContent = collapse ? '‹' : '›';
+            btnCollapseRight.title = collapse ? 'Expand panel' : 'Collapse panel';
+            // Disable resize handle when collapsed
+            document.getElementById('resizeRight').style.pointerEvents = collapse ? 'none' : '';
+            document.getElementById('resizeRight').style.opacity = collapse ? '0' : '';
+            if (save) localStorage.setItem('panelRightCollapsed', collapse);
+        }
+    })();
+
+    // VOICE INPUT
+    (function () {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btnMic        = document.getElementById('btnMic');
+        const txtInput      = document.getElementById('txtInput');
+        const statusBar     = document.getElementById('voiceStatusBar');
+        const statusText    = document.getElementById('voiceStatusText');
+        const countdownEl   = document.getElementById('voiceCountdown');
+        const cancelBtn     = document.getElementById('voiceCancelBtn');
+        const inputHint     = document.getElementById('inputHint');
+
+        // Hide mic button if browser doesn't support it
+        if (!SpeechRecognition) {
+            if (btnMic) btnMic.style.display = 'none';
+            return;
+        }
+
+        let recognition     = null;
+        let isRecording     = false;
+        let silenceTimer    = null;
+        let countdownInterval = null;
+        let silenceSeconds  = 0;
+        const SILENCE_LIMIT = 5; // seconds before auto-send
+
+        function buildRecognition() {
+            const r = new SpeechRecognition();
+            r.continuous      = true;
+            r.interimResults  = true;
+            r.lang            = 'en-US';
+
+            let finalTranscript = '';
+
+            r.onstart = () => {
+                finalTranscript = txtInput.value.trim();
+                statusBar.classList.add('visible');
+                inputHint.style.display = 'none';
+                setListeningState();
+            };
+
+            r.onresult = (e) => {
+                let interim = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    const t = e.results[i][0].transcript;
+                    if (e.results[i].isFinal) finalTranscript += (finalTranscript ? ' ' : '') + t.trim();
+                    else interim = t;
+                }
+                txtInput.value = finalTranscript + (interim ? ' ' + interim : '');
+                autoResize(txtInput);
+                resetSilenceTimer();
+            };
+
+            r.onspeechend = () => { startSilenceTimer(); };
+
+            r.onerror = (e) => {
+                if (e.error === 'no-speech' || e.error === 'audio-capture') { startSilenceTimer(); return; }
+                if (e.error === 'aborted') return;
+                stopRecording(false);
+            };
+
+            r.onsoundend = () => { startSilenceTimer(); };
+
+            r.onend = () => {
+                // Restart if still recording (handles browser auto-stop)
+                if (isRecording) {
+                    try { r.start(); } catch (_) {}
+                }
+            };
+
+            return r;
+        }
+
+        function setListeningState() {
+            statusText.textContent = 'Listening…';
+            countdownEl.textContent = '';
+            countdownEl.classList.remove('urgent');
+        }
+
+        function startSilenceTimer() {
+            clearSilenceTimer();
+            silenceSeconds = SILENCE_LIMIT;
+            statusText.textContent = 'Auto-sending in…';
+
+            countdownInterval = setInterval(() => {
+                silenceSeconds--;
+                countdownEl.textContent = silenceSeconds + 's';
+                countdownEl.classList.toggle('urgent', silenceSeconds <= 2);
+
+                if (silenceSeconds <= 0) {
+                    clearSilenceTimer();
+                    stopRecording(true); // true = auto-send
+                }
+            }, 1000);
+        }
+
+        function resetSilenceTimer() {
+            clearSilenceTimer();
+            setListeningState();
+        }
+
+        function clearSilenceTimer() {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+
+        function startRecording() {
+            if (isRecording) return;
+            isRecording = true;
+            btnMic.classList.add('recording');
+            btnMic.title = 'Stop recording';
+            recognition = buildRecognition();
+            try { recognition.start(); } catch (_) {}
+        }
+
+        function stopRecording(andSend = false) {
+            if (!isRecording) return;
+            isRecording = false;
+            clearSilenceTimer();
+            btnMic.classList.remove('recording');
+            btnMic.title = 'Voice input';
+            statusBar.classList.remove('visible');
+            inputHint.style.display = '';
+            countdownEl.classList.remove('urgent');
+
+            try { recognition.abort(); } catch (_) {}
+            recognition = null;
+
+            if (andSend) {
+                const msg = txtInput.value.trim();
+                if (msg) sendMessage();
+            }
+        }
+
+        // Mic button toggle
+        btnMic.addEventListener('click', () => {
+            isRecording ? stopRecording(false) : startRecording();
+        });
+
+        // Cancel button
+        cancelBtn.addEventListener('click', () => {
+            stopRecording(false);
+        });
+
+        // If user manually edits or sends during countdown, stop cleanly
+        txtInput.addEventListener('keydown', (e) => {
+            if (isRecording && e.key === 'Enter' && !e.shiftKey) {
+                stopRecording(false); // let the existing sendMessage handle it
+            }
+        });
+
+        document.getElementById('btnSend').addEventListener('click', () => {
+            if (isRecording) stopRecording(false);
+        });
+    })();
+
+</script>
 
     handle.addEventListener('mousedown', (e) => {
         e.preventDefault();

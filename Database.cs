@@ -7,7 +7,8 @@ namespace RavnLearnWeb
     {
         private static string connString =
             new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", optional: true) // optional na lang
+                .AddEnvironmentVariables() // ✅ Kunin sa environment variables
                 .Build()
                 .GetConnectionString("DefaultConnection")!;
 
