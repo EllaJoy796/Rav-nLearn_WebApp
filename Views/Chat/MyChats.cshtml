@@ -436,7 +436,7 @@
 
    async function loadChats() {
         try {
-            const res   = await fetch('/Chat/GetMyProjects');
+            const res   = await fetch('/Chat/GetMyProjectsAll');
             const chats = await res.json();
             const filtered = chats.filter(c => !c.isManual);  // filter manual projects
             allChats = filtered;
